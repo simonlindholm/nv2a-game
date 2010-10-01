@@ -21,12 +21,12 @@ int main(int argc, char** argv) {
 
 		// Initialize SDL and SDL_mixer
 		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
-			throw GameException();
+			throw SDL_Exception();
 		}
 		hasSDL = true;
 
 		if (Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 1024) == -1) {
-			throw GameException();
+			throw SDL_Exception();
 		}
 		hasMix = true;
 
@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
 
 		screen = SDL_SetVideoMode(config.winWidth, config.winHeight, 32, videoOptions);
 		if (!screen){
-			throw GameException();
+			throw SDL_Exception();
 		}
 		SDL_FillRect(screen, 0, 0x000000);
 

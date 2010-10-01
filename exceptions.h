@@ -1,16 +1,14 @@
 #pragma once
 #include <exception>
 
-// This is the standard class for SDL exceptions
-class GameException : public std::exception {
+// This is the standard class for SDL exceptions. This is needed because SDL
+// was originally written in C and doesn't use C++-style error handling.
+// Wraps SDL_GetError().
+class SDL_Exception : public std::exception {
 	public:
 		virtual const char* what() const throw();
-		virtual ~GameException() throw();
+		virtual ~SDL_Exception() throw();
 };
 
 // Exception symbolising quitting the program
-class ExitException : public std::exception {
-	public:
-		virtual ~ExitException() throw();
-		virtual const char* what() const throw();
-};
+class ExitException {};
