@@ -1,6 +1,7 @@
 #pragma once
 #include "GameState.h"
 
+// An abstract class describing a player in the game
 class Player {
 	public:
 		// A struct describing the actions a player performs at a certain frame, such

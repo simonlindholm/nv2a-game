@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
 			Uint32 ctime = SDL_GetTicks();
 			int sdelay = ctime - ltime;
 			while (sdelay < 0) {
-				// Correct timer errors (not sure if this can realistically happen)
+				// Correct timer errors (not sure if this can happen)
 				SDL_Delay(1);
 				ctime = SDL_GetTicks();
 				sdelay = ctime - ltime;
