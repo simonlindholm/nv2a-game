@@ -3,6 +3,7 @@
 
 Config::Config() {
 	// Initialize config with default values
+	// XXX: Fullscreen with h/w given by SDL_GetVideoInfo()->current_h/w?
 	fullscreen = false;
 	winWidth = 600;
 	winHeight = 500;

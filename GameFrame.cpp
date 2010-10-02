@@ -1,4 +1,6 @@
 #include <iostream>
+#include <SDL/SDL.h>
+#include "SDL_helpers.h"
 #include "GameFrame.h"
 #include "exceptions.h"
 #include "shared_ptr.h"
@@ -23,6 +25,6 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 
 	// TODO: Draw background and sprites here, instead of (as is happing right
 	// now) just painting the screen red.
-	SDL_FillRect(screen, 0, 0xFF0000);
+	SDL_FillRectLocked(screen, 255, 0, 0);
 	return 0;
 }

@@ -1,5 +1,6 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_mixer.h>
+#include "SDL_helpers.h"
 #include <iostream>
 #include <exception>
 #include "exceptions.h"
@@ -33,6 +34,8 @@ int main(int argc, char** argv) {
 		// Set up the window
 		SDL_WM_SetCaption("The NV2A Project", "The NV2A Project");
 
+		// TODO: Set application icon with SDL_WM_SetIcon (when we get one)
+
 		Uint32 videoOptions = SDL_HWSURFACE | SDL_DOUBLEBUF;
 		if (config.fullscreen) videoOptions |= SDL_FULLSCREEN;
 
@@ -40,7 +43,7 @@ int main(int argc, char** argv) {
 		if (!screen){
 			throw SDL_Exception();
 		}
-		SDL_FillRect(screen, 0, 0x000000);
+		SDL_FillRectLocked(screen, 0, 0, 0);
 
 		// Begin in a 'begin state' given by StartFrame
 		curFrame = new StartFrame;
