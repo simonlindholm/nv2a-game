@@ -10,7 +10,7 @@
 int main(int argc, char** argv) {
 	int returnValue = 0;
 	SDL_Surface* screen = 0;
-	Frame* curFrame;
+	Frame* curFrame = 0;
 	bool hasSDL = false, hasMix = false;
 	Config config;
 
