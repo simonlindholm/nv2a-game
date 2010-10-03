@@ -1,0 +1,116 @@
+#include <SDL/SDL.h>
+#include <cmath>
+#include "HumanPlayer.h"
+#include "SDL_helpers.h"
+#include "util.h"
+
+HumanPlayer::HumanPlayer() {
+}
+
+void HumanPlayer::startFrame(Uint8* keyState, Uint8 mouseState, int mouseX, int mouseY) {
+	// Calculate relative movement direction (ie. left, up, diagonal, etc.)
+	vx = vy = 0;
+	if (keyState[SDLK_w]) ++vy;
+	if (keyState[SDLK_a]) --vx;
+	if (keyState[SDLK_s]) --vy;
+	if (keyState[SDLK_d]) ++vx;
+
+	this->mouse.x = mouseX;
+	this->mouse.y = mouseY;
+}
+
+void HumanPlayer::handleEvent(const SDL_Event& event) {
+	// TODO: Handle events related to the player interface, such as
+	// weapon swapping, item use, etc.
+}
+
+void HumanPlayer::paint(GameState* game, SDL_Surface* screen) {
+	// TODO: Paint player interface to screen
+	// (The GUI that includes score, weapons, etc. goes here)
+
+	// XXX: Stub.
+	Coord pos = this->getPosition();
+	{
+		SDL_Lock lock(screen);
+		SDL_FillRect(screen, 0, SDL_MapRGB(screen->format, 100, 0, 255));
+		SDL_Rect rect;
+		rect.x = pos.x - 10;
+		rect.y = pos.y - 10;
+		rect.w = rect.h = 20;
+		SDL_FillRect(screen, &rect, SDL_MapRGB(screen->format, 0, 255, 0));
+	}
+}
+
+// Calculate movement of player
+Player::Action HumanPlayer::move(GameState* game, unsigned int delay) {
+	bool atCursor = false;
+
+	// Find forward angle
+	Coord pos = this->getPosition();
+	double relX = mouse.x - pos.x;
+	double relY = mouse.y - pos.y;
+	if (fpEqual(pos.x, mouse.x, 2) && fpEqual(pos.y, mouse.y, 2)) {
+		// The player is at the cursor; only move backwards, and retain the
+		// old angle of movement (since we can't calculate a new one, and it
+		// is nice to be able to back out again the same way we came.)
+		atCursor = true;
+	}
+	else {
+		// The vector (mouse - pos) in standard, mathy form is (relX, -relY)
+		double angle = std::atan2(-relY, relX);
+		if (angle < 0) { // Let the angle be in [0, 2pi)
+			angle += 2*m_pi;
+		}
+
+		this->setAngle(angle);
+	}
+
+	// Calculate movement
+	double mx, my;
+	double angle = this->getAngle();
+	double mov = delay * 0.1; // 100 pixels/second, XXX: Change this
+	double cursorDist2 = relY*relY + relX*relX;
+	double mForward = mov * ((vx && vy) ? std::sqrt(0.5) : 1.0);
+
+	if (vy > 0 && mForward*mForward >= cursorDist2) {
+		// We will reach the cursor in this step, so teleport it there.
+		mx = relX;
+		my = relY;
+	}
+	else if ((vy >= 0 && atCursor) || (!vx && !vy)) {
+		// Player is either at cursor and not moving backwards, or
+		// not moving at all; don't move
+		mx = my = 0;
+	}
+	else if (vx || vy) {
+		// Move the player normally
+
+		// Calculate the average of the direction angles
+		double mAngle = 0;
+		if (vx < 0) mAngle =  m_pi/2;
+		if (vx > 0) mAngle = -m_pi/2;
+		if (vy) {
+			mAngle /= 2;
+			if (vy < 0) {
+				mAngle = m_pi - mAngle;
+			}
+		}
+
+		mAngle += angle;
+
+		//Reduce to [0, 2pi)
+		if (mAngle < 0) mAngle += 2*m_pi;
+		if (mAngle >= 2*m_pi) mAngle -= 2*m_pi;
+
+		// Transform back into regular form
+		mx = mov * std::cos(mAngle);
+		my = mov * -std::sin(mAngle);
+	}
+
+	Action a;
+	a.mx = mx;
+	a.my = my;
+	a.shooting = false;
+	a.shootingAngle = angle;
+	return a;
+}

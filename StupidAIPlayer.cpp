@@ -10,5 +10,6 @@ Player::Action StupidAIPlayer::move(GameState* game, unsigned int delay) {
 	ret.mx = 1;
 	ret.my = 0;
 	ret.shooting = false;
+	ret.shootingAngle = 0;
 	return ret;
 }
