@@ -1,17 +1,15 @@
 #pragma once
-#include "GameState.h"
+#include "fwd.h"
 #include "util.h"
 
 // An abstract class describing a player in the game
 class Player {
 	private:
-		// The position of the center of the player
 		Coord pos;
-
-		// The angle of sight
 		double angle;
+		double speed;
 
-		// XXX: Some sort of hitbox needed here
+		// TODO: Add some sort of hitbox here
 
 	protected:
 		// Set the angle of sight (from the derived class)
@@ -33,7 +31,7 @@ class Player {
 
 		// Returns what actions the player performs this frame, given the state of
 		// the game and the delay since last frame
-		virtual Action move(GameState* game, unsigned int delay) = 0;
+		virtual Action move(const GameState& game, unsigned int delay) = 0;
 
 		// Get the player's position
 		Coord getPosition() const;
@@ -44,4 +42,7 @@ class Player {
 
 		// Get the angle of movement
 		double getAngle() const;
+
+		// Get the speed of the player, in pixels per millisecond
+		double getSpeed() const;
 };

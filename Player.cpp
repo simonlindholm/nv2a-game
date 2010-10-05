@@ -4,8 +4,10 @@
 Player::~Player() {}
 
 Player::Player() {
+	// XXX: Don't use hardcoded values
 	pos.x = pos.y = 200;
 	angle = 0;
+	speed = 0.2;
 }
 
 void Player::setAngle(double angle) {
@@ -23,4 +25,8 @@ void Player::moveBy(double x, double y) {
 
 Coord Player::getPosition() const {
 	return this->pos;
+}
+
+double Player::getSpeed() const {
+	return this->speed;
 }

@@ -12,6 +12,6 @@ class HumanPlayer : public Player {
 		HumanPlayer();
 		void startFrame(Uint8* keyState, Uint8 mouseState, int mouseX, int mouseY);
 		void handleEvent(const SDL_Event& event);
-		Action move(GameState* game, unsigned int delay);
-		void paint(GameState* game, SDL_Surface* screen);
+		Action move(const GameState& game, unsigned int delay);
+		void paint(const GameState& game, SDL_Surface* screen);
 };

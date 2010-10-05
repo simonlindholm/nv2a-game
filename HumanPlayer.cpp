@@ -1,6 +1,7 @@
 #include <SDL/SDL.h>
 #include <cmath>
 #include "HumanPlayer.h"
+#include "GameState.h"
 #include "SDL_helpers.h"
 #include "util.h"
 
@@ -24,25 +25,34 @@ void HumanPlayer::handleEvent(const SDL_Event& event) {
 	// weapon swapping, item use, etc.
 }
 
-void HumanPlayer::paint(GameState* game, SDL_Surface* screen) {
+void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 	// TODO: Paint player interface to screen
 	// (The GUI that includes score, weapons, etc. goes here)
 
-	// XXX: Stub.
-	Coord pos = this->getPosition();
-	{
-		SDL_Lock lock(screen);
-		SDL_FillRect(screen, 0, SDL_MapRGB(screen->format, 100, 0, 255));
+	SDL_Lock lock(screen);
+	SDL_FillRect(screen, 0, SDL_MapRGB(screen->format, 100, 0, 255));
+
+	for(unsigned int i = 0; i < game.players.size(); ++i) {
+		const Player& p = *game.players[i];
+		Coord pos = p.getPosition();
+		Uint32 color;
+		if (&p == this) {
+			// Let yourself have another color
+			color = SDL_MapRGB(screen->format, 0, 255, 0);
+		}
+		else {
+			color = SDL_MapRGB(screen->format, 255, 0, 0);
+		}
 		SDL_Rect rect;
 		rect.x = pos.x - 10;
 		rect.y = pos.y - 10;
 		rect.w = rect.h = 20;
-		SDL_FillRect(screen, &rect, SDL_MapRGB(screen->format, 0, 255, 0));
+		SDL_FillRect(screen, &rect, color);
 	}
 }
 
 // Calculate movement of player
-Player::Action HumanPlayer::move(GameState* game, unsigned int delay) {
+Player::Action HumanPlayer::move(const GameState& game, unsigned int delay) {
 	bool atCursor = false;
 
 	// Find forward angle
@@ -58,9 +68,7 @@ Player::Action HumanPlayer::move(GameState* game, unsigned int delay) {
 	else {
 		// The vector (mouse - pos) in standard, mathy form is (relX, -relY)
 		double angle = std::atan2(-relY, relX);
-		if (angle < 0) { // Let the angle be in [0, 2pi)
-			angle += 2*m_pi;
-		}
+		angle = reduceAngle(angle);
 
 		this->setAngle(angle);
 	}
@@ -68,7 +76,7 @@ Player::Action HumanPlayer::move(GameState* game, unsigned int delay) {
 	// Calculate movement
 	double mx, my;
 	double angle = this->getAngle();
-	double mov = delay * 0.1; // 100 pixels/second, XXX: Change this
+	double mov = delay * this->getSpeed();
 	double cursorDist2 = relY*relY + relX*relX;
 	double mForward = mov * ((vx && vy) ? std::sqrt(0.5) : 1.0);
 
@@ -97,10 +105,6 @@ Player::Action HumanPlayer::move(GameState* game, unsigned int delay) {
 		}
 
 		mAngle += angle;
-
-		//Reduce to [0, 2pi)
-		if (mAngle < 0) mAngle += 2*m_pi;
-		if (mAngle >= 2*m_pi) mAngle -= 2*m_pi;
 
 		// Transform back into regular form
 		mx = mov * std::cos(mAngle);

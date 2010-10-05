@@ -1,6 +1,15 @@
 #include <cmath>
 #include "util.h"
 
+Coord::Coord() : x(0), y(0) {}
+Coord::Coord(double x,double y) : x(x), y(y) {}
+
+double reduceAngle(double angle) {
+	double ret = std::fmod(angle, 2*m_pi);
+	if (ret < 0) ret += 2*m_pi;
+	return ret;
+}
+
 template <class T>
 bool fpEqualRelImpl(T a, T b, T epsilon) {
 	T aa = std::fabs(a), ab = std::fabs(b), ad = std::fabs(a-b);

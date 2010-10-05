@@ -6,10 +6,11 @@
 #include "exceptions.h"
 #include "shared_ptr.h"
 
-GameFrame::GameFrame(shared_ptr<Player> enemy)
+GameFrame::GameFrame(const std::vector<shared_ptr<Player> >& enemies)
 {
 	player = shared_ptr<HumanPlayer>(new HumanPlayer);
-	this->enemy = enemy;
+	gameState.players = enemies;
+	gameState.players.push_back(player);
 }
 
 Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
@@ -27,7 +28,7 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 	while (SDL_PollEvent(&event)) {
 		if (event.type == SDL_QUIT) throw ExitException();
 		else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) {
-			// XXX: Add a menu on Escape?
+			// TODO: Add a menu on Escape?
 			throw ExitException();
 		}
 		else {
@@ -37,12 +38,14 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 	}
 
 	// Move all players
-	// XXX: Handle return values intelligently, and check hitboxes
-	Player::Action ac = player->move(&gameState, delay);
-	player->moveBy(ac.mx, ac.my);
-	enemy->move(&gameState, delay);
+	for (unsigned int i = 0; i < gameState.players.size(); ++i) {
+		shared_ptr<Player> p = gameState.players[i];
+		Player::Action ac = p->move(gameState, delay);
+		// TODO: Check hitboxes, and handle shooting correctly
+		p->moveBy(ac.mx, ac.my);
+	}
 
 	// Draw the player interface
-	player->paint(&gameState, screen);
+	player->paint(gameState, screen);
 	return 0;
 }

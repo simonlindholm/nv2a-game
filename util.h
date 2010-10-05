@@ -8,8 +8,11 @@ const double m_pi = 3.14159265358979323846264338327;
 // A coordinate
 struct Coord {
 	double x, y;
+	Coord();
+	Coord(double x, double y);
 };
 
+double reduceAngle(double angle);
 // Floating point equality tests
 // (Note: Floating point comparisons are inexact, so instead of comparing
 // equality we check whether the difference is sufficiently small.)

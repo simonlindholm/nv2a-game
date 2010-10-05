@@ -43,7 +43,10 @@ int main(int argc, char** argv) {
 		if (!screen){
 			throw SDL_Exception();
 		}
-		SDL_FillRectLocked(screen, 0, 0, 0);
+		{
+			SDL_Lock lock(screen);
+			SDL_FillRect(screen, 0, SDL_MapRGB(screen->format, 0, 0, 0));
+		}
 
 		// Begin in a 'begin state' given by StartFrame
 		curFrame = new StartFrame;

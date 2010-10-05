@@ -10,9 +10,7 @@ class GameFrame : public Frame {
 	private:
 		GameState gameState;
 		shared_ptr<HumanPlayer> player;
-		// XXX: Merge into one array containing all players
-		shared_ptr<Player> enemy;
 	public:
-		GameFrame(shared_ptr<Player> enemy);
+		GameFrame(const std::vector<shared_ptr<Player> >& enemies);
 		Frame* frame(SDL_Surface* screen, unsigned int delay);
 };
