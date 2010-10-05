@@ -2,6 +2,7 @@
 #include <cmath>
 #include "StupidAIPlayer.h"
 #include "util.h"
+#include "mathutil.h"
 
 StupidAIPlayer::StupidAIPlayer(const std::vector<Coord>& checkpoints) 
 	: checkpoints(checkpoints), moveInd(0)
@@ -37,7 +38,8 @@ Player::Action StupidAIPlayer::move(const GameState& game, unsigned int delay) {
 
 	if (!(fpEqual(ret.mx, 0, 1) && fpEqual(ret.my, 0, 1))) {
 		double angle = atan2(-ret.my, ret.mx);
-		if (angle < 0) angle += 2*m_pi;
+		angle = reduceAngle(angle);
+
 		this->setAngle(angle);
 	}
 

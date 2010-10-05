@@ -4,6 +4,7 @@
 #include "GameState.h"
 #include "SDL_helpers.h"
 #include "util.h"
+#include "mathutil.h"
 
 HumanPlayer::HumanPlayer() {
 }
