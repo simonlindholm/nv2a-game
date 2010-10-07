@@ -10,5 +10,15 @@ class SDL_Exception : public std::exception {
 		virtual ~SDL_Exception() throw();
 };
 
+// Exception thrown when not able to load the configuration, for any reason.
+class ConfigException : public std::exception {
+	private:
+		const char* msg;
+	public:
+		ConfigException(const char* msg);
+		virtual const char* what() const throw();
+		virtual ~ConfigException() throw();
+};
+
 // Exception symbolising quitting the program
 class ExitException {};
