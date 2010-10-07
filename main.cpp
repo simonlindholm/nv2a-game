@@ -12,21 +12,25 @@ int main(int argc, char** argv) {
 	SDL_Surface* screen = 0;
 	Frame* curFrame = 0;
 	bool hasSDL = false, hasMix = false;
-	Config config;
 
 	// Wrap all logic, including the game loop, in a try-catch; we quit (and print
 	// an error message as appropriate) when we catch an exception.
 	try {
-		// Load configuration from file
-		config.load("config.txt");
-
-		// Initialize SDL and SDL_mixer
-		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
+		// Initialize SDL
+		if (SDL_Init(SDL_INIT_VIDEO) == -1) {
 			throw SDL_Exception();
 		}
 		hasSDL = true;
 
-		if (Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 1024) == -1) {
+		// Initialize configuration and read settings from file. This is done after
+		// SDL is initialized, so we can get the screen resolution.
+		Config& config = Config::get();
+
+		config.load("config.txt");
+
+		// Initialize SDL mixer (and the audio subsystem)
+		if (SDL_InitSubSystem(SDL_INIT_AUDIO) == -1 || 
+		    Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 1024) == -1) {
 			throw SDL_Exception();
 		}
 		hasMix = true;

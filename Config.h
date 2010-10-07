@@ -1,14 +1,23 @@
 #pragma once
 
-// Struct for holding configuration settings, such as window dimensions, FPS,
-// keybinds, etc.
-struct Config {
-	// XXX: Make this a singleton? (ie. a single global object, instead of main()
-	// creating a Config and passing it to other classes as needed)
-	int winWidth, winHeight;
-	bool fullscreen;
-	int minDelay;
+// Singleton struct for holding configuration settings, such as window
+// dimensions, FPS, keybinds, etc.
+class Config {
+	private:
+		// Hide constructors from public view, since Config is a singleton
+		Config();
+		Config(const Config& other);
 
-	Config();
-	void load(const char* filename);
+	public:
+		// Publicly available properties
+		int winWidth, winHeight;
+		bool fullscreen;
+		int minDelay;
+
+		// Load configuration from file
+		void load(const char* filename);
+
+		// Return the config singleton (ie. the single Config instance that
+		// exists in the program)
+		static Config& get();
 };
