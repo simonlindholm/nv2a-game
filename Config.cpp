@@ -23,18 +23,18 @@ static void setFromUserConfig(Config& config, UserConfig& ucfg) {
 
 	// Set window dimensions
 	if (ucfg.dim) {
-		config.winHeight = ucfg.dim->first;
-		config.winWidth = ucfg.dim->second;
+		config.winWidth = ucfg.dim->first;
+		config.winHeight = ucfg.dim->second;
 	}
 	else {
 		if (config.fullscreen) {
 			const SDL_VideoInfo* info = SDL_GetVideoInfo();
-			config.winHeight = info->current_h;
 			config.winWidth = info->current_w;
+			config.winHeight = info->current_h;
 		}
 		else {
-			config.winHeight = 500;
-			config.winWidth = 600;
+			config.winWidth = 640;
+			config.winHeight = 480;
 		}
 	}
 
@@ -119,9 +119,9 @@ static shared_ptr<bool> parseBoolean(const string& str) {
 	throw ConfigException("Invalid parameter (must be a boolean).");
 }
 
-static unsigned int parseUintRaw(const string& str) {
-	if (str == "") return UINT_MAX;
-	unsigned int val = 0;
+static int parseUintRaw(const string& str) {
+	if (str == "") return -1;
+	int val = 0;
 	for (size_t i = 0; i < str.size(); ++i) {
 		char c = str[i];
 		if ('0' <= c && c <= '9') {
@@ -129,7 +129,7 @@ static unsigned int parseUintRaw(const string& str) {
 			val += (c - '0');
 		}
 		else {
-			return UINT_MAX;
+			return -1;
 		}
 	}
 	return val;
@@ -143,11 +143,10 @@ static shared_ptr<int> parseInt(const string& str) {
 		neg = true;
 		s = s.substr(1);
 	}
-	unsigned int uval = parseUintRaw(s);
-	if (uval == UINT_MAX) {
+	int val = parseUintRaw(s);
+	if (val == -1) {
 		throw ConfigException("Invalid parameter (must be an integer).");
 	}
-	int val = (int)uval;
 	if (neg) val = -val;
 	return shared_ptr<int>(new int(val));
 }
@@ -156,16 +155,16 @@ static shared_ptr<pair<int, int> > parseDimension(const string& str) {
 	if (str == "") return shared_ptr<pair<int, int> >();
 	size_t p = str.find('x');
 	if (p == string::npos) {
-		throw ConfigException("Invalid parameter (must be in format HxW).");
+		throw ConfigException("Invalid parameter (must be in format WxH).");
 	}
 
-	unsigned int h = parseUintRaw(str.substr(0, p));
-	unsigned int w = parseUintRaw(str.substr(p + 1));
-	if (h == UINT_MAX || w == UINT_MAX) {
-		throw ConfigException("Invalid parameter (must be in format HxW).");
+	int w = parseUintRaw(str.substr(0, p));
+	int h = parseUintRaw(str.substr(p + 1));
+	if (w == -1 || h == -1) {
+		throw ConfigException("Invalid parameter (must be in format WxH).");
 	}
 
-	return shared_ptr<pair<int, int> >(new pair<int, int>((int)h, (int)w));
+	return shared_ptr<pair<int, int> >(new pair<int, int>(w, h));
 }
 
 void Config::load(const char* filename) {
