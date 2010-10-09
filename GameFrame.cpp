@@ -40,9 +40,10 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 	// Move all players
 	for (unsigned int i = 0; i < gameState.players.size(); ++i) {
 		shared_ptr<Player> p = gameState.players[i];
+		Coord pos = p->getPosition();
 		Player::Action ac = p->move(gameState, delay);
 		// TODO: Check hitboxes, and handle shooting correctly
-		p->moveBy(ac.mx, ac.my);
+		p->moveTo(pos.x + ac.mx, pos.y + ac.my);
 	}
 
 	// Draw the player interface

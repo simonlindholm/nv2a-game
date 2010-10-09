@@ -18,9 +18,9 @@ double Player::getAngle() const {
 	return this->angle;
 }
 
-void Player::moveBy(double x, double y) {
-	pos.x += x;
-	pos.y += y;
+void Player::moveTo(double x, double y) {
+	pos.x = x;
+	pos.y = y;
 }
 
 Coord Player::getPosition() const {

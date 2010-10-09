@@ -38,7 +38,7 @@ class Player {
 
 		// Move a player by (x, y). This should only be called from some managing
 		// class, such as GameState.
-		void moveBy(double x, double y);
+		void moveTo(double x, double y);
 
 		// Get the angle of movement
 		double getAngle() const;

@@ -18,7 +18,7 @@ Frame* StartFrame::frame(SDL_Surface* screen, unsigned int delay) {
 		coords.push_back(Coord(300, 100));
 		coords.push_back(Coord(100, 300));
 		shared_ptr<Player> enemy(new StupidAIPlayer(coords));
-		enemy->moveBy(-170, -170); // XXX: Hack to start enemy at (30, 30)
+		enemy->moveTo(30, 30); // XXX: Hack to start enemy at (30, 30)
 		enemies.push_back(enemy);
 	}
 	return new GameFrame(enemies);
