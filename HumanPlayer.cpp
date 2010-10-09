@@ -78,10 +78,10 @@ Player::Action HumanPlayer::move(const GameState& game, unsigned int delay) {
 	double mx, my;
 	double angle = this->getAngle();
 	double mov = delay * this->getSpeed();
-	double cursorDist2 = relY*relY + relX*relX;
+	double cursorDist = std::sqrt(relY*relY + relX*relX);
 	double mForward = mov * ((vx && vy) ? std::sqrt(0.5) : 1.0);
 
-	if (vy > 0 && mForward*mForward >= cursorDist2) {
+	if (vy > 0 && mForward >= cursorDist) {
 		// We will reach the cursor in this step, so teleport it there.
 		mx = relX;
 		my = relY;
@@ -94,22 +94,39 @@ Player::Action HumanPlayer::move(const GameState& game, unsigned int delay) {
 	else if (vx || vy) {
 		// Move the player normally
 
-		// Calculate the average of the direction angles
-		double mAngle = 0;
-		if (vx < 0) mAngle =  m_pi/2;
-		if (vx > 0) mAngle = -m_pi/2;
-		if (vy) {
-			mAngle /= 2;
-			if (vy < 0) {
-				mAngle = m_pi - mAngle;
-			}
+		if (vx && !vy) {
+			// Player is moving sidewards, and this is equivalent to
+			// moving in a circle around the cursor.
+			double mAngle = mov / cursorDist;
+			if (vx < 0) mAngle = -mAngle;
+
+			mAngle += angle;
+
+			double nx = mouse.x - cursorDist * std::cos(mAngle);
+			double ny = mouse.y + cursorDist * std::sin(mAngle);
+			mx = nx - pos.x;
+			my = ny - pos.y;
 		}
+		else {
+			// Calculate the movement by walking in the average of the
+			// direction angles. This is not entirely accurate, but works
+			// well enough.
+			double mAngle = 0;
+			if (vx < 0) mAngle =  m_pi/2;
+			if (vx > 0) mAngle = -m_pi/2;
+			if (vy) {
+				mAngle /= 2;
+				if (vy < 0) {
+					mAngle = m_pi - mAngle;
+				}
+			}
 
-		mAngle += angle;
+			mAngle += angle;
 
-		// Transform back into regular form
-		mx = mov * std::cos(mAngle);
-		my = mov * -std::sin(mAngle);
+			// Transform back into regular form
+			mx = mov * std::cos(mAngle);
+			my = mov * -std::sin(mAngle);
+		}
 	}
 
 	Action a;
