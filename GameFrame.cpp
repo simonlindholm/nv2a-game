@@ -38,7 +38,7 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 	}
 
 	// Move all players
-	for (unsigned int i = 0; i < gameState.players.size(); ++i) {
+	for (size_t i = 0; i < gameState.players.size(); ++i) {
 		shared_ptr<Player> p = gameState.players[i];
 		Coord pos = p->getPosition();
 		Player::Action ac = p->move(gameState, delay);

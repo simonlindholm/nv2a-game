@@ -9,7 +9,7 @@
 class StupidAIPlayer : public Player {
 	private:
 		std::vector<Coord> checkpoints;
-		unsigned int moveInd;
+		size_t moveInd;
 	public:
 		StupidAIPlayer(const std::vector<Coord>& checkpoints);
 		Action move(const GameState& game, unsigned int delay);

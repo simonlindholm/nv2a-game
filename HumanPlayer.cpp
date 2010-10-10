@@ -33,7 +33,7 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 	SDL_Lock lock(screen);
 	SDL_FillRect(screen, 0, SDL_MapRGB(screen->format, 100, 0, 255));
 
-	for(unsigned int i = 0; i < game.players.size(); ++i) {
+	for(size_t i = 0; i < game.players.size(); ++i) {
 		const Player& p = *game.players[i];
 		Coord pos = p.getPosition();
 		Uint32 color;
