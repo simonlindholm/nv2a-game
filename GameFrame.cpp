@@ -39,11 +39,32 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 
 	// Move all players
 	for (size_t i = 0; i < gameState.players.size(); ++i) {
-		shared_ptr<Player> p = gameState.players[i];
-		Coord pos = p->getPosition();
-		Player::Action ac = p->move(gameState, delay);
 		// TODO: Check hitboxes, and handle shooting correctly
-		p->moveTo(pos.x + ac.mx, pos.y + ac.my);
+		shared_ptr<Player> p = gameState.players[i];
+		Hitbox hbox = p->getHitbox();
+
+		Player::Action ac = p->move(gameState, delay);
+
+		Coord pos = p->getPosition();
+		Coord npos = pos;
+		npos.x += ac.mx;
+		npos.y += ac.my;
+		p->moveTo(npos);
+
+		/* Collision detecting, don't move against other players. Currently not working.
+		bool stop = false;
+		for (size_t j = 0; j < gameState.players.size(); ++j) {
+			if (i != j && gameState.players[j]->getHitbox().collidesWith(hbox)) {
+				stop = true;
+				break;
+			}
+		}
+
+		if (stop) {
+			// Movement blocked by other player or wall; don't move
+			p->moveTo(pos);
+		}
+		*/
 	}
 
 	// Draw the player interface

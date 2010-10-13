@@ -3,7 +3,9 @@
 
 Player::~Player() {}
 
-Player::Player() {
+Player::Player()
+	: hitbox(Coord(0, 0), 10)
+{
 	// XXX: Don't use hardcoded values
 	pos.x = pos.y = 200;
 	angle = 0;
@@ -18,9 +20,8 @@ double Player::getAngle() const {
 	return this->angle;
 }
 
-void Player::moveTo(double x, double y) {
-	pos.x = x;
-	pos.y = y;
+void Player::moveTo(const Coord& to) {
+	pos = to;
 }
 
 Coord Player::getPosition() const {
@@ -29,4 +30,11 @@ Coord Player::getPosition() const {
 
 double Player::getSpeed() const {
 	return this->speed;
+}
+
+Hitbox Player::getHitbox() const {
+	Hitbox ret = this->hitbox;
+	ret.rotate(this->getAngle());
+	ret.move(this->getPosition());
+	return ret;
 }

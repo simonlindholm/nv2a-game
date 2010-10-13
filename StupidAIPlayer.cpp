@@ -44,6 +44,5 @@ Player::Action StupidAIPlayer::move(const GameState& game, unsigned int delay) {
 	}
 
 	ret.shooting = false;
-	ret.shootingAngle = 0;
 	return ret;
 }

@@ -133,6 +133,5 @@ Player::Action HumanPlayer::move(const GameState& game, unsigned int delay) {
 	a.mx = mx;
 	a.my = my;
 	a.shooting = false;
-	a.shootingAngle = angle;
 	return a;
 }

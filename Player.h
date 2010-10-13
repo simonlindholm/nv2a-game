@@ -1,6 +1,7 @@
 #pragma once
 #include "fwd.h"
 #include "util.h"
+#include "Hitbox.h"
 
 // An abstract class describing a player in the game
 class Player {
@@ -8,8 +9,7 @@ class Player {
 		Coord pos;
 		double angle;
 		double speed;
-
-		// TODO: Add some sort of hitbox here
+		Hitbox hitbox;
 
 	protected:
 		// Set the angle of sight (from the derived class)
@@ -21,12 +21,10 @@ class Player {
 		struct Action {
 			double mx, my;
 			bool shooting;
-			double shootingAngle;
 		};
 
 		Player();
 
-		// (Every abstract class needs a virtual destructor; I can explain this in person later)
 		virtual ~Player() = 0;
 
 		// Returns what actions the player performs this frame, given the state of
@@ -36,13 +34,16 @@ class Player {
 		// Get the player's position
 		Coord getPosition() const;
 
-		// Move a player by (x, y). This should only be called from some managing
-		// class, such as GameState.
-		void moveTo(double x, double y);
+		// Move the player to a position. This should only be called from some
+		// managing class, such as GameState.
+		void moveTo(const Coord& to);
 
 		// Get the angle of movement
 		double getAngle() const;
 
 		// Get the speed of the player, in pixels per millisecond
 		double getSpeed() const;
+
+		// Get the (external) hitbox for the player
+		Hitbox getHitbox() const;
 };
