@@ -8,6 +8,7 @@ class HumanPlayer : public Player {
 	private:
 		int vx, vy;
 		Coord mouse;
+		bool shooting;
 	public:
 		HumanPlayer();
 		void startFrame(Uint8* keyState, Uint8 mouseState, int mouseX, int mouseY);

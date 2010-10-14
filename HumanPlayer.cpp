@@ -2,6 +2,7 @@
 #include <cmath>
 #include "HumanPlayer.h"
 #include "GameState.h"
+#include "Bullet.h"
 #include "SDL_helpers.h"
 #include "util.h"
 #include "mathutil.h"
@@ -19,11 +20,16 @@ void HumanPlayer::startFrame(Uint8* keyState, Uint8 mouseState, int mouseX, int 
 
 	this->mouse.x = mouseX;
 	this->mouse.y = mouseY;
+
+	this->shooting = false;
 }
 
 void HumanPlayer::handleEvent(const SDL_Event& event) {
 	// TODO: Handle events related to the player interface, such as
 	// weapon swapping, item use, etc.
+	if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
+		this->shooting = true;
+	}
 }
 
 void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
@@ -33,7 +39,7 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 	SDL_Lock lock(screen);
 	SDL_FillRect(screen, 0, SDL_MapRGB(screen->format, 100, 0, 255));
 
-	for(size_t i = 0; i < game.players.size(); ++i) {
+	for (size_t i = 0; i < game.players.size(); ++i) {
 		const Player& p = *game.players[i];
 		Coord pos = p.getPosition();
 		Uint32 color;
@@ -45,10 +51,26 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 			color = SDL_MapRGB(screen->format, 255, 0, 0);
 		}
 		SDL_Rect rect;
-		rect.x = pos.x - 10;
-		rect.y = pos.y - 10;
+		rect.x = static_cast<int>(pos.x - 10);
+		rect.y = static_cast<int>(pos.y - 10);
 		rect.w = rect.h = 20;
 		SDL_FillRect(screen, &rect, color);
+	}
+
+	typedef std::list<shared_ptr<Bullet> >::const_iterator BulletIt;
+	BulletIt bIter = game.bullets.begin(), bEnd = game.bullets.end();
+	while (bIter != bEnd) {
+		shared_ptr<Bullet> b = *bIter;
+		Coord pos = b->getPosition();
+
+		SDL_Rect rect;
+		rect.x = static_cast<int>(pos.x - 2);
+		rect.y = static_cast<int>(pos.y - 2);
+		rect.w = rect.h = 5;
+		Uint32 color = SDL_MapRGB(screen->format, 255, 255, 0);
+		SDL_FillRect(screen, &rect, color);
+
+		++bIter;
 	}
 }
 
@@ -132,6 +154,6 @@ Player::Action HumanPlayer::move(const GameState& game, unsigned int delay) {
 	Action a;
 	a.mx = mx;
 	a.my = my;
-	a.shooting = false;
+	a.shooting = this->shooting;
 	return a;
 }

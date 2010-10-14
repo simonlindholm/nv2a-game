@@ -3,6 +3,7 @@
 #include "GameFrame.h"
 #include "SDL_helpers.h"
 #include "HumanPlayer.h"
+#include "Bullet.h"
 #include "exceptions.h"
 #include "shared_ptr.h"
 
@@ -37,6 +38,15 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 		}
 	}
 
+	// Move bullets
+	typedef std::list<shared_ptr<Bullet> >::iterator BulletIt;
+	BulletIt bIter = gameState.bullets.begin(), bEnd = gameState.bullets.end();
+	while (bIter != bEnd) {
+		shared_ptr<Bullet> b = *bIter;
+		b->move(delay);
+		++bIter;
+	}
+
 	// Move all players
 	for (size_t i = 0; i < gameState.players.size(); ++i) {
 		// TODO: Handle shooting correctly
@@ -64,7 +74,38 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 			// Movement blocked by other player; revert the move
 			p->moveTo(pos);
 		}
+
+		// Handle shooting
+		if (ac.shooting) {
+			shared_ptr<Bullet> b(new Bullet(p->getPosition(), p->getAngle(), i));
+			gameState.bullets.push_back(b);
+		}
 	}
+	
+	// Check collisions for bullets
+	bIter = gameState.bullets.begin();
+	bEnd = gameState.bullets.end();
+	while (bIter != bEnd) {
+		shared_ptr<Bullet> bullet = *bIter;
+		size_t collidesWith = 0;
+		bool collision = false;
+		for (size_t i = 0; i < gameState.players.size(); ++i) {
+			shared_ptr<Player> p = gameState.players[i];
+			if (bullet->getOwner() != i &&
+			        p->getHitbox().collidesWith(bullet->getHitbox())) {
+				collision = true;
+				collidesWith = i;
+				break;
+			}
+		}
+		if (collision) {
+			gameState.bullets.erase(bIter++);
+		}
+		else {
+			++bIter;
+		}
+	}
+
 
 	// Draw the player interface
 	player->paint(gameState, screen);
