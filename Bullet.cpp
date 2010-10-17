@@ -3,8 +3,9 @@
 
 Bullet::Bullet(const Coord& p, double angle, size_t owner) {
 	this->pos = p;
-	this->angle = angle;
 	this->ownerPlayer = owner;
+	this->dx = std::cos(angle);
+	this->dy = -std::sin(angle);
 }
 
 double Bullet::getSpeed() const {
@@ -13,9 +14,8 @@ double Bullet::getSpeed() const {
 
 void Bullet::move(unsigned int delay) {
 	double mov = delay * this->getSpeed();
-	pos.x += mov * std::cos(this->angle);
-	pos.y += mov * -std::sin(this->angle);
-
+	pos.x += mov * dx;
+	pos.y += mov * dy;
 }
 
 Hitbox Bullet::getHitbox() const {

@@ -6,7 +6,7 @@
 
 class Bullet {
 	private:
-		double angle;
+		double dx, dy;
 		Coord pos;
 		size_t ownerPlayer;
 	public:
