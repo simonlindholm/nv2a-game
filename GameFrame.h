@@ -12,5 +12,5 @@ class GameFrame : public Frame {
 		shared_ptr<HumanPlayer> player;
 	public:
 		GameFrame(const std::vector<shared_ptr<Player> >& enemies);
-		Frame* frame(SDL_Surface* screen, unsigned int delay);
+		virtual Frame* frame(SDL_Surface* screen, unsigned int delay);
 };

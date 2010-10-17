@@ -49,7 +49,6 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 
 	// Move all players
 	for (size_t i = 0; i < gameState.players.size(); ++i) {
-		// TODO: Handle shooting correctly
 		shared_ptr<Player> p = gameState.players[i];
 
 		Player::Action ac = p->move(gameState, delay);

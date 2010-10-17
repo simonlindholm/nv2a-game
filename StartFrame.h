@@ -5,5 +5,5 @@
 // execution on to the real start frame (to decouple this choice from main().)
 class StartFrame : public Frame {
 	public:
-		Frame* frame(SDL_Surface* screen, unsigned int delay);
+		virtual Frame* frame(SDL_Surface* screen, unsigned int delay);
 };
