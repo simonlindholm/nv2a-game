@@ -3,6 +3,8 @@
 #include "SDL_helpers.h"
 #include <iostream>
 #include <exception>
+#include <cstdlib>
+#include <ctime>
 #include "exceptions.h"
 #include "StartFrame.h"
 #include "Config.h"
@@ -12,6 +14,8 @@ int main(int argc, char** argv) {
 	SDL_Surface* screen = 0;
 	Frame* curFrame = 0;
 	bool hasSDL = false, hasMix = false;
+
+	std::srand((unsigned int)std::time(0));
 
 	// Wrap all logic, including the game loop, in a try-catch; we quit (and print
 	// an error message as appropriate) when we catch an exception.

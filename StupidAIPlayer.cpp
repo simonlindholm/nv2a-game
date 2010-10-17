@@ -1,12 +1,15 @@
 #include <vector>
 #include <cmath>
+#include <cstdlib>
 #include "StupidAIPlayer.h"
+#include "GameState.h"
 #include "util.h"
 #include "mathutil.h"
 
 StupidAIPlayer::StupidAIPlayer(const std::vector<Coord>& checkpoints) 
-	: checkpoints(checkpoints), moveInd(0)
+	: checkpoints(checkpoints), moveInd(0), targetInd(-1)
 {
+	this->shootDelay = randRange(1500, 2500);
 }
 
 // Move the player in some (rather stupid) way
@@ -36,13 +39,29 @@ Player::Action StupidAIPlayer::move(const GameState& game, unsigned int delay) {
 		ret.my = relY * rat;
 	}
 
-	if (!(fpEqual(ret.mx, 0, 1) && fpEqual(ret.my, 0, 1))) {
-		double angle = atan2(-ret.my, ret.mx);
-		angle = reduceAngle(angle);
+	// Calculate the angle of sight
+	if (targetInd == -1) {
+		for (size_t i = 0; i < game.players.size(); ++i) {
+			if (game.players[i].get() != this) {
+				targetInd = static_cast<int>(i);
+				break;
+			}
+		}
+	}
+	Coord targetPos = game.players[targetInd]->getPosition();
+	double dx = targetPos.x - pos.x;
+	double dy = targetPos.y - pos.y;
+	double angle = atan2(-dy, dx);
+	angle = reduceAngle(angle);
+	this->setAngle(angle);
 
-		this->setAngle(angle);
+	// Handle random shooting
+	ret.shooting = false;
+	this->shootDelay -= delay;
+	if (this->shootDelay <= 0) {
+		ret.shooting = true;
+		this->shootDelay = randRange(200, 1500);
 	}
 
-	ret.shooting = false;
 	return ret;
 }
