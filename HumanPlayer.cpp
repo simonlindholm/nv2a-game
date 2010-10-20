@@ -6,6 +6,8 @@
 #include "SDL_helpers.h"
 #include "util.h"
 #include "mathutil.h"
+#include "graphicsutil.h"
+#include "GraphicsCache.h"
 
 HumanPlayer::HumanPlayer() {
 }
@@ -50,11 +52,11 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 		else {
 			color = SDL_MapRGB(screen->format, 255, 0, 0);
 		}
-		SDL_Rect rect;
-		rect.x = static_cast<int>(pos.x - 10);
-		rect.y = static_cast<int>(pos.y - 10);
-		rect.w = rect.h = 20;
-		SDL_FillRect(screen, &rect, color);
+        GraphicsCache& gCache = GraphicsCache::get();
+
+        double angle = p.getAngle(); //Gets angle from player
+        angle = (angle * 360) / (2 * m_pi); //Converts to degrees
+		draw_surface(pos, gCache.getImg(GraphicsCache::ImgHuman, angle ), screen);
 	}
 
 	typedef std::list<shared_ptr<Bullet> >::const_iterator BulletIt;

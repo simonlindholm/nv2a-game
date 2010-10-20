@@ -8,6 +8,7 @@
 #include "exceptions.h"
 #include "StartFrame.h"
 #include "Config.h"
+#include "GraphicsCache.h"
 
 int main(int argc, char** argv) {
 	int returnValue = 0;
@@ -33,7 +34,7 @@ int main(int argc, char** argv) {
 		config.load("config.txt");
 
 		// Initialize SDL mixer (and the audio subsystem)
-		if (SDL_InitSubSystem(SDL_INIT_AUDIO) == -1 || 
+		if (SDL_InitSubSystem(SDL_INIT_AUDIO) == -1 ||
 		    Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 1024) == -1) {
 			throw SDL_Exception();
 		}
