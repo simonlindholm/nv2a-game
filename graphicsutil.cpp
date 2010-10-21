@@ -1,7 +1,8 @@
 #include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
 #include <string>
 #include "graphicsutil.h"
-#include "SDL/SDL_image.h"
+#include "exceptions.h"
 using namespace std;
 
 SDL_Surface* loadSurface(const string& filename) {
@@ -17,6 +18,8 @@ SDL_Surface* loadSurface(const string& filename) {
         //Free the temporary surface
         SDL_FreeSurface(loadedImage);
     }
+
+	if (!loadedImage) throw SDL_Exception();
 
     return ret;
 }

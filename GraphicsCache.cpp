@@ -1,8 +1,8 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
+#include <SDL/SDL_rotozoom.h>
 #include "GraphicsCache.h"
 #include "graphicsutil.h"
-#include "SDL/SDL_rotozoom.h"
 
 GraphicsCache::GraphicsCache() {
     SDL_Surface* human = loadSurface("char.png");
