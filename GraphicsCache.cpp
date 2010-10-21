@@ -7,7 +7,7 @@
 GraphicsCache::GraphicsCache() {
     SDL_Surface* human = loadSurface("char.png");
     for (int i = 0; i < 360; i++){
-        SDL_Surface* rotate = rotozoomSurface(human, i, 0.1, 1);
+        SDL_Surface* rotate = rotozoomSurface(human, i, 0.0625, 1);
         cache[ImgHuman].images[i] = rotate;
     }
 }
