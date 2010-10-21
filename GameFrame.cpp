@@ -9,14 +9,18 @@
 
 GameFrame::GameFrame(const std::vector<shared_ptr<Player> >& enemies)
 {
+	Coord startingPos[] = {Coord(30, 30), Coord(200, 200)};
+	size_t stSize = sizeof startingPos/sizeof *startingPos;
+
 	player = shared_ptr<HumanPlayer>(new HumanPlayer);
 	gameState.players = enemies;
 	gameState.players.push_back(player);
+	for (size_t i = 0; i < gameState.players.size() && i < stSize; ++i) {
+		gameState.players[i]->moveTo(startingPos[i]);
+	}
 }
 
 Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
-	// (Game logic goes here.)
-
 	// Pass keyboard and mouse data on to HumanPlayer
 	SDL_PumpEvents();
 	int mouseX, mouseY;
