@@ -7,6 +7,14 @@ double reduceAngle(double angle) {
 	return ret;
 }
 
+int radToIntDeg(double rad) {
+	double deg = rad * 180 / m_pi;
+	int ideg = static_cast<int>(deg + 0.5);
+	ideg %= 360;
+	if (ideg < 0) ideg += 360;
+	return ideg;
+}
+
 template <class T>
 bool fpEqualRelImpl(T a, T b, T epsilon) {
 	T aa = std::fabs(a), ab = std::fabs(b), ad = std::fabs(a-b);

@@ -54,9 +54,8 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 		}
         GraphicsCache& gCache = GraphicsCache::get();
 
-        double angle = p.getAngle(); //Gets angle from player
-        angle = (angle * 360) / (2 * m_pi); //Converts to degrees
-		drawCenteredSurface(pos, gCache.getImg(GraphicsCache::ImgHuman, angle ), screen);
+        int angle = radToIntDeg(p.getAngle());
+		drawCenteredSurface(pos, gCache.getImg(GraphicsCache::ImgHuman, angle), screen);
 	}
 
 	typedef std::list<shared_ptr<Bullet> >::const_iterator BulletIt;

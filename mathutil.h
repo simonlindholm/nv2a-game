@@ -5,7 +5,12 @@
 // Definition of pi
 const double m_pi = 3.14159265358979323846264338327;
 
+// Reduce an angle to lie in the interval [0, 2pi)
 double reduceAngle(double angle);
+
+// Convert an angle from radians to degrees, rounding to nearest
+int radToIntDeg(double rad);
+
 // Floating point equality tests
 // (Note: Floating point comparisons are inexact, so instead of comparing
 // equality we check whether the difference is sufficiently small.)
