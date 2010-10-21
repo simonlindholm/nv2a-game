@@ -8,7 +8,6 @@
 #include "exceptions.h"
 #include "StartFrame.h"
 #include "Config.h"
-#include "GraphicsCache.h"
 
 int main(int argc, char** argv) {
 	int returnValue = 0;
