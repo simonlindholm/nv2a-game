@@ -21,7 +21,7 @@ SDL_Surface* loadSurface(const string& filename) {
     return ret;
 }
 
-void drawCenteredSurface(Coord position, SDL_Surface* image, SDL_Surface* screen) {
+void drawCenteredSurface(const Coord& position, SDL_Surface* image, SDL_Surface* screen) {
     //Rectangle to hold the position as SDL_BlitSurface only takes SDL_Rect
     SDL_Rect pos;
     pos.x = static_cast<Sint16>(position.x - image->w/2.0); //TODO: make this independent of image size

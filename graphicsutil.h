@@ -4,7 +4,7 @@
 #include "util.h"
 
 SDL_Surface* loadSurface(const std::string& filename);
-void drawCenteredSurface(Coord position, SDL_Surface* image, SDL_Surface* screen);
+void drawCenteredSurface(const Coord& position, SDL_Surface* image, SDL_Surface* screen);
 
 struct RotateableObject
 {
