@@ -56,7 +56,7 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 
         double angle = p.getAngle(); //Gets angle from player
         angle = (angle * 360) / (2 * m_pi); //Converts to degrees
-		draw_surface(pos, gCache.getImg(GraphicsCache::ImgHuman, angle ), screen);
+		drawCenteredSurface(pos, gCache.getImg(GraphicsCache::ImgHuman, angle ), screen);
 	}
 
 	typedef std::list<shared_ptr<Bullet> >::const_iterator BulletIt;
@@ -66,8 +66,8 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 		Coord pos = b->getPosition();
 
 		SDL_Rect rect;
-		rect.x = static_cast<int>(pos.x - 2);
-		rect.y = static_cast<int>(pos.y - 2);
+		rect.x = static_cast<Sint16>(pos.x - 2);
+		rect.y = static_cast<Sint16>(pos.y - 2);
 		rect.w = rect.h = 5;
 		Uint32 color = SDL_MapRGB(screen->format, 255, 255, 0);
 		SDL_FillRect(screen, &rect, color);

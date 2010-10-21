@@ -1,10 +1,6 @@
 #pragma once
 #include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
-#include <vector>
 #include "graphicsutil.h"
-
-using namespace std;
 
 /*
     GraphicsCache is class that stores every image and every variation of those images
@@ -15,15 +11,15 @@ using namespace std;
 
 class GraphicsCache {
     public:
-        enum ImageTypes {
+        enum ImageType {
             ImgHuman,
             ImgEnd
         };
 
         static GraphicsCache& get();
-        SDL_Surface* getImg(ImageTypes it, int angle) const;
+        SDL_Surface* getImg(ImageType it, int angle) const;
     private:
-        rotateableObject cache[ImgEnd];
+        RotateableObject cache[ImgEnd];
         //Constructors/Destructors can be private as they are called by the get() function
         GraphicsCache(const GraphicsCache&); //left undefined
         GraphicsCache();

@@ -5,7 +5,7 @@
 #include "SDL/SDL_rotozoom.h"
 
 GraphicsCache::GraphicsCache() {
-    SDL_Surface* human = load_surface("char.png");
+    SDL_Surface* human = loadSurface("char.png");
     for (int i = 0; i < 360; i++){
         SDL_Surface* rotate = rotozoomSurface(human, i, 0.1, 1);
         cache[ImgHuman].images[i] = rotate;
@@ -25,6 +25,6 @@ GraphicsCache& GraphicsCache::get() {
     return singleton;
 }
 
-SDL_Surface* GraphicsCache::getImg(ImageTypes it, int angle) const {
+SDL_Surface* GraphicsCache::getImg(ImageType it, int angle) const {
     return this->cache[it].images[angle];
 }

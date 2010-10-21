@@ -2,14 +2,11 @@
 #include <SDL/SDL.h>
 #include "string"
 #include "util.h"
-#include <vector>
 
-using namespace std;
+SDL_Surface* loadSurface(const std::string& filename);
+void drawCenteredSurface(Coord position, SDL_Surface* image, SDL_Surface* screen);
 
-SDL_Surface* load_surface(string filename);
-void draw_surface(Coord position, SDL_Surface* image, SDL_Surface* screen);
-
-struct rotateableObject
+struct RotateableObject
 {
     SDL_Surface* images[360]; //Holds one image for every angle
 };

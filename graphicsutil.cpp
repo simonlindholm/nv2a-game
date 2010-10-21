@@ -4,7 +4,7 @@
 #include "SDL/SDL_image.h"
 using namespace std;
 
-SDL_Surface* load_surface(string filename) {
+SDL_Surface* loadSurface(const string& filename) {
     //Declare the optimized image
     SDL_Surface* ret = 0;
     //Load the image
@@ -21,11 +21,11 @@ SDL_Surface* load_surface(string filename) {
     return ret;
 }
 
-void draw_surface(Coord position, SDL_Surface* image, SDL_Surface* screen) {
+void drawCenteredSurface(Coord position, SDL_Surface* image, SDL_Surface* screen) {
     //Rectangle to hold the position as SDL_BlitSurface only takes SDL_Rect
     SDL_Rect pos;
-    pos.x = position.x - 16; //TODO: make this independent of image size
-    pos.y = position.y - 16;
+    pos.x = static_cast<Sint16>(position.x - image->w/2.0); //TODO: make this independent of image size
+    pos.y = static_cast<Sint16>(position.y - image->h/2.0);
 
     //Draw the surface
     SDL_BlitSurface(image, 0, screen, &pos);
