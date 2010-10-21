@@ -7,7 +7,7 @@ Player::Player()
 	: hitbox(Coord(0, 0), 10)
 {
 	// XXX: Don't use hardcoded values
-	pos.x = pos.y = 200;
+	pos.x = pos.y = 0;
 	angle = 0;
 	speed = 0.2;
 }
