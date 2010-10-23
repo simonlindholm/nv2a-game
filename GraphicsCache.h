@@ -11,15 +11,23 @@
 
 class GraphicsCache {
     public:
+        enum RotatedImageType {
+            RotatedImgHuman,
+            RotatedImgEnemy,
+            RotatedImgEnd
+        };
+
         enum ImageType {
-            ImgHuman,
+            ImgBullet,
             ImgEnd
         };
 
         static GraphicsCache& get();
-        SDL_Surface* getImg(ImageType it, int angle) const;
+        SDL_Surface* getImg(ImageType it) const;
+        SDL_Surface* getRotatedImg(RotatedImageType it, int angle) const;
     private:
-        RotateableObject cache[ImgEnd];
+        RotateableObject rotateCache[RotatedImgEnd];
+        SDL_Surface* cache[ImgEnd];
         //Constructors/Destructors can be private as they are called by the get() function
         GraphicsCache(const GraphicsCache&); //left undefined
         GraphicsCache();
