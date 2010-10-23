@@ -15,6 +15,10 @@ int radToIntDeg(double rad) {
 	return ideg;
 }
 
+double pyth(double a, double b) {
+	return std::sqrt(a*a + b*b);
+}
+
 template <class T>
 bool fpEqualRelImpl(T a, T b, T epsilon) {
 	T aa = std::fabs(a), ab = std::fabs(b), ad = std::fabs(a-b);

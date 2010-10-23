@@ -101,7 +101,7 @@ Player::Action HumanPlayer::move(const GameState& game, unsigned int delay) {
 	double mx, my;
 	double angle = this->getAngle();
 	double mov = delay * this->getSpeed();
-	double cursorDist = std::sqrt(relY*relY + relX*relX);
+	double cursorDist = pyth(relX, relY);
 	double mForward = mov * ((vx && vy) ? std::sqrt(0.5) : 1.0);
 
 	if (vy > 0 && mForward >= cursorDist) {

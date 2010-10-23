@@ -6,6 +6,7 @@ Bullet::Bullet(const Coord& p, double angle, size_t owner) {
 	this->ownerPlayer = owner;
 	this->dx = std::cos(angle);
 	this->dy = -std::sin(angle);
+	this->hitbox.add(shared_ptr<Shape>(new Circle(this->pos, 2.5)));
 }
 
 double Bullet::getSpeed() const {
@@ -14,12 +15,13 @@ double Bullet::getSpeed() const {
 
 void Bullet::move(unsigned int delay) {
 	double mov = delay * this->getSpeed();
-	pos.x += mov * dx;
-	pos.y += mov * dy;
+	this->pos.x += mov * this->dx;
+	this->pos.y += mov * this->dy;
+	this->hitbox.moveBy(Coord(mov * this->dx, mov * this->dy));
 }
 
 Hitbox Bullet::getHitbox() const {
-	return Hitbox(this->pos, 2.5);
+	return this->hitbox;
 }
 
 size_t Bullet::getOwner() const {

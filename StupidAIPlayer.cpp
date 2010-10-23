@@ -22,7 +22,7 @@ Player::Action StupidAIPlayer::move(const GameState& game, unsigned int delay) {
 	double mov = this->getSpeed() * delay;
 	double relX = towards.x - pos.x;
 	double relY = towards.y - pos.y;
-	double dist = std::sqrt(relX*relX + relY*relY);
+	double dist = pyth(relX, relY);
 
 	if (dist <= mov) {
 		// Player can reach target in this step, teleport there

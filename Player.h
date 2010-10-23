@@ -9,7 +9,7 @@ class Player {
 		Coord pos;
 		double angle;
 		double speed;
-		Hitbox hitbox;
+		Hitbox hitbox, rhitbox;
 
 	protected:
 		// Set the angle of sight (from the derived class)

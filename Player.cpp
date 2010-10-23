@@ -3,17 +3,19 @@
 
 Player::~Player() {}
 
-Player::Player()
-	: hitbox(Coord(0, 0), 10)
-{
+Player::Player() {
 	// XXX: Don't use hardcoded values
-	pos.x = pos.y = 0;
+	hitbox.add(shared_ptr<Shape>(new Circle(Coord(0, 0), 10)));
+	rhitbox = hitbox;
 	angle = 0;
+	pos.x = pos.y = 0;
 	speed = 0.2;
 }
 
 void Player::setAngle(double angle) {
+	double dangle = angle - this->angle;
 	this->angle = angle;
+	this->rhitbox.rotate(dangle);
 }
 
 double Player::getAngle() const {
@@ -33,8 +35,7 @@ double Player::getSpeed() const {
 }
 
 Hitbox Player::getHitbox() const {
-	Hitbox ret = this->hitbox;
-	ret.rotate(this->getAngle());
-	ret.move(this->getPosition());
+	Hitbox ret = this->rhitbox;
+	ret.moveBy(this->getPosition());
 	return ret;
 }

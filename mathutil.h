@@ -11,6 +11,9 @@ double reduceAngle(double angle);
 // Convert an angle from radians to degrees, rounding to nearest
 int radToIntDeg(double rad);
 
+// Calculate the hypotenuse in a right triangle with sides a and b, ie. sqrt(a*a+b*b)
+double pyth(double a, double b);
+
 // Floating point equality tests
 // (Note: Floating point comparisons are inexact, so instead of comparing
 // equality we check whether the difference is sufficiently small.)
