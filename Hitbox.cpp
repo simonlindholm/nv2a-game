@@ -1,4 +1,5 @@
 #include <cmath>
+#include <stdexcept>
 #include "Hitbox.h"
 #include "mathutil.h"
 
@@ -24,7 +25,54 @@ static Coord rotatePoint(const Coord& point, double angle) {
 	return res;
 }
 
-// Circle functions
+static bool pythCmpSq(double a, double b, double c2) {
+	return a*a + b*b < c2;
+}
+
+
+// Collision detection functions
+bool CollisionTests::collRC(const Rectangle& a, const Circle& b) {
+	// Create a copy of the circle to allow moving it, which makes
+	// the algorithm simpler
+	Circle c = b;
+
+	// Transform the coordinate system so that the rectangle is located at
+	// the origin, and is axis-aligned
+	c.moveBy(Coord(-a.pos.x, -a.pos.y));
+	c.rotate(-a.angle);
+
+	// Now, check whether the circle's center is within the minkowski sum
+	// of the two shapes
+	if (c.pos.x <= -c.radius || c.pos.x >= a.w + c.radius) return false;
+	if (c.pos.y <= -c.radius || c.pos.y >= a.h + c.radius) return false;
+
+	if (c.pos.x >= 0 && c.pos.x <= a.w &&
+		c.pos.y > -c.radius && c.pos.y < a.h + c.radius) return true;
+	if (c.pos.y >= 0 && c.pos.y <= a.h &&
+		c.pos.x > -c.radius && c.pos.x < a.w + c.radius) return true;
+
+	double sq = c.radius * c.radius;
+	return (pythCmpSq(c.pos.x, c.pos.y, sq) ||
+			pythCmpSq(c.pos.x - a.w, c.pos.y, sq) ||
+			pythCmpSq(c.pos.x, c.pos.y - a.h, sq) ||
+			pythCmpSq(c.pos.x - a.w, c.pos.y - a.h, sq));
+}
+
+bool CollisionTests::collCC(const Circle& a, const Circle& b) {
+	double difx = a.pos.x - b.pos.x;
+	double dify = a.pos.y - b.pos.y;
+	double mdist = a.radius + b.radius;
+	return (difx*difx + dify*dify < mdist*mdist);
+}
+
+bool CollisionTests::collRR(const Rectangle& a, const Rectangle& b) {
+	// TODO: Implement this.
+	throw std::logic_error
+		("Rectangle to rectangle collision detection not yet implemented.");
+}
+
+
+// Circle member functions
 Circle::Circle(const Coord& pos, double rad)
 	: Shape(pos), radius(rad)
 {}
@@ -36,23 +84,44 @@ void Circle::rotate(double angle) {
 bool Circle::collidesWith(const Shape& other) const {
 	return other.collidesWithDisp(*this);
 }
-
 bool Circle::collidesWithDisp(const Circle& other) const {
-	double difx = this->pos.x - other.pos.x;
-	double dify = this->pos.y - other.pos.y;
-	double mdist = this->radius + other.radius;
-	return (difx*difx + dify*dify < mdist*mdist);
+	return CollisionTests::collCC(other, *this);
+}
+bool Circle::collidesWithDisp(const Rectangle& other) const {
+	return CollisionTests::collRC(other, *this);
 }
 
 shared_ptr<Shape> Circle::clone() const {
 	return shared_ptr<Shape>(new Circle(*this));
 }
 
-// Rectangle functions
-// TODO: Actually implement this
+
+// Rectangle member functions
+Rectangle::Rectangle(const Coord& pos, double width, double height, double angle)
+	: Shape(pos), w(width), h(height), angle(angle)
+{}
+
+void Rectangle::rotate(double angle) {
+	this->pos = rotatePoint(this->pos, angle);
+	this->angle = reduceAngle(this->angle + angle);
+}
+
+bool Rectangle::collidesWith(const Shape& other) const {
+	return other.collidesWithDisp(*this);
+}
+bool Rectangle::collidesWithDisp(const Rectangle& other) const {
+	return CollisionTests::collRR(*this, other);
+}
+bool Rectangle::collidesWithDisp(const Circle& other) const {
+	return CollisionTests::collRC(*this, other);
+}
+
+shared_ptr<Shape> Rectangle::clone() const {
+	return shared_ptr<Shape>(new Rectangle(*this));
+}
+
 
 // Hitbox functions
-
 Hitbox::Hitbox() {}
 Hitbox::Hitbox(const Hitbox& other) {
 	this->shapes.resize(other.shapes.size());

@@ -1,9 +1,9 @@
-#include <iostream>
 #include <SDL/SDL.h>
 #include "GameFrame.h"
 #include "SDL_helpers.h"
 #include "HumanPlayer.h"
 #include "Bullet.h"
+#include "Config.h"
 #include "exceptions.h"
 #include "shared_ptr.h"
 
@@ -18,6 +18,19 @@ GameFrame::GameFrame(const std::vector<shared_ptr<Player> >& enemies)
 	for (size_t i = 0; i < gameState.players.size() && i < stSize; ++i) {
 		gameState.players[i]->moveTo(startingPos[i]);
 	}
+
+	// Add out-of-screen rectangles to act as boundaries
+	const int wallSize = 10;
+	int sw = Config::get().winWidth, sh = Config::get().winHeight;
+
+	gameState.wall.add(shared_ptr<Shape>(new Rectangle(Coord(-wallSize, -wallSize),
+					sw + 2*wallSize, wallSize, 0)));
+	gameState.wall.add(shared_ptr<Shape>(new Rectangle(Coord(-wallSize, -wallSize),
+					wallSize, sw + 2*wallSize, 0)));
+	gameState.wall.add(shared_ptr<Shape>(new Rectangle(Coord(-wallSize, sh),
+					sw + 2*wallSize, wallSize, 0)));
+	gameState.wall.add(shared_ptr<Shape>(new Rectangle(Coord(sw, -wallSize),
+					wallSize, sw + 2*wallSize, 0)));
 }
 
 Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
@@ -66,10 +79,13 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 		// Collision detection, don't move against other players.
 		bool stop = false;
 		Hitbox hbox = p->getHitbox();
-		for (size_t j = 0; j < gameState.players.size(); ++j) {
-			if (i != j && gameState.players[j]->getHitbox().collidesWith(hbox)) {
-				stop = true;
-				break;
+		if (gameState.wall.collidesWith(hbox)) stop = true;
+		if (!stop) {
+			for (size_t j = 0; j < gameState.players.size(); ++j) {
+				if (i != j && gameState.players[j]->getHitbox().collidesWith(hbox)) {
+					stop = true;
+					break;
+				}
 			}
 		}
 
@@ -90,18 +106,26 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 	bEnd = gameState.bullets.end();
 	while (bIter != bEnd) {
 		shared_ptr<Bullet> bullet = *bIter;
-		size_t collidesWith = 0;
-		bool collision = false;
-		for (size_t i = 0; i < gameState.players.size(); ++i) {
-			shared_ptr<Player> p = gameState.players[i];
-			if (bullet->getOwner() != i &&
-			        p->getHitbox().collidesWith(bullet->getHitbox())) {
-				collision = true;
-				collidesWith = i;
-				break;
+		const Hitbox& bhit = bullet->getHitbox();
+		bool del = false;
+
+		if (bhit.collidesWith(gameState.wall)) {
+			//TODO: Handle wall collision
+			del = true;
+		}
+		else {
+			for (size_t i = 0; i < gameState.players.size(); ++i) {
+				shared_ptr<Player> p = gameState.players[i];
+				if (bullet->getOwner() != i &&
+						p->getHitbox().collidesWith(bhit)) {
+					// TODO: Handle player collision
+					del = true;
+					break;
+				}
 			}
 		}
-		if (collision) {
+
+		if (del) {
 			gameState.bullets.erase(bIter++);
 		}
 		else {
