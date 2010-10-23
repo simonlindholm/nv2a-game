@@ -1,6 +1,7 @@
 #include <SDL/SDL.h>
 #include <fstream>
 #include <vector>
+#include <string>
 #include <utility>
 #include <climits>
 #include "Config.h"
