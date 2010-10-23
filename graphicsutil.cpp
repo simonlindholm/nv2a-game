@@ -5,31 +5,24 @@
 #include "exceptions.h"
 using namespace std;
 
-SDL_Surface* loadSurface(const string& filename) {
-    //Declare the optimized image
-    SDL_Surface* ret = 0;
-    //Load the image
-    SDL_Surface* loadedImage = IMG_Load(filename.c_str());
-
-    //If the image got loaded without problems
-    if (loadedImage) {
-        //Optimize format
-        ret = SDL_DisplayFormatAlpha(loadedImage);
-        //Free the temporary surface
-        SDL_FreeSurface(loadedImage);
-    }
-
+SDL_Surface* loadSurface(const char* filename) {
+	SDL_Surface* loadedImage = IMG_Load(filename);
 	if (!loadedImage) throw SDL_Exception();
 
-    return ret;
+	//Optimize format
+	SDL_Surface* ret = SDL_DisplayFormatAlpha(loadedImage);
+	SDL_FreeSurface(loadedImage);
+	if (!ret) throw SDL_Exception();
+
+	return ret;
 }
 
 void drawCenteredSurface(const Coord& position, SDL_Surface* image, SDL_Surface* screen) {
-    //Rectangle to hold the position as SDL_BlitSurface only takes SDL_Rect
-    SDL_Rect pos;
-    pos.x = static_cast<Sint16>(position.x - image->w/2.0); //TODO: make this independent of image size
-    pos.y = static_cast<Sint16>(position.y - image->h/2.0);
+	//Rectangle to hold the position as SDL_BlitSurface only takes SDL_Rect
+	SDL_Rect pos;
+	pos.x = static_cast<Sint16>(position.x - image->w/2.0);
+	pos.y = static_cast<Sint16>(position.y - image->h/2.0);
 
-    //Draw the surface
-    SDL_BlitSurface(image, 0, screen, &pos);
+	//Draw the surface
+	SDL_BlitSurface(image, 0, screen, &pos);
 }
