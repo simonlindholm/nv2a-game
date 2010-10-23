@@ -40,22 +40,23 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 
 	SDL_Lock lock(screen);
 	SDL_FillRect(screen, 0, SDL_MapRGB(screen->format, 100, 0, 255));
+	GraphicsCache& gCache = GraphicsCache::get();
 
 	for (size_t i = 0; i < game.players.size(); ++i) {
 		const Player& p = *game.players[i];
 		Coord pos = p.getPosition();
-		Uint32 color;
+		int angle = radToIntDeg(p.getAngle());
+
+
 		if (&p == this) {
-			// Let yourself have another color
-			color = SDL_MapRGB(screen->format, 0, 255, 0);
+			// Let yourself have a seperate appearance
+			drawCenteredSurface(pos, gCache.getRotatedImg(GraphicsCache::RotatedImgHuman, angle), screen);
 		}
 		else {
-			color = SDL_MapRGB(screen->format, 255, 0, 0);
+			drawCenteredSurface(pos, gCache.getRotatedImg(GraphicsCache::RotatedImgEnemy, angle), screen);
 		}
-        GraphicsCache& gCache = GraphicsCache::get();
 
-        int angle = radToIntDeg(p.getAngle());
-		drawCenteredSurface(pos, gCache.getImg(GraphicsCache::ImgHuman, angle), screen);
+
 	}
 
 	typedef std::list<shared_ptr<Bullet> >::const_iterator BulletIt;
@@ -64,12 +65,7 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 		shared_ptr<Bullet> b = *bIter;
 		Coord pos = b->getPosition();
 
-		SDL_Rect rect;
-		rect.x = static_cast<Sint16>(pos.x - 2);
-		rect.y = static_cast<Sint16>(pos.y - 2);
-		rect.w = rect.h = 5;
-		Uint32 color = SDL_MapRGB(screen->format, 255, 255, 0);
-		SDL_FillRect(screen, &rect, color);
+		drawCenteredSurface(pos, gCache.getImg(GraphicsCache::ImgBullet), screen);
 
 		++bIter;
 	}
