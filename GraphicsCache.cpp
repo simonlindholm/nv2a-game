@@ -2,28 +2,18 @@
 #include <SDL/SDL_image.h>
 #include <SDL/SDL_rotozoom.h>
 #include <stdexcept>
+#include <string>
 #include "GraphicsCache.h"
 #include "exceptions.h"
 #include "graphicsutil.h"
 
 GraphicsCache::GraphicsCache() {
 	//Load rotateable images
-	SDL_Surface* human = loadSurface("human.png");
-	for (int i = 0; i < 360; i++){
-		SDL_Surface* surf = rotozoomSurface(human, i, 0.0625, 1);
-		if (!surf) throw std::runtime_error("Rotozoom didn't work.");
-		rotateCache[RotatedImgHuman].images[i] = surf;
-	}
-	SDL_Surface* enemy = loadSurface("enemy.png");
-	for (int i = 0; i < 360; i++){
-		SDL_Surface* surf = rotozoomSurface(enemy, i, 0.0625, 1);
-		if (!surf) throw std::runtime_error("Rotozoom didn't work.");
-		rotateCache[RotatedImgEnemy].images[i] = surf;
-	}
+	addRotateable("human.png", RotatedImgHuman);
+	addRotateable("enemy.png", RotatedImgEnemy);
 
 	//Load static images
-	SDL_Surface* bullet = loadSurface("bullet.png");
-	cache[ImgBullet] = bullet;
+	addStatic("bullet.png", ImgBullet);
 }
 
 GraphicsCache::~GraphicsCache() {
@@ -45,4 +35,17 @@ SDL_Surface* GraphicsCache::getRotatedImg(RotatedImageType it, int angle) const 
 
 SDL_Surface* GraphicsCache::getImg(ImageType it) const {
 	return this->cache[it];
+}
+
+void GraphicsCache::addRotateable(std::string filename, RotatedImageType it){
+    SDL_Surface* image = loadSurface(filename.c_str());
+	for (int i = 0; i < 360; i++){
+		SDL_Surface* surf = rotozoomSurface(image, i, 0.0625, 1);
+		if (!surf) throw std::runtime_error("Rotozoom didn't work.");
+		rotateCache[it].images[i] = surf;
+	}
+}
+void GraphicsCache::addStatic(std::string filename, ImageType it){
+    SDL_Surface* image = loadSurface(filename.c_str());
+    cache[it] = image;
 }

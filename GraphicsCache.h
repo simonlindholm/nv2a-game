@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL/SDL.h>
+#include <string>
 #include "graphicsutil.h"
 
 // GraphicsCache is a singleton class used to pre-render every image and rotation
@@ -25,7 +26,8 @@ class GraphicsCache {
 	private:
 		RotatableObject rotateCache[RotatedImgEnd];
 		SDL_Surface* cache[ImgEnd];
-
+        void addRotateable(std::string filename, RotatedImageType it);
+        void addStatic(std::string filename, ImageType it);
 		// Let constructors/destructors be private, since GraphicsCache is a singleton
 		GraphicsCache();
 		~GraphicsCache();
