@@ -20,7 +20,7 @@ GameFrame::GameFrame(const std::vector<shared_ptr<Player> >& enemies)
 	}
 
 	// Add out-of-screen rectangles to act as boundaries
-	const int wallSize = 10;
+	const int wallSize = 100;
 	int sw = Config::get().winWidth, sh = Config::get().winHeight;
 
 	gameState.wall.add(shared_ptr<Shape>(new Rectangle(Coord(-wallSize, -wallSize),

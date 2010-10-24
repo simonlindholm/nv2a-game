@@ -25,6 +25,13 @@ static Coord rotatePoint(const Coord& point, double angle) {
 	return res;
 }
 
+// Helper function for the rectangle-rectangle collision detection routine,
+// tests whether the point q is within any triangle with a right angle at
+// position (px,py), width w and height h.
+static bool rrCorner(const Coord& q, double w, double h, double px, double py) {
+	return w * std::abs(q.y - py) + h * std::abs(q.x - px) <= h * w;
+}
+
 
 // Collision detection functions
 bool CollisionTests::collRC(const Rectangle& a, const Circle& b) {
@@ -60,9 +67,62 @@ bool CollisionTests::collCC(const Circle& a, const Circle& b) {
 }
 
 bool CollisionTests::collRR(const Rectangle& a, const Rectangle& b) {
-	// TODO: Implement this.
-	throw std::logic_error
-		("Rectangle to rectangle collision detection not yet implemented.");
+	if (b.axis) {
+		if (a.axis) {
+			// Both rectangles are axis-aligned, which makes the test trivial
+			if (a.pos.x + a.w <= b.pos.x) return false;
+			if (b.pos.x + b.w <= a.pos.x) return false;
+			if (a.pos.y + a.h <= b.pos.y) return false;
+			if (b.pos.y + b.h <= a.pos.y) return false;
+			return true;
+		}
+		else {
+			// Order them so that a is the most axis-aligned
+			return collRR(b, a);
+		}
+	}
+
+	// As in the rectangle-circle test, create a copy of b and modify it so that
+	// we can see the coordinate system as having 'a' at the origin, unrotated.
+	Rectangle c = b;
+
+	c.moveBy(Coord(-a.pos.x, -a.pos.y));
+	if (!a.axis) c.rotate(-a.angle);
+
+	// Switch the corner of reference for 'c', so that the angle in in [0, pi/2)
+	while (c.angle >= m_pi/2) {
+		c.pos.x += std::cos(c.angle) * c.w;
+		c.pos.y -= std::sin(c.angle) * c.w;
+		c.angle -= m_pi/2;
+		std::swap(c.w, c.h);
+	}
+
+	// Do the actual test by checking whether the bottom-right corner of 'c' is
+	// within the minkowski sum of 'a' and 'c', which now has a particular shape.
+	double cang = std::cos(c.angle);
+	double sang = std::sin(c.angle);
+	double da = c.w * sang;
+	double db = c.h * cang;
+	double dc = c.w * cang;
+	double dd = c.h * sang;
+
+	Coord m = c.pos;
+	m.x += dc + dd;
+	m.y += db - da;
+	double x1 = 0;
+	double x2 = a.w + dc + dd;
+	double y1 = -da;
+	double y2 = a.h + db;
+
+	if (m.x <= x1 || m.x >= x2) return false;
+	if (m.y <= y1 || m.y >= y2) return false;
+
+	if (rrCorner(m, dc, da, x1, y1)) return false;
+	if (rrCorner(m, dc, da, x2, y2)) return false;
+	if (rrCorner(m, dd, db, x2, y1)) return false;
+	if (rrCorner(m, dd, db, x1, y2)) return false;
+
+	return true;
 }
 
 
