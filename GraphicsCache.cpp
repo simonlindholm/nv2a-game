@@ -38,7 +38,7 @@ SDL_Surface* GraphicsCache::getImg(ImageType it) const {
 }
 
 void GraphicsCache::addRotateable(std::string filename, RotatedImageType it){
-    SDL_Surface* image = loadSurface(filename.c_str());
+	SDL_Surface* image = loadSurface(filename.c_str());
 	for (int i = 0; i < 360; i++){
 		SDL_Surface* surf = rotozoomSurface(image, i, 0.0625, 1);
 		if (!surf) throw std::runtime_error("Rotozoom didn't work.");
@@ -46,6 +46,6 @@ void GraphicsCache::addRotateable(std::string filename, RotatedImageType it){
 	}
 }
 void GraphicsCache::addStatic(std::string filename, ImageType it){
-    SDL_Surface* image = loadSurface(filename.c_str());
-    cache[it] = image;
+	SDL_Surface* image = loadSurface(filename.c_str());
+	cache[it] = image;
 }
