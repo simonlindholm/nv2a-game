@@ -24,13 +24,13 @@ GameFrame::GameFrame(const std::vector<shared_ptr<Player> >& enemies)
 	int sw = Config::get().winWidth, sh = Config::get().winHeight;
 
 	gameState.wall.add(shared_ptr<Shape>(new Rectangle(Coord(-wallSize, -wallSize),
-					sw + 2*wallSize, wallSize, 0)));
+					sw + 2*wallSize, wallSize)));
 	gameState.wall.add(shared_ptr<Shape>(new Rectangle(Coord(-wallSize, -wallSize),
-					wallSize, sw + 2*wallSize, 0)));
+					wallSize, sw + 2*wallSize)));
 	gameState.wall.add(shared_ptr<Shape>(new Rectangle(Coord(-wallSize, sh),
-					sw + 2*wallSize, wallSize, 0)));
+					sw + 2*wallSize, wallSize)));
 	gameState.wall.add(shared_ptr<Shape>(new Rectangle(Coord(sw, -wallSize),
-					wallSize, sw + 2*wallSize, 0)));
+					wallSize, sw + 2*wallSize)));
 }
 
 Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {

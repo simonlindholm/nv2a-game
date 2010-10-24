@@ -25,10 +25,6 @@ static Coord rotatePoint(const Coord& point, double angle) {
 	return res;
 }
 
-static bool pythCmpSq(double a, double b, double c2) {
-	return a*a + b*b < c2;
-}
-
 
 // Collision detection functions
 bool CollisionTests::collRC(const Rectangle& a, const Circle& b) {
@@ -39,7 +35,7 @@ bool CollisionTests::collRC(const Rectangle& a, const Circle& b) {
 	// Transform the coordinate system so that the rectangle is located at
 	// the origin, and is axis-aligned
 	c.moveBy(Coord(-a.pos.x, -a.pos.y));
-	c.rotate(-a.angle);
+	if (!a.axis) c.rotate(-a.angle);
 
 	// Now, check whether the circle's center is within the minkowski sum
 	// of the two shapes
@@ -51,11 +47,9 @@ bool CollisionTests::collRC(const Rectangle& a, const Circle& b) {
 	if (c.pos.y >= 0 && c.pos.y <= a.h &&
 		c.pos.x > -c.radius && c.pos.x < a.w + c.radius) return true;
 
-	double sq = c.radius * c.radius;
-	return (pythCmpSq(c.pos.x, c.pos.y, sq) ||
-			pythCmpSq(c.pos.x - a.w, c.pos.y, sq) ||
-			pythCmpSq(c.pos.x, c.pos.y - a.h, sq) ||
-			pythCmpSq(c.pos.x - a.w, c.pos.y - a.h, sq));
+	double xdif = std::min(std::abs(c.pos.x), std::abs(c.pos.x - a.w));
+	double ydif = std::min(std::abs(c.pos.y), std::abs(c.pos.y - a.h));
+	return (xdif*xdif + ydif*ydif < c.radius*c.radius);
 }
 
 bool CollisionTests::collCC(const Circle& a, const Circle& b) {
@@ -97,13 +91,18 @@ shared_ptr<Shape> Circle::clone() const {
 
 
 // Rectangle member functions
+Rectangle::Rectangle(const Coord& pos, double width, double height)
+	: Shape(pos), w(width), h(height), angle(0), axis(true)
+{}
+
 Rectangle::Rectangle(const Coord& pos, double width, double height, double angle)
-	: Shape(pos), w(width), h(height), angle(angle)
+	: Shape(pos), w(width), h(height), angle(angle), axis(false)
 {}
 
 void Rectangle::rotate(double angle) {
 	this->pos = rotatePoint(this->pos, angle);
 	this->angle = reduceAngle(this->angle + angle);
+	this->axis = false;
 }
 
 bool Rectangle::collidesWith(const Shape& other) const {

@@ -65,7 +65,9 @@ class Rectangle : public Shape {
 	private:
 		double w, h;
 		double angle;
+		bool axis;
 	public:
+		Rectangle(const Coord& pos, double width, double height);
 		Rectangle(const Coord& pos, double width, double height, double angle);
 		virtual bool collidesWith(const Shape& other) const;
 		virtual bool collidesWithDisp(const Circle& other) const;
