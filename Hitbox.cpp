@@ -26,8 +26,8 @@ static Coord rotatePoint(const Coord& point, double angle) {
 }
 
 // Helper function for the rectangle-rectangle collision detection routine,
-// tests whether the point q is within any triangle with a right angle at
-// position (px,py), width w and height h.
+// tests whether the point q is within any axis-aligned triangle with a right
+// angle at position (px,py), width w and height h.
 static bool rrCorner(const Coord& q, double w, double h, double px, double py) {
 	return w * std::abs(q.y - py) + h * std::abs(q.x - px) <= h * w;
 }
@@ -89,18 +89,22 @@ bool CollisionTests::collRR(const Rectangle& a, const Rectangle& b) {
 	c.moveBy(Coord(-a.pos.x, -a.pos.y));
 	if (!a.axis) c.rotate(-a.angle);
 
+	double cang = std::cos(c.angle);
+	double sang = std::sin(c.angle);
+
 	// Switch the corner of reference for 'c', so that the angle in in [0, pi/2)
 	while (c.angle >= m_pi/2) {
-		c.pos.x += std::cos(c.angle) * c.w;
-		c.pos.y -= std::sin(c.angle) * c.w;
+		c.pos.x += cang * c.w;
+		c.pos.y -= sang * c.w;
 		c.angle -= m_pi/2;
 		std::swap(c.w, c.h);
+		double osin = sang;
+		sang = -cang;
+		cang = osin;
 	}
 
 	// Do the actual test by checking whether the bottom-right corner of 'c' is
 	// within the minkowski sum of 'a' and 'c', which now has a particular shape.
-	double cang = std::cos(c.angle);
-	double sang = std::sin(c.angle);
 	double da = c.w * sang;
 	double db = c.h * cang;
 	double dc = c.w * cang;
