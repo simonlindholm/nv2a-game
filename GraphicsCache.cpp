@@ -8,25 +8,52 @@
 #include "graphicsutil.h"
 
 GraphicsCache::GraphicsCache() {
-	//Load rotateable images
-	addRotateable("human.png", RotatedImgHuman);
-	addRotateable("enemy.png", RotatedImgEnemy);
-
-	//Load static images
-	addStatic("bullet.png", ImgBullet);
-}
-
-GraphicsCache::~GraphicsCache() {
-	for (int a = 0; a < this->ImgEnd; a++) {
-		for (int b = 0; b < 360; b++) {
-			SDL_FreeSurface(this->rotateCache[a].images[b]);
+	// Zero-initialize surface pointers
+	for (int i = 0; i < RotatedImgEnd; ++i) {
+		for (int j = 0; j < 360; ++j) {
+			this->rotateCache[i].images[j] = 0;
 		}
+	}
+	for (int i = 0; i < ImgEnd; ++i) {
+		this->cache[i] = 0;
+	}
+
+	try {
+		// Load rotatable images
+		addRotatable("human.png", RotatedImgHuman);
+		addRotatable("enemy.png", RotatedImgEnemy);
+
+		// Load static images
+		addStatic("bullet.png", ImgBullet);
+	}
+	catch (...) {
+		// Clean up in case of errors
+		this->~GraphicsCache();
+		throw;
 	}
 }
 
+GraphicsCache::~GraphicsCache() {
+	for (int i = 0; i < RotatedImgEnd; ++i) {
+		for (int j = 0; j < 360; ++j) {
+			SDL_FreeSurface(this->rotateCache[i].images[j]);
+		}
+	}
+	for (int i = 0; i < ImgEnd; ++i) {
+		SDL_FreeSurface(this->cache[i]);
+	}
+}
+
+static GraphicsCache* singleton = 0;
+void GraphicsCache::init() {
+	if (!singleton) singleton = new GraphicsCache;
+}
+void GraphicsCache::destroy() {
+	delete singleton;
+	singleton = 0;
+}
 GraphicsCache& GraphicsCache::get() {
-	static GraphicsCache singleton;
-	return singleton;
+	return *singleton;
 }
 
 SDL_Surface* GraphicsCache::getRotatedImg(RotatedImageType it, int angle) const {
@@ -37,7 +64,7 @@ SDL_Surface* GraphicsCache::getImg(ImageType it) const {
 	return this->cache[it];
 }
 
-void GraphicsCache::addRotateable(const std::string& filename, RotatedImageType it){
+void GraphicsCache::addRotatable(const std::string& filename, RotatedImageType it){
 	SDL_Surface* image = loadSurface(filename.c_str());
 	for (int i = 0; i < 360; i++){
 		SDL_Surface* surf = rotozoomSurface(image, i, 0.0625, 1);

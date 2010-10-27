@@ -7,13 +7,14 @@
 #include <ctime>
 #include "exceptions.h"
 #include "StartFrame.h"
+#include "GraphicsCache.h"
 #include "Config.h"
 
 int main(int argc, char** argv) {
 	int returnValue = 0;
 	SDL_Surface* screen = 0;
 	Frame* curFrame = 0;
-	bool hasSDL = false, hasMix = false;
+	bool hasSDL = false, hasMix = false, hasGr = false;
 
 	std::srand((unsigned int)std::time(0));
 
@@ -55,6 +56,9 @@ int main(int argc, char** argv) {
 			SDL_Lock lock(screen);
 			SDL_FillRect(screen, 0, SDL_MapRGB(screen->format, 0, 0, 0));
 		}
+
+		GraphicsCache::init();
+		hasGr = true;
 
 		// Begin in a 'begin state' given by StartFrame
 		curFrame = new StartFrame;
@@ -100,6 +104,7 @@ int main(int argc, char** argv) {
 	}
 
 	// Clean up
+	if (hasGr) GraphicsCache::destroy();
 	if (curFrame) delete curFrame;
 	if (hasMix) Mix_CloseAudio();
 	if (hasSDL) SDL_Quit();

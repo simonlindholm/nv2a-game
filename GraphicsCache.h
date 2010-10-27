@@ -19,14 +19,17 @@ class GraphicsCache {
 			ImgEnd
 		};
 
-		static GraphicsCache& get();
 		SDL_Surface* getImg(ImageType it) const;
 		SDL_Surface* getRotatedImg(RotatedImageType it, int angle) const;
+
+		static void init();
+		static void destroy();
+		static GraphicsCache& get();
 
 	private:
 		RotatableObject rotateCache[RotatedImgEnd];
 		SDL_Surface* cache[ImgEnd];
-		void addRotateable(const std::string& filename, RotatedImageType it);
+		void addRotatable(const std::string& filename, RotatedImageType it);
 		void addStatic(const std::string& filename, ImageType it);
 		// Let constructors/destructors be private, since GraphicsCache is a singleton
 		GraphicsCache();
