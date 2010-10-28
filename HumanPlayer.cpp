@@ -51,12 +51,19 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 		if (&p == this) {
 			// Let yourself have a seperate appearance
 			drawCenteredSurface(pos, gCache.getRotatedImg(GraphicsCache::RotatedImgHuman, angle), screen);
+
+			// Show player's HP bar in the lower left corner
+			SDL_Rect clipHP = {(int)(1.5*(100 - p.getHP())), 0, 150, 15};
+			SDL_Rect HPpos = {(screen->h / 30), screen->h - (screen->h / 15), 0, 0};
+			SDL_BlitSurface( gCache.getImg(GraphicsCache::ImgPlayerHP), &clipHP, screen, &HPpos );
 		}
 		else {
 			drawCenteredSurface(pos, gCache.getRotatedImg(GraphicsCache::RotatedImgEnemy, angle), screen);
+
+			SDL_Rect clipHP = {(int)(0.6*(100 - p.getHP())), 0, 60, 8};
+			SDL_Rect HPpos = {(int)pos.x - 30, (int)pos.y - 30, 0, 0};
+			SDL_BlitSurface( gCache.getImg(GraphicsCache::ImgEnemyHP), &clipHP, screen, &HPpos );
 		}
-
-
 	}
 
 	typedef std::list<shared_ptr<Bullet> >::const_iterator BulletIt;
