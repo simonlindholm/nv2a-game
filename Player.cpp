@@ -5,7 +5,7 @@ Player::~Player() {}
 
 Player::Player() {
 	// XXX: Don't use hardcoded values
-	hitbox.add(shared_ptr<Shape>(new Circle(Coord(0, 0), 10)));
+	hitbox.add(shared_ptr<Shape>(new Circle(Coord(0, 0), 16)));
 	rhitbox = hitbox;
 	angle = 0;
 	pos.x = pos.y = 0;

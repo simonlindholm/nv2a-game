@@ -8,5 +8,6 @@
 struct GameState {
 	std::vector<shared_ptr<Player> > players;
 	std::list<shared_ptr<Bullet> > bullets;
+	std::list<shared_ptr<Item> > items;
 	Hitbox wall;
 };

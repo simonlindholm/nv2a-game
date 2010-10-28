@@ -3,6 +3,7 @@
 #include "SDL_helpers.h"
 #include "HumanPlayer.h"
 #include "Bullet.h"
+#include "Item.h"
 #include "Config.h"
 #include "exceptions.h"
 #include "shared_ptr.h"
@@ -100,7 +101,32 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 			gameState.bullets.push_back(b);
 		}
 	}
-	
+
+	// Check item collisions
+	std::list<shared_ptr<Item> >::iterator iIter, iEnd;
+	iIter = gameState.items.begin();
+	iEnd = gameState.items.end();
+	while (iIter != iEnd) {
+		shared_ptr<Item> item = *iIter;
+		const Hitbox& ihit = item->getHitbox();
+		bool del = false;
+		for (size_t i = 0; i < gameState.players.size(); ++i) {
+			shared_ptr<Player> p = gameState.players[i];
+			if (p->getHitbox().collidesWith(ihit)) {
+				item->use(*p);
+				del = true;
+				break;
+			}
+		}
+
+		if (del) {
+			gameState.items.erase(iIter++);
+		}
+		else {
+			++iIter;
+		}
+	}
+
 	// Check collisions for bullets
 	bIter = gameState.bullets.begin();
 	bEnd = gameState.bullets.end();
