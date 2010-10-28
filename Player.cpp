@@ -10,6 +10,7 @@ Player::Player() {
 	angle = 0;
 	pos.x = pos.y = 0;
 	speed = 0.2;
+	HP = 100;
 }
 
 void Player::setAngle(double angle) {
@@ -32,6 +33,14 @@ Coord Player::getPosition() const {
 
 double Player::getSpeed() const {
 	return this->speed;
+}
+
+void Player::setHP(double newHP) {
+	this->HP = newHP;	
+}
+
+double Player::getHP() const {
+	return this->HP;
 }
 
 Hitbox Player::getHitbox() const {

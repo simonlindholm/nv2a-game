@@ -9,6 +9,7 @@ class Player {
 		Coord pos;
 		double angle;
 		double speed;
+		double HP;
 		Hitbox hitbox, rhitbox;
 
 	protected:
@@ -43,6 +44,12 @@ class Player {
 
 		// Get the speed of the player, in pixels per millisecond
 		double getSpeed() const;
+
+		// Set HP based on bullet collision or (later on) HP regeneration
+		void setHP(double newHP);
+
+		// Get the current HP of the player
+		double getHP() const;		
 
 		// Get the (external) hitbox for the player
 		Hitbox getHitbox() const;
