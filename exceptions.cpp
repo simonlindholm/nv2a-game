@@ -2,11 +2,11 @@
 #include "exceptions.h"
 
 ConfigException::~ConfigException() throw() {}
-ConfigException::ConfigException(const char* msg) {
+ConfigException::ConfigException(const std::string& msg) {
 	this->msg = msg;
 }
 const char* ConfigException::what() const throw() {
-	return this->msg;
+	return this->msg.c_str();
 }
 
 SDL_Exception::~SDL_Exception() throw() {}

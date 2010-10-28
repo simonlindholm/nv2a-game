@@ -6,7 +6,7 @@
 #include "util.h"
 #include "mathutil.h"
 
-StupidAIPlayer::StupidAIPlayer(const std::vector<Coord>& checkpoints) 
+StupidAIPlayer::StupidAIPlayer(const std::vector<Coord>& checkpoints)
 	: checkpoints(checkpoints), moveInd(0), targetInd(-1)
 {
 	this->shootDelay = randRange(1500, 2500);

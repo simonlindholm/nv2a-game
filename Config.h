@@ -15,7 +15,7 @@ class Config {
 		int minDelay;
 
 		// Load configuration from file
-		void load(const char* filename);
+		void load(const std::string& filename);
 
 		// Return the config singleton (ie. the single Config instance that
 		// exists in the program)

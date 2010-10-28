@@ -5,8 +5,8 @@
 #include "exceptions.h"
 using namespace std;
 
-SDL_Surface* loadSurface(const char* filename) {
-	SDL_Surface* loadedImage = IMG_Load(filename);
+SDL_Surface* loadSurface(const std::string& filename) {
+	SDL_Surface* loadedImage = IMG_Load(filename.c_str());
 	if (!loadedImage) throw SDL_Exception();
 
 	//Optimize format

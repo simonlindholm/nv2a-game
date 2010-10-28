@@ -168,10 +168,10 @@ static shared_ptr<pair<int, int> > parseDimension(const string& str) {
 	return shared_ptr<pair<int, int> >(new pair<int, int>(w, h));
 }
 
-void Config::load(const char* filename) {
+void Config::load(const string& filename) {
 	vector<pair<string, string> > properties;
 
-	ifstream fin(filename, ios_base::binary | ios_base::in);
+	ifstream fin(filename.c_str(), ios_base::binary | ios_base::in);
 	string line;
 	while(getline(fin, line)) {
 		size_t eq = line.find('=');

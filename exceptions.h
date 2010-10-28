@@ -1,5 +1,6 @@
 #pragma once
 #include <exception>
+#include <string>
 
 // This is the standard class for SDL exceptions. This is needed because SDL
 // was originally written in C and doesn't use C++-style error handling.
@@ -13,9 +14,9 @@ class SDL_Exception : public std::exception {
 // Exception thrown when not able to load the configuration, for any reason.
 class ConfigException : public std::exception {
 	private:
-		const char* msg;
+		std::string msg;
 	public:
-		ConfigException(const char* msg);
+		ConfigException(const std::string& msg);
 		virtual const char* what() const throw();
 		virtual ~ConfigException() throw();
 };

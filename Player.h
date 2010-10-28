@@ -49,7 +49,7 @@ class Player {
 		void setHP(double newHP);
 
 		// Get the current HP of the player
-		double getHP() const;		
+		double getHP() const;
 
 		// Get the (external) hitbox for the player
 		Hitbox getHitbox() const;

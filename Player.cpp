@@ -36,7 +36,7 @@ double Player::getSpeed() const {
 }
 
 void Player::setHP(double newHP) {
-	this->hp = newHP;	
+	this->hp = newHP;
 }
 
 double Player::getHP() const {
