@@ -9,7 +9,7 @@ class Player {
 		Coord pos;
 		double angle;
 		double speed;
-		double HP;
+		double hp;
 		Hitbox hitbox, rhitbox;
 
 	protected:
