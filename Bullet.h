@@ -15,6 +15,7 @@ class Bullet {
 		void move(unsigned int delay);
 		Hitbox getHitbox() const;
 		double getSpeed() const;
+		double getDamage() const;
 		size_t getOwner() const;
 		Coord getPosition() const;
 };

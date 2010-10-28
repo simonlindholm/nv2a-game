@@ -13,6 +13,10 @@ double Bullet::getSpeed() const {
 	return 1.0;
 }
 
+double Bullet::getDamage() const {
+	return 15.0;
+}
+
 void Bullet::move(unsigned int delay) {
 	double mov = delay * this->getSpeed();
 	this->pos.x += mov * this->dx;
