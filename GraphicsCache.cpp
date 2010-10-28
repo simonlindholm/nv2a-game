@@ -25,6 +25,8 @@ GraphicsCache::GraphicsCache() {
 
 		// Load static images
 		addStatic("bullet.png", ImgBullet);
+		addStatic("player_HP.png", ImgPlayerHP);
+		addStatic("enemy_HP.png", ImgEnemyHP);
 	}
 	catch (...) {
 		// Clean up in case of errors

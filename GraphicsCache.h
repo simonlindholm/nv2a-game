@@ -16,6 +16,8 @@ class GraphicsCache {
 
 		enum ImageType {
 			ImgBullet,
+			ImgPlayerHP,
+			ImgEnemyHP,
 			ImgEnd
 		};
 
