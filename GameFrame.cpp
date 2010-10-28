@@ -20,17 +20,17 @@ GameFrame::GameFrame(const std::vector<shared_ptr<Player> >& enemies)
 	}
 
 	// Add out-of-screen rectangles to act as boundaries
-	const int wallSize = 10;
+	const int wallSize = 100;
 	int sw = Config::get().winWidth, sh = Config::get().winHeight;
 
 	gameState.wall.add(shared_ptr<Shape>(new Rectangle(Coord(-wallSize, -wallSize),
-					sw + 2*wallSize, wallSize, 0)));
+					sw + 2*wallSize, wallSize)));
 	gameState.wall.add(shared_ptr<Shape>(new Rectangle(Coord(-wallSize, -wallSize),
-					wallSize, sw + 2*wallSize, 0)));
+					wallSize, sw + 2*wallSize)));
 	gameState.wall.add(shared_ptr<Shape>(new Rectangle(Coord(-wallSize, sh),
-					sw + 2*wallSize, wallSize, 0)));
+					sw + 2*wallSize, wallSize)));
 	gameState.wall.add(shared_ptr<Shape>(new Rectangle(Coord(sw, -wallSize),
-					wallSize, sw + 2*wallSize, 0)));
+					wallSize, sw + 2*wallSize)));
 }
 
 Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
@@ -117,16 +117,16 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 			for (size_t i = 0; i < gameState.players.size(); ++i) {
 				shared_ptr<Player> p = gameState.players[i];
 				if (bullet->getOwner() != i &&
-						p->getHitbox().collidesWith(bhit)) {					
-							p->setHP(p->getHP() - bullet->getDamage());
+						p->getHitbox().collidesWith(bhit)) {
+					p->setHP(p->getHP() - bullet->getDamage());
 
-							//TODO: Game over-screen when HP reaches zero instead of resetting HP
-							if(0 >= p->getHP()) {
-								p->setHP(100);
-							}
+					//TODO: Game over-screen when HP reaches zero instead of resetting HP
+					if(0 >= p->getHP()) {
+						p->setHP(100);
+					}
 
-							del = true;
-							break;
+					del = true;
+					break;
 				}
 			}
 		}
