@@ -144,7 +144,7 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 				shared_ptr<Player> p = gameState.players[i];
 				if (bullet->getOwner() != i &&
 						p->getHitbox().collidesWith(bhit)) {
-					p->setHP(p->getHP() - bullet->getDamage());
+					p->setHP(p->getHP() - (int)bullet->getDamage());
 
 					//TODO: Game over-screen when HP reaches zero instead of resetting HP
 					if(0 >= p->getHP()) {
