@@ -25,41 +25,55 @@ bool SimpleTimer::isDone() const {
 }
 
 Timer::Timer()
-	: timer(), running(false)
+	: simpleTimer(), active(false), paused(false)
 {}
 
 Timer::Timer(int left)
-	: timer(left), running(true)
+	: simpleTimer(left), active(true), paused(false)
 {}
 
 void Timer::step(unsigned int delay) {
-	if (running) simpleTimer.step(delay);
+	if (active && !paused) simpleTimer.step(delay);
 }
 
 void Timer::changeTime(int ms) {
-	if (ms >= 0)
-		simpleTimer.addTime(ms);
-	else
-		simpleTimer.step(-ms);
+	if (active) {
+		if (ms >= 0)
+			simpleTimer.addTime(ms);
+		else
+			simpleTimer.step(-ms);
+	}
 }
 
 void Timer::set(int left) {
 	simpleTimer.setTimer(left);
-	running = true;
+	active = true;
+	paused = false;
+}
+
+void Timer::stop() {
+	active = false;
+	paused = false;
+}
+
+bool Timer::isActive() const {
+	return active;
 }
 
 bool Timer::isDone() const {
-	return (running && simpleTimer.isDone());
+	return (active && !paused && simpleTimer.isDone());
 }
 
 void Timer::pause() {
-	running = false;
+	if (active)
+		paused = true;
 }
 
 void Timer::unpause() {
-	running = true;
+	if (active)
+		paused = false;
 }
 
 bool Timer::isPaused() const {
-	return !running;
+	return (active && paused);
 }

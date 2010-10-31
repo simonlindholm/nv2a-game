@@ -18,6 +18,7 @@ class GraphicsCache {
 			ImgBullet,
 			ImgPlayerHP,
 			ImgEnemyHP,
+			ImgMushroom,
 			ImgEnd
 		};
 

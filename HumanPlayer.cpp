@@ -3,6 +3,7 @@
 #include "HumanPlayer.h"
 #include "GameState.h"
 #include "Bullet.h"
+#include "Item.h"
 #include "SDL_helpers.h"
 #include "util.h"
 #include "mathutil.h"
@@ -42,6 +43,18 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 	SDL_FillRect(screen, 0, SDL_MapRGB(screen->format, 100, 0, 255));
 	GraphicsCache& gCache = GraphicsCache::get();
 
+	// Draw the items
+	std::list<shared_ptr<Item> >::const_iterator iIter, iEnd;
+	iIter = game.items.begin();
+	iEnd = game.items.end();
+	while (iIter != iEnd) {
+		const Item& item = **iIter;
+		GraphicsCache::ImageType img = item.getImage();
+		Coord pos = item.getPosition();
+		drawCenteredSurface(pos, gCache.getImg(img), screen);
+		++iIter;
+	}
+
 	for (size_t i = 0; i < game.players.size(); ++i) {
 		const Player& p = *game.players[i];
 		Coord pos = p.getPosition();
@@ -55,14 +68,14 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 			// Show player's HP bar in the lower left corner
 			SDL_Rect clipHP = {(int)(1.5*(100 - p.getHP())), 0, 150, 15};
 			SDL_Rect HPpos = {(screen->h / 30), screen->h - (screen->h / 15), 0, 0};
-			SDL_BlitSurface( gCache.getImg(GraphicsCache::ImgPlayerHP), &clipHP, screen, &HPpos );
+			SDL_BlitSurface(gCache.getImg(GraphicsCache::ImgPlayerHP), &clipHP, screen, &HPpos);
 		}
 		else {
 			drawCenteredSurface(pos, gCache.getRotatedImg(GraphicsCache::RotatedImgEnemy, angle), screen);
 
 			SDL_Rect clipHP = {(int)(0.6*(100 - p.getHP())), 0, 60, 8};
 			SDL_Rect HPpos = {(int)pos.x - 30, (int)pos.y - 30, 0, 0};
-			SDL_BlitSurface( gCache.getImg(GraphicsCache::ImgEnemyHP), &clipHP, screen, &HPpos );
+			SDL_BlitSurface(gCache.getImg(GraphicsCache::ImgEnemyHP), &clipHP, screen, &HPpos);
 		}
 	}
 

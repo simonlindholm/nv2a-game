@@ -2,9 +2,11 @@
 #include "GameFrame.h"
 #include "SDL_helpers.h"
 #include "HumanPlayer.h"
+#include "Timer.h"
 #include "Bullet.h"
 #include "Item.h"
 #include "Config.h"
+#include "util.h"
 #include "exceptions.h"
 #include "shared_ptr.h"
 
@@ -32,6 +34,28 @@ GameFrame::GameFrame(const std::vector<shared_ptr<Player> >& enemies)
 					sw + 2*wallSize, wallSize)));
 	gameState.wall.add(shared_ptr<Shape>(new Rectangle(Coord(sw, -wallSize),
 					wallSize, sw + 2*wallSize)));
+
+	gameState.itemsLeft = 0;
+	this->setItemTimer();
+}
+
+void GameFrame::setItemTimer() {
+	const int maxItems = 2, minTime = 7000, maxTime = 10000;
+	if (gameState.itemsLeft < maxItems && !gameState.itemTimer.isActive()) {
+		gameState.itemTimer.set(randRange(minTime, maxTime));
+	}
+}
+
+shared_ptr<Item> GameFrame::getRandomItem() const {
+	Config& cfg = Config::get();
+	for (;;) {
+		Coord pos;
+		pos.x = randRange(0, cfg.winWidth);
+		pos.y = randRange(0, cfg.winHeight);
+		shared_ptr<Item> ret = shared_ptr<Item>(new MushroomItem(pos));
+		if (gameState.wall.collidesWith(ret->getHitbox())) continue;
+		return ret;
+	}
 }
 
 Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
@@ -102,6 +126,15 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 		}
 	}
 
+	gameState.itemTimer.step(delay);
+	if (gameState.itemTimer.isDone()) {
+		shared_ptr<Item> newItem = this->getRandomItem();
+		gameState.items.push_back(newItem);
+		++gameState.itemsLeft;
+		gameState.itemTimer.stop();
+		this->setItemTimer();
+	}
+
 	// Check item collisions
 	std::list<shared_ptr<Item> >::iterator iIter, iEnd;
 	iIter = gameState.items.begin();
@@ -121,6 +154,8 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 
 		if (del) {
 			gameState.items.erase(iIter++);
+			--gameState.itemsLeft;
+			this->setItemTimer();
 		}
 		else {
 			++iIter;

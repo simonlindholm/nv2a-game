@@ -31,3 +31,7 @@ void MushroomItem::use(Player& pl) {
 	if (hp > 100) hp = 100; //TODO: Implement a reduceHP-like function.
 	pl.setHP(hp);
 }
+
+GraphicsCache::ImageType MushroomItem::getImage() const {
+	return GraphicsCache::ImgMushroom;
+}

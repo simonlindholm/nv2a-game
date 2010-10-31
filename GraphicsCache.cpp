@@ -27,6 +27,7 @@ GraphicsCache::GraphicsCache() {
 		addStatic("bullet.png", ImgBullet);
 		addStatic("player_HP.png", ImgPlayerHP);
 		addStatic("enemy_HP.png", ImgEnemyHP);
+		addStatic("item-mushroom.png", ImgMushroom);
 	}
 	catch (...) {
 		// Clean up in case of errors

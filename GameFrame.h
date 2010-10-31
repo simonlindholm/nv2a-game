@@ -10,6 +10,8 @@ class GameFrame : public Frame {
 	private:
 		GameState gameState;
 		shared_ptr<HumanPlayer> player;
+		void setItemTimer();
+		shared_ptr<Item> getRandomItem() const;
 	public:
 		GameFrame(const std::vector<shared_ptr<Player> >& enemies);
 		virtual Frame* frame(SDL_Surface* screen, unsigned int delay);
