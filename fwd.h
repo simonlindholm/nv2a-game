@@ -5,4 +5,4 @@
 class Player;
 class Item;
 class Bullet;
-class GameState;
+struct GameState;
