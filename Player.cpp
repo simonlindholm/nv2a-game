@@ -14,9 +14,9 @@ Player::Player() {
 }
 
 void Player::setAngle(double angle) {
-	double dangle = angle - this->angle;
 	this->angle = angle;
-	this->rhitbox.rotate(dangle);
+	this->rhitbox.rawAssign(this->hitbox);
+	this->rhitbox.rotate(angle);
 }
 
 double Player::getAngle() const {
