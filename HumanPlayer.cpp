@@ -51,10 +51,25 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 		const Item& item = **iIter;
 		GraphicsCache::ImageType img = item.getImage();
 		Coord pos = item.getPosition();
+
 		drawCenteredSurface(pos, gCache.getImg(img), screen);
+
 		++iIter;
 	}
 
+	// Then the bullets
+	typedef std::list<shared_ptr<Bullet> >::const_iterator BulletIt;
+	BulletIt bIter = game.bullets.begin(), bEnd = game.bullets.end();
+	while (bIter != bEnd) {
+		shared_ptr<Bullet> b = *bIter;
+		Coord pos = b->getPosition();
+
+		drawCenteredSurface(pos, gCache.getImg(GraphicsCache::ImgBullet), screen);
+
+		++bIter;
+	}
+
+	// And lastly the players
 	for (size_t i = 0; i < game.players.size(); ++i) {
 		const Player& p = *game.players[i];
 		Coord pos = p.getPosition();
@@ -77,17 +92,6 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 			SDL_Rect HPpos = {(int)pos.x - 30, (int)pos.y - 30, 0, 0};
 			SDL_BlitSurface(gCache.getImg(GraphicsCache::ImgEnemyHP), &clipHP, screen, &HPpos);
 		}
-	}
-
-	typedef std::list<shared_ptr<Bullet> >::const_iterator BulletIt;
-	BulletIt bIter = game.bullets.begin(), bEnd = game.bullets.end();
-	while (bIter != bEnd) {
-		shared_ptr<Bullet> b = *bIter;
-		Coord pos = b->getPosition();
-
-		drawCenteredSurface(pos, gCache.getImg(GraphicsCache::ImgBullet), screen);
-
-		++bIter;
 	}
 }
 
