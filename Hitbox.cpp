@@ -153,6 +153,10 @@ shared_ptr<Shape> Circle::clone() const {
 	return shared_ptr<Shape>(new Circle(*this));
 }
 
+void Circle::rawAssign(const Shape& sh) {
+	*this = static_cast<const Circle&>(sh);
+}
+
 
 // Rectangle member functions
 Rectangle::Rectangle(const Coord& pos, double width, double height)
@@ -181,6 +185,10 @@ bool Rectangle::collidesWithDisp(const Circle& other) const {
 
 shared_ptr<Shape> Rectangle::clone() const {
 	return shared_ptr<Shape>(new Rectangle(*this));
+}
+
+void Rectangle::rawAssign(const Shape& sh) {
+	*this = static_cast<const Rectangle&>(sh);
 }
 
 
@@ -226,5 +234,12 @@ void Hitbox::moveBy(const Coord& by) {
 	size_t sz = this->shapes.size();
 	for (size_t i = 0; i < sz; ++i) {
 		this->shapes[i]->moveBy(by);
+	}
+}
+
+void Hitbox::rawAssign(const Hitbox& other) {
+	size_t sz = this->shapes.size();
+	for (size_t i = 0; i < sz; ++i) {
+		this->shapes[i]->rawAssign(*other.shapes[i]);
 	}
 }

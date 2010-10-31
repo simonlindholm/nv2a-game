@@ -43,6 +43,11 @@ class Shape {
 		// Functions to help with multiple dispatch for collision detection
 		virtual bool collidesWithDisp(const Circle& other) const = 0;
 		virtual bool collidesWithDisp(const Rectangle& other) const = 0;
+
+		// Copy the object onto sh, which must be of the same type (no
+		// typechecking is done, so use only if you are absolutely sure
+		// about what the types are)
+		virtual void rawAssign(const Shape& sh) = 0;
 };
 
 class Circle : public Shape {
@@ -58,6 +63,7 @@ class Circle : public Shape {
 		virtual bool collidesWithDisp(const Rectangle& other) const;
 		virtual void rotate(double angle);
 		virtual shared_ptr<Shape> clone() const;
+		virtual void rawAssign(const Shape& sh);
 };
 
 class Rectangle : public Shape {
@@ -74,6 +80,7 @@ class Rectangle : public Shape {
 		virtual bool collidesWithDisp(const Rectangle& other) const;
 		virtual void rotate(double angle);
 		virtual shared_ptr<Shape> clone() const;
+		virtual void rawAssign(const Shape& sh);
 };
 
 // Collection of shapes for use in collision detection
@@ -91,4 +98,10 @@ class Hitbox {
 		bool collidesWith(const Hitbox& other) const;
 		void rotate(double angle);
 		void moveBy(const Coord& by);
+
+		// Make a copy of another hitbox, which must have a shape vector with
+		// the same size and containing objects of the same type as this one
+		// (no checking is done, so use only if you are absolutely sure that
+		// this is the case)
+		void rawAssign(const Hitbox& other);
 };
