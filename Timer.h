@@ -1,46 +1,29 @@
 #pragma once
-#include <SDL/SDL.h>
+
+class SimpleTimer {
+	private:
+		int left;
+	public:
+		SimpleTimer();
+		SimpleTimer(int left);
+		void step(unsigned int delay);
+		void addTime(unsigned int ms);
+		void setTimer(int left);
+		bool isDone() const;
+};
 
 class Timer {
 	private:
-		int waitingTime;
-		int startTime;
-		int pausedTime;
-		bool paused;
-		bool started;
-
+		SimpleTimer simpleTimer;
+		bool running;
 	public:
-		~Timer();
-
-		Timer(int t);
-		
-		//Start timer
-		void start();
-
-		//Stop timer
-		void stop();
-
-		//Check if timer is started
-		bool isStarted() const;
-
-		//Delay timer
-		void prolong(int delay);
-
-		//Advance timer
-		void advance(int adv);
-
-		//Set the timer
-		void setWaitingTime(int newTime);
-
-		//Pause or unpause timer
-		void setPause(bool p);
-
-		//Check if timer is paused
-		bool isPaused() const;
-
-		//Check if timer is done
+		Timer(int left);
+		Timer();
+		void step(unsigned int delay);
+		void changeTime(int ms);
+		void set(int left);
 		bool isDone() const;
-
-		//Get the time
-		int getTicks() const;
+		void pause();
+		void unpause();
+		bool isPaused() const;
 };

@@ -1,74 +1,65 @@
-#pragma once
 #include "Timer.h"
 
-Timer::~Timer() {}
+SimpleTimer::SimpleTimer()
+	: left(0)
+{}
 
-Timer::Timer(int t) {
-	started = false;
-	paused = false;
-	startTime = 0;
-	pausedTime = 0;
-	waitingTime = t;
+SimpleTimer::SimpleTimer(int left)
+	: left(left)
+{}
+
+void SimpleTimer::step(unsigned int delay) {
+	left -= delay;
 }
 
-void Timer::start() {
-	started = true;
-	paused = false;
-	startTime = SDL_GetTicks();
+void SimpleTimer::addTime(unsigned int ms) {
+	left += ms;
 }
 
-void Timer::stop() {
-	started = false;
-	paused = false;
-	startTime = 0;
+void SimpleTimer::setTimer(int left) {
+	this->left = left;
 }
 
-bool Timer::isStarted() const {
-	return started;
+bool SimpleTimer::isDone() const {
+	return left <= 0;
 }
 
-void Timer::prolong(int delay) {
-	waitingTime += delay;
+Timer::Timer()
+	: timer(), running(false)
+{}
+
+Timer::Timer(int left)
+	: timer(left), running(true)
+{}
+
+void Timer::step(unsigned int delay) {
+	if (running) simpleTimer.step(delay);
 }
 
-void Timer::advance(int adv) {
-	waitingTime -= adv;
-}
-
-void Timer::setWaitingTime(int newTime) {
-	waitingTime = newTime;
-}
-
-void Timer::setPause(bool p) {
-	if( p )
-		pausedTime = getTicks();
+void Timer::changeTime(int ms) {
+	if (ms >= 0)
+		simpleTimer.addTime(ms);
 	else
-		startTime = SDL_GetTicks() - pausedTime;
-	
-	paused = p;	
+		simpleTimer.step(-ms);
 }
 
-bool Timer::isPaused() const {
-	return paused;
+void Timer::set(int left) {
+	simpleTimer.setTimer(left);
+	running = true;
 }
 
 bool Timer::isDone() const {
-	if(waitingTime - getTicks() < 0)
-	{
-		return true;
-	}
-
-	return false;
+	return (running && simpleTimer.isDone());
 }
 
-int Timer::getTicks() const {
-	if(started)
-	{
-		if(paused)
-			return pausedTime;
-		else
-			return (SDL_GetTicks() - startTime);
-	}
+void Timer::pause() {
+	running = false;
+}
 
-	return 0;
+void Timer::unpause() {
+	running = true;
+}
+
+bool Timer::isPaused() const {
+	return !running;
 }
