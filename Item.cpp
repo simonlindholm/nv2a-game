@@ -26,10 +26,7 @@ MushroomItem::MushroomItem(const Coord& pos) {
 }
 
 void MushroomItem::use(PlayerInfo& pl) {
-	int hp = pl.getHP();
-	hp += 50;
-	if (hp > 100) hp = 100; //TODO: Implement a reduceHP-like function.
-	pl.setHP(hp);
+	pl.setHP(pl.getHP() + 50);
 }
 
 GraphicsCache::ImageType MushroomItem::getImage() const {
