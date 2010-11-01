@@ -12,14 +12,19 @@
 
 GameFrame::GameFrame(const std::vector<shared_ptr<Player> >& enemies)
 {
-	Coord startingPos[] = {Coord(30, 30), Coord(200, 200)};
-	size_t stSize = sizeof startingPos/sizeof *startingPos;
-
 	player = shared_ptr<HumanPlayer>(new HumanPlayer);
 	gameState.players = enemies;
 	gameState.players.push_back(player);
+
+	gameState.playerInfo.resize(gameState.players.size());
+	Coord startingPos[] = {Coord(30, 30), Coord(200, 200)};
+	size_t stSize = sizeof startingPos/sizeof *startingPos;
 	for (size_t i = 0; i < gameState.players.size() && i < stSize; ++i) {
-		gameState.players[i]->moveTo(startingPos[i]);
+		gameState.playerInfo[i].moveTo(startingPos[i]);
+	}
+
+	for (size_t i = 0; i < gameState.players.size(); ++i) {
+		gameState.players[i]->setInfo(&gameState.playerInfo[i]);
 	}
 
 	// Add out-of-screen rectangles to act as boundaries
@@ -92,22 +97,24 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 	// Move all players
 	for (size_t i = 0; i < gameState.players.size(); ++i) {
 		shared_ptr<Player> p = gameState.players[i];
+		PlayerInfo& pinfo = gameState.playerInfo[i];
 
 		Player::Action ac = p->move(gameState, delay);
 
-		Coord pos = p->getPosition();
+		Coord pos = pinfo.getPosition();
 		Coord npos = pos;
 		npos.x += ac.mx;
 		npos.y += ac.my;
-		p->moveTo(npos);
+		pinfo.moveTo(npos);
 
 		// Collision detection, don't move against other players.
 		bool stop = false;
-		Hitbox hbox = p->getHitbox();
+		Hitbox hbox = pinfo.getHitbox();
 		if (gameState.wall.collidesWith(hbox)) stop = true;
 		if (!stop) {
 			for (size_t j = 0; j < gameState.players.size(); ++j) {
-				if (i != j && gameState.players[j]->getHitbox().collidesWith(hbox)) {
+				if (i == j) continue;
+				if (gameState.playerInfo[j].getHitbox().collidesWith(hbox)) {
 					stop = true;
 					break;
 				}
@@ -116,16 +123,20 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 
 		if (stop) {
 			// Movement blocked by other player; revert the move
-			p->moveTo(pos);
+			pinfo.moveTo(pos);
 		}
 
 		// Handle shooting
 		if (ac.shooting) {
-			shared_ptr<Bullet> b(new Bullet(p->getPosition(), p->getAngle(), i));
+			shared_ptr<Bullet> b(new Bullet(pinfo.getPosition(), pinfo.getAngle(), i));
 			gameState.bullets.push_back(b);
 		}
+
+		// Handle rotation
+		pinfo.setAngle(ac.angle);
 	}
 
+	// Appearance of new items
 	gameState.itemTimer.step(delay);
 	if (gameState.itemTimer.isDone()) {
 		shared_ptr<Item> newItem = this->getRandomItem();
@@ -144,9 +155,9 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 		const Hitbox& ihit = item->getHitbox();
 		bool del = false;
 		for (size_t i = 0; i < gameState.players.size(); ++i) {
-			shared_ptr<Player> p = gameState.players[i];
-			if (p->getHitbox().collidesWith(ihit)) {
-				item->use(*p);
+			PlayerInfo& p = gameState.playerInfo[i];
+			if (p.getHitbox().collidesWith(ihit)) {
+				item->use(p);
 				del = true;
 				break;
 			}
@@ -176,14 +187,14 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 		}
 		else {
 			for (size_t i = 0; i < gameState.players.size(); ++i) {
-				shared_ptr<Player> p = gameState.players[i];
+				PlayerInfo& p = gameState.playerInfo[i];
 				if (bullet->getOwner() != i &&
-						p->getHitbox().collidesWith(bhit)) {
-					p->setHP(p->getHP() - (int)bullet->getDamage());
+						p.getHitbox().collidesWith(bhit)) {
+					p.setHP(p.getHP() - (int)bullet->getDamage());
 
 					//TODO: Game over-screen when HP reaches zero instead of resetting HP
-					if(0 >= p->getHP()) {
-						p->setHP(100);
+					if(p.getHP() <= 0) {
+						p.setHP(100);
 					}
 
 					del = true;

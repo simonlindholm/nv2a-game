@@ -25,7 +25,7 @@ MushroomItem::MushroomItem(const Coord& pos) {
 	this->Item::init(pos, hb);
 }
 
-void MushroomItem::use(Player& pl) {
+void MushroomItem::use(PlayerInfo& pl) {
 	int hp = pl.getHP();
 	hp += 50;
 	if (hp > 100) hp = 100; //TODO: Implement a reduceHP-like function.

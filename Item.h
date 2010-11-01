@@ -14,13 +14,13 @@ class Item {
 		void init(const Coord& pos, const Hitbox& hitbox);
 		Hitbox getHitbox() const;
 		Coord getPosition() const;
-		virtual void use(Player& pl) = 0;
+		virtual void use(PlayerInfo& pl) = 0;
 		virtual GraphicsCache::ImageType getImage() const = 0;
 };
 
 class MushroomItem : public Item {
 	public:
 		MushroomItem(const Coord& pos);
-		virtual void use(Player& pl);
+		virtual void use(PlayerInfo& pl);
 		virtual GraphicsCache::ImageType getImage() const;
 };

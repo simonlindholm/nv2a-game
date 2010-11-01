@@ -21,17 +21,17 @@ void HumanPlayer::startFrame(Uint8* keyState, Uint8 mouseState, int mouseX, int 
 	if (keyState[SDLK_s]) --vy;
 	if (keyState[SDLK_d]) ++vx;
 
-	this->mouse.x = mouseX;
-	this->mouse.y = mouseY;
+	mouse.x = mouseX;
+	mouse.y = mouseY;
 
-	this->shooting = false;
+	shooting = false;
 }
 
 void HumanPlayer::handleEvent(const SDL_Event& event) {
 	// TODO: Handle events related to the player interface, such as
 	// weapon swapping, item use, etc.
 	if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
-		this->shooting = true;
+		shooting = true;
 	}
 }
 
@@ -71,12 +71,13 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 
 	// And lastly the players
 	for (size_t i = 0; i < game.players.size(); ++i) {
-		const Player& p = *game.players[i];
+		const Player& pl = *game.players[i];
+		const PlayerInfo& p = game.playerInfo[i];
 		Coord pos = p.getPosition();
 		int angle = radToIntDeg(p.getAngle());
 
 
-		if (&p == this) {
+		if (&pl == this) {
 			// Let yourself have a seperate appearance
 			drawCenteredSurface(pos, gCache.getRotatedImg(GraphicsCache::RotatedImgHuman, angle), screen);
 
@@ -98,9 +99,10 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 // Calculate movement of player
 Player::Action HumanPlayer::move(const GameState& game, unsigned int delay) {
 	bool atCursor = false;
+	double angle = info->getAngle();
 
 	// Find forward angle
-	Coord pos = this->getPosition();
+	Coord pos = info->getPosition();
 	double relX = mouse.x - pos.x;
 	double relY = mouse.y - pos.y;
 	if (fpEqual(pos.x, mouse.x, 2) && fpEqual(pos.y, mouse.y, 2)) {
@@ -111,16 +113,12 @@ Player::Action HumanPlayer::move(const GameState& game, unsigned int delay) {
 	}
 	else {
 		// The vector (mouse - pos) in standard, mathy form is (relX, -relY)
-		double angle = std::atan2(-relY, relX);
-		angle = reduceAngle(angle);
-
-		this->setAngle(angle);
+		angle = std::atan2(-relY, relX);
 	}
 
 	// Calculate movement
 	double mx, my;
-	double angle = this->getAngle();
-	double mov = delay * this->getSpeed();
+	double mov = delay * info->getSpeed();
 	double cursorDist = pyth(relX, relY);
 	double mForward = mov * ((vx && vy) ? std::sqrt(0.5) : 1.0);
 
@@ -172,9 +170,10 @@ Player::Action HumanPlayer::move(const GameState& game, unsigned int delay) {
 		}
 	}
 
-	Action a;
+	Player::Action a;
 	a.mx = mx;
 	a.my = my;
 	a.shooting = this->shooting;
+	a.angle = angle;
 	return a;
 }

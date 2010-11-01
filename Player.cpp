@@ -1,50 +1,56 @@
 #include "Player.h"
 #include "util.h"
+#include "mathutil.h"
 
-Player::~Player() {}
-
-Player::Player() {
+PlayerInfo::PlayerInfo() {
 	// XXX: Don't use hardcoded values
 	hitbox.add(shared_ptr<Shape>(new Circle(Coord(0, 0), 16)));
-	rhitbox = hitbox;
+	phitbox = rhitbox = hitbox;
 	angle = 0;
 	pos.x = pos.y = 0;
 	speed = 0.2;
 	hp = 100;
 }
 
-void Player::setAngle(double angle) {
-	this->angle = angle;
-	this->rhitbox.rawAssign(this->hitbox);
-	this->rhitbox.rotate(angle);
+double PlayerInfo::getAngle() const {
+	return angle;
 }
 
-double Player::getAngle() const {
-	return this->angle;
+double PlayerInfo::getSpeed() const {
+	return speed;
 }
 
-void Player::moveTo(const Coord& to) {
+void PlayerInfo::setAngle(double newAngle) {
+	angle = reduceAngle(newAngle);
+	rhitbox.rawAssign(hitbox);
+	rhitbox.rotate(angle);
+}
+
+void PlayerInfo::moveTo(const Coord& to) {
 	pos = to;
 }
 
-Coord Player::getPosition() const {
-	return this->pos;
+Coord PlayerInfo::getPosition() const {
+	return pos;
 }
 
-double Player::getSpeed() const {
-	return this->speed;
+void PlayerInfo::setHP(int newHP) {
+	hp = newHP;
 }
 
-void Player::setHP(int newHP) {
-	this->hp = newHP;
+int PlayerInfo::getHP() const {
+	return hp;
 }
 
-int Player::getHP() const {
-	return this->hp;
+const Hitbox& PlayerInfo::getHitbox() const {
+	phitbox.rawAssign(rhitbox);
+	phitbox.moveBy(this->getPosition());
+	return phitbox;
 }
 
-Hitbox Player::getHitbox() const {
-	Hitbox ret = this->rhitbox;
-	ret.moveBy(this->getPosition());
-	return ret;
+
+Player::~Player() {}
+
+void Player::setInfo(const PlayerInfo* info) {
+	this->info = info;
 }

@@ -17,9 +17,9 @@ Player::Action StupidAIPlayer::move(const GameState& game, unsigned int delay) {
 	Action ret;
 
 	Coord towards = this->checkpoints[this->moveInd];
-	Coord pos = this->getPosition();
+	Coord pos = info->getPosition();
 
-	double mov = this->getSpeed() * delay;
+	double mov = info->getSpeed() * delay;
 	double relX = towards.x - pos.x;
 	double relY = towards.y - pos.y;
 	double dist = pyth(relX, relY);
@@ -48,12 +48,10 @@ Player::Action StupidAIPlayer::move(const GameState& game, unsigned int delay) {
 			}
 		}
 	}
-	Coord targetPos = game.players[targetInd]->getPosition();
+	Coord targetPos = game.playerInfo[targetInd].getPosition();
 	double dx = targetPos.x - pos.x;
 	double dy = targetPos.y - pos.y;
-	double angle = atan2(-dy, dx);
-	angle = reduceAngle(angle);
-	this->setAngle(angle);
+	ret.angle = atan2(-dy, dx);
 
 	// Handle random shooting
 	ret.shooting = false;
