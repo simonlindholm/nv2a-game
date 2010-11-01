@@ -2,6 +2,7 @@
 #include "fwd.h"
 #include "util.h"
 #include "Hitbox.h"
+#include "Timer.h"
 
 // A class describing the external state of the player
 class PlayerInfo {
@@ -12,6 +13,7 @@ class PlayerInfo {
 		mutable Hitbox phitbox;
 		Coord pos;
 		double angle;
+		Timer regenTimer;
 
 	public:
 		PlayerInfo();
@@ -29,7 +31,7 @@ class PlayerInfo {
 		// managing class, such as GameState.
 		void moveTo(const Coord& to);
 
-		// Set HP based on bullet collision or (later on) HP regeneration
+		// Set HP based on bullet collision or HP regeneration
 		void setHP(int newHP);
 
 		// Get the current HP of the player
@@ -40,6 +42,9 @@ class PlayerInfo {
 
 		// Set the angle of sight (from the derived class)
 		void setAngle(double angle);
+
+		// Step regenTimer by delay ms, then regenerate HP if timer is done
+		void regenTimerLogic(unsigned int delay);
 };
 
 // An abstract class describing a player in the game

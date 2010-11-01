@@ -10,6 +10,7 @@ PlayerInfo::PlayerInfo() {
 	pos.x = pos.y = 0;
 	speed = 0.2;
 	hp = 100;
+	regenTimer.set(randRange(4000, 6000));
 }
 
 double PlayerInfo::getAngle() const {
@@ -36,6 +37,9 @@ Coord PlayerInfo::getPosition() const {
 
 void PlayerInfo::setHP(int newHP) {
 	hp = newHP;
+
+	if(hp > 100)
+		hp = 100;
 }
 
 int PlayerInfo::getHP() const {
@@ -46,6 +50,17 @@ const Hitbox& PlayerInfo::getHitbox() const {
 	phitbox.rawAssign(rhitbox);
 	phitbox.moveBy(this->getPosition());
 	return phitbox;
+}
+
+void PlayerInfo::regenTimerLogic(unsigned int delay) {
+	regenTimer.step(delay);
+
+	if(regenTimer.isDone())
+	{
+		setHP(hp + 15);
+		regenTimer.stop();
+		regenTimer.set(randRange(4000, 6000));
+	}
 }
 
 
