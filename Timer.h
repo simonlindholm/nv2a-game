@@ -43,7 +43,7 @@ class Timer {
 		// or not running
 		void step(unsigned int delay);
 
-		// Change the time left until fire by 'ms' milliseconds; a positive 
+		// Change the time left until fire by 'ms' milliseconds; a positive
 		// value increases the duration, and a negative value decreases it
 		// (only applicable for active timers)
 		void changeTime(int ms);

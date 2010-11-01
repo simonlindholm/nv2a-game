@@ -67,7 +67,7 @@ class Player {
 		// Returns what actions the player performs this frame, given the state
 		// of the game and the delay since last frame
 		virtual Action move(const GameState& game, unsigned int delay) = 0;
-		
+
 		// Initialize the external state of a player. Must be called before
 		// any other function is used.
 		void setInfo(const PlayerInfo* info);
