@@ -134,6 +134,9 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 
 		// Handle rotation
 		pinfo.setAngle(ac.angle);
+
+		// Handle HP regeneration
+		pinfo.regenTimerLogic(delay);
 	}
 
 	// Appearance of new items
