@@ -10,6 +10,12 @@ PlayerInfo::PlayerInfo() {
 	pos.x = pos.y = 0;
 	speed = 0.2;
 	hp = 100;
+	regenTimer.set(5000);
+	second.set(1000);
+}
+
+void PlayerInfo::resetRegenTimer() {
+	regenTimer.set(5000);
 }
 
 double PlayerInfo::getAngle() const {
@@ -52,22 +58,13 @@ const Hitbox& PlayerInfo::getHitbox() const {
 }
 
 void PlayerInfo::regenTimerLogic(unsigned int delay) {
-	if(hp < 100)
-	{
-		if(!regenTimer.isActive())
-			regenTimer.set(5000);
-
-		regenTimer.step(delay);
-
-		if(regenTimer.isDone())
-		{
+	regenTimer.step(delay);
+	if (regenTimer.isDone()) {
+		second.step(delay);
+		if (second.isDone()) {
 			setHP(hp + 15);
-			regenTimer.set(5000);
+			second.changeTime(1000);
 		}
-	}
-	else if(hp == 100 && regenTimer.isActive())
-	{
-		regenTimer.stop();
 	}
 }
 

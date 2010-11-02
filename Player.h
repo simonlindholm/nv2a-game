@@ -13,7 +13,7 @@ class PlayerInfo {
 		mutable Hitbox phitbox;
 		Coord pos;
 		double angle;
-		Timer regenTimer;
+		Timer regenTimer, second;
 
 	public:
 		PlayerInfo();
@@ -45,6 +45,7 @@ class PlayerInfo {
 
 		// Step regenTimer by delay ms, then regenerate HP if timer is done
 		void regenTimerLogic(unsigned int delay);
+		void resetRegenTimer();
 };
 
 // An abstract class describing a player in the game

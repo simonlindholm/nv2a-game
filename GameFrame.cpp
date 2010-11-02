@@ -134,9 +134,6 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 
 		// Handle rotation
 		pinfo.setAngle(ac.angle);
-
-		// Handle HP regeneration
-		pinfo.regenTimerLogic(delay);
 	}
 
 	// Appearance of new items
@@ -194,6 +191,7 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 				if (bullet->getOwner() != i &&
 						p.getHitbox().collidesWith(bhit)) {
 					p.setHP(p.getHP() - (int)bullet->getDamage());
+					p.resetRegenTimer();
 
 					//TODO: Game over-screen when HP reaches zero instead of resetting HP
 					if(p.getHP() <= 0) {
@@ -214,6 +212,11 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 		}
 	}
 
+	for (size_t i = 0; i < gameState.players.size(); ++i) {
+		if(gameState.playerInfo[i].getHP() < 100) {
+			gameState.playerInfo[i].regenTimerLogic(delay);
+		}
+	}
 
 	// Draw the player interface
 	player->paint(gameState, screen);
