@@ -10,8 +10,7 @@ PlayerInfo::PlayerInfo() {
 	pos.x = pos.y = 0;
 	speed = 0.2;
 	hp = 100;
-	regenTimer.set(5000);
-	second.set(1000);
+	resetRegenTimer();
 }
 
 double PlayerInfo::getAngle() const {
@@ -54,8 +53,8 @@ const Hitbox& PlayerInfo::getHitbox() const {
 }
 
 void PlayerInfo::resetRegenTimer() {
-	regenTimer.set(5000);
-	second.set(1000);
+	regenTimer.set(6000);
+	second.set(0);
 }
 
 void PlayerInfo::regenTimerLogic(unsigned int delay) {
