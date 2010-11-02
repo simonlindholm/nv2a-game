@@ -43,9 +43,12 @@ class PlayerInfo {
 		// Set the angle of sight (from the derived class)
 		void setAngle(double angle);
 
-		// Step regenTimer by delay ms, then regenerate HP if timer is done
-		void regenTimerLogic(unsigned int delay);
+		// Resets regenTimer to 5 seconds and second to 1 second
 		void resetRegenTimer();
+
+		// Step regenTimer (or second when regenTimer is done) by delay ms.
+		// When both timers are done, player regains 15 hp and second resets.
+		void regenTimerLogic(unsigned int delay);
 };
 
 // An abstract class describing a player in the game

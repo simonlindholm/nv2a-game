@@ -14,10 +14,6 @@ PlayerInfo::PlayerInfo() {
 	second.set(1000);
 }
 
-void PlayerInfo::resetRegenTimer() {
-	regenTimer.set(5000);
-}
-
 double PlayerInfo::getAngle() const {
 	return angle;
 }
@@ -55,6 +51,11 @@ const Hitbox& PlayerInfo::getHitbox() const {
 	phitbox.rawAssign(rhitbox);
 	phitbox.moveBy(this->getPosition());
 	return phitbox;
+}
+
+void PlayerInfo::resetRegenTimer() {
+	regenTimer.set(5000);
+	second.set(1000);
 }
 
 void PlayerInfo::regenTimerLogic(unsigned int delay) {

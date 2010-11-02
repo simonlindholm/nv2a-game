@@ -212,6 +212,7 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 		}
 	}
 
+	//Handle HP regeneration
 	for (size_t i = 0; i < gameState.players.size(); ++i) {
 		if(gameState.playerInfo[i].getHP() < 100) {
 			gameState.playerInfo[i].regenTimerLogic(delay);
