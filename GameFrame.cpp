@@ -57,7 +57,7 @@ shared_ptr<Item> GameFrame::getRandomItem() const {
 		Coord pos;
 		pos.x = randRange(0, cfg.winWidth);
 		pos.y = randRange(0, cfg.winHeight);
-		shared_ptr<Item> ret = shared_ptr<Item>(new MushroomItem(pos));
+		shared_ptr<Item> ret = shared_ptr<Item>(new ShieldItem(pos));
 		if (gameState.wall.collidesWith(ret->getHitbox())) continue;
 		return ret;
 	}
@@ -158,6 +158,7 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 			PlayerInfo& p = gameState.playerInfo[i];
 			if (p.getHitbox().collidesWith(ihit)) {
 				item->use(p);
+
 				del = true;
 				break;
 			}
@@ -189,9 +190,9 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 			for (size_t i = 0; i < gameState.players.size(); ++i) {
 				PlayerInfo& p = gameState.playerInfo[i];
 				if (bullet->getOwner() != i &&
-						p.getHitbox().collidesWith(bhit)) {
-					p.setHP(p.getHP() - (int)bullet->getDamage());
-					p.resetRegenTimer();
+					p.getHitbox().collidesWith(bhit)) {
+						p.setHP(p.getHP() - (int)(bullet->getDamage() - p.getDef()));
+						p.resetRegenTimer();
 
 					//TODO: Game over-screen when HP reaches zero instead of resetting HP
 					if(p.getHP() <= 0) {
@@ -211,11 +212,17 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 			++bIter;
 		}
 	}
-
-	//Handle HP regeneration
+	
 	for (size_t i = 0; i < gameState.players.size(); ++i) {
-		if(gameState.playerInfo[i].getHP() < 100) {
-			gameState.playerInfo[i].regenTimerLogic(delay);
+		PlayerInfo& p = gameState.playerInfo[i];
+		// Handle HP regeneration
+		if(p.getHP() < 100) {
+			p.regenTimerLogic(delay);
+		}
+
+		// Handle timer for buffs
+		if(p.buffIsActive()) {
+			p.buffTimerLogic(delay);
 		}
 	}
 
