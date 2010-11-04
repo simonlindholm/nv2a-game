@@ -10,6 +10,7 @@ PlayerInfo::PlayerInfo() {
 	pos.x = pos.y = 0;
 	speed = 0.2;
 	hp = 100;
+	defense = 0;
 	resetRegenTimer();
 }
 
@@ -46,6 +47,14 @@ int PlayerInfo::getHP() const {
 	return hp;
 }
 
+void PlayerInfo::setDef(int newDef) {
+	defense = newDef;
+}
+
+int PlayerInfo::getDef() const {
+	return defense;
+}
+
 const Hitbox& PlayerInfo::getHitbox() const {
 	phitbox.rawAssign(rhitbox);
 	phitbox.moveBy(this->getPosition());
@@ -65,6 +74,23 @@ void PlayerInfo::regenTimerLogic(unsigned int delay) {
 			setHP(hp + 15);
 			second.changeTime(1000);
 		}
+	}
+}
+
+void PlayerInfo::setBuffTimer(unsigned int time) {
+	buffTimer.set(time);
+}
+
+bool PlayerInfo::buffIsActive() const {
+	return buffTimer.isActive();
+}
+
+void PlayerInfo::buffTimerLogic(unsigned int delay) {
+	buffTimer.step(delay);
+	if(buffTimer.isDone()) {
+		buffTimer.stop();
+		
+		defense = 0;
 	}
 }
 

@@ -9,11 +9,13 @@ class PlayerInfo {
 	private:
 		double speed;
 		int hp;
+		int defense;
 		Hitbox hitbox, rhitbox;
 		mutable Hitbox phitbox;
 		Coord pos;
 		double angle;
 		Timer regenTimer, second;
+		Timer buffTimer;
 
 	public:
 		PlayerInfo();
@@ -37,6 +39,12 @@ class PlayerInfo {
 		// Get the current HP of the player
 		int getHP() const;
 
+		// Set defense based on buffs from items
+		void setDef(int newDef);
+
+		// Get the player's current defense stat
+		int getDef() const;
+
 		// Get the (external) hitbox for the player
 		const Hitbox& getHitbox() const;
 
@@ -49,6 +57,16 @@ class PlayerInfo {
 		// Step regenTimer (or second when regenTimer is done) by delay ms.
 		// When both timers are done, player regains 15 hp and second resets.
 		void regenTimerLogic(unsigned int delay);
+
+		// Set the buff timer
+		void setBuffTimer(unsigned int time);
+
+		// Check if a buff is currently active or not
+		bool buffIsActive() const;
+
+		// Step buffTimer by delay ms. Stop timer when done.
+		// If timer is done, revert any changes that have been done to Player's stats.
+		void buffTimerLogic(unsigned int delay);
 };
 
 // An abstract class describing a player in the game
