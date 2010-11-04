@@ -19,6 +19,7 @@ class GraphicsCache {
 			ImgPlayerHP,
 			ImgEnemyHP,
 			ImgMushroom,
+			ImgShield,
 			ImgEnd
 		};
 
