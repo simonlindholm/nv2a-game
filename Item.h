@@ -1,6 +1,7 @@
 #pragma once
 #include "Hitbox.h"
 #include "GraphicsCache.h"
+#include "Timer.h"
 #include "fwd.h"
 #include "util.h"
 
@@ -13,7 +14,7 @@ class Item {
 		virtual ~Item();
 		void init(const Coord& pos, const Hitbox& hitbox);
 		Hitbox getHitbox() const;
-		Coord getPosition() const;
+		Coord getPosition() const;		
 		virtual void use(PlayerInfo& pl) = 0;
 		virtual GraphicsCache::ImageType getImage() const = 0;
 };
@@ -21,6 +22,13 @@ class Item {
 class MushroomItem : public Item {
 	public:
 		MushroomItem(const Coord& pos);
+		virtual void use(PlayerInfo& pl);
+		virtual GraphicsCache::ImageType getImage() const;
+};
+
+class ShieldItem : public Item {
+	public:
+		ShieldItem(const Coord& pos);
 		virtual void use(PlayerInfo& pl);
 		virtual GraphicsCache::ImageType getImage() const;
 };

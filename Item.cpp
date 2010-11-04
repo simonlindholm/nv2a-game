@@ -32,3 +32,19 @@ void MushroomItem::use(PlayerInfo& pl) {
 GraphicsCache::ImageType MushroomItem::getImage() const {
 	return GraphicsCache::ImgMushroom;
 }
+
+
+ShieldItem::ShieldItem(const Coord& pos) {
+	Hitbox hb;
+	hb.add(shared_ptr<Shape>(new Circle(Coord(0, 0), 7.5)));
+	this->Item::init(pos, hb);
+}
+
+void ShieldItem::use(PlayerInfo& pl) {
+	pl.setDef(10);
+	pl.setBuffTimer(5000);
+}
+
+GraphicsCache::ImageType ShieldItem::getImage() const {
+	return GraphicsCache::ImgShield;
+}
