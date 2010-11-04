@@ -1,7 +1,6 @@
 #pragma once
 #include "Hitbox.h"
 #include "GraphicsCache.h"
-#include "Timer.h"
 #include "fwd.h"
 #include "util.h"
 
