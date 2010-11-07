@@ -57,7 +57,7 @@ shared_ptr<Item> GameFrame::getRandomItem() const {
 		Coord pos;
 		pos.x = randRange(0, cfg.winWidth);
 		pos.y = randRange(0, cfg.winHeight);
-		shared_ptr<Item> ret = shared_ptr<Item>(new ShieldItem(pos));
+		shared_ptr<Item> ret = shared_ptr<Item>(new SpeedItem(pos));
 		if (gameState.wall.collidesWith(ret->getHitbox())) continue;
 		return ret;
 	}

@@ -31,3 +31,10 @@ class ShieldItem : public Item {
 		virtual void use(PlayerInfo& pl);
 		virtual GraphicsCache::ImageType getImage() const;
 };
+
+class SpeedItem : public Item {
+	public:
+		SpeedItem(const Coord& pos);
+		virtual void use(PlayerInfo& pl);
+		virtual GraphicsCache::ImageType getImage() const;
+};

@@ -48,3 +48,20 @@ void ShieldItem::use(PlayerInfo& pl) {
 GraphicsCache::ImageType ShieldItem::getImage() const {
 	return GraphicsCache::ImgShield;
 }
+
+
+SpeedItem::SpeedItem(const Coord& pos) {
+	Hitbox hb;
+	hb.add(shared_ptr<Shape>(new Circle(Coord(0, 0), 7.5)));
+	this->Item::init(pos, hb);
+}
+
+void SpeedItem::use(PlayerInfo &pl) {
+	pl.setSpeed(0.4);
+	pl.setBuffTimer(7000);
+}
+
+//TODO: create an actual sprite for SpeedItem
+GraphicsCache::ImageType SpeedItem::getImage() const {
+	return GraphicsCache::ImgShield;
+}
