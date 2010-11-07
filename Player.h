@@ -19,9 +19,15 @@ class PlayerInfo {
 
 	public:
 		PlayerInfo();
+		
+		// Resets player's stats to default values
+		void resetStats();
 
 		// Get the angle of movement
 		double getAngle() const;
+
+		// Set player's speed depending on whether they're buffed or not
+		void setSpeed(double spd);
 
 		// Get the speed of the player, in pixels per millisecond
 		double getSpeed() const;
@@ -65,7 +71,7 @@ class PlayerInfo {
 		bool buffIsActive() const;
 
 		// Step buffTimer by delay ms. Stop timer when done.
-		// If timer is done, revert any changes that have been done to Player's stats.
+		// If timer is done, call resetStats().
 		void buffTimerLogic(unsigned int delay);
 };
 

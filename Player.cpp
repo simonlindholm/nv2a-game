@@ -8,14 +8,22 @@ PlayerInfo::PlayerInfo() {
 	phitbox = rhitbox = hitbox;
 	angle = 0;
 	pos.x = pos.y = 0;
-	speed = 0.2;
 	hp = 100;
-	defense = 0;
+	resetStats();
 	resetRegenTimer();
+}
+
+void PlayerInfo::resetStats() {
+	setDef(0);
+	setSpeed(0.2);
 }
 
 double PlayerInfo::getAngle() const {
 	return angle;
+}
+
+void PlayerInfo::setSpeed(double spd) {
+	speed = spd;
 }
 
 double PlayerInfo::getSpeed() const {
@@ -90,7 +98,7 @@ void PlayerInfo::buffTimerLogic(unsigned int delay) {
 	if(buffTimer.isDone()) {
 		buffTimer.stop();
 		
-		defense = 0;
+		resetStats();
 	}
 }
 
