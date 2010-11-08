@@ -97,7 +97,6 @@ void PlayerInfo::buffTimerLogic(unsigned int delay) {
 	buffTimer.step(delay);
 	if(buffTimer.isDone()) {
 		buffTimer.stop();
-		
 		resetStats();
 	}
 }
