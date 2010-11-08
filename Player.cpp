@@ -86,6 +86,7 @@ void PlayerInfo::regenTimerLogic(unsigned int delay) {
 }
 
 void PlayerInfo::setBuffTimer(unsigned int time) {
+	resetStats();
 	buffTimer.set(time);
 }
 

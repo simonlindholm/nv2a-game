@@ -39,8 +39,8 @@ ShieldItem::ShieldItem(const Coord& pos) {
 }
 
 void ShieldItem::use(PlayerInfo& pl) {
-	pl.setDef(10);
 	pl.setBuffTimer(5000);
+	pl.setDef(10);
 }
 
 GraphicsCache::ImageType ShieldItem::getImage() const {
@@ -53,8 +53,8 @@ SpeedItem::SpeedItem(const Coord& pos) {
 }
 
 void SpeedItem::use(PlayerInfo &pl) {
-	pl.setSpeed(0.4);
 	pl.setBuffTimer(7000);
+	pl.setSpeed(0.4);
 }
 
 //TODO: create an actual sprite for SpeedItem
