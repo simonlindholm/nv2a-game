@@ -29,7 +29,7 @@ class PlayerInfo {
 		// Set player's speed depending on whether they're buffed or not
 		void setSpeed(double spd);
 
-		// Get the speed of the player
+		// Get the speed of the player, in pixels per millisecond
 		double getSpeed() const;
 
 		// Get the player's position
