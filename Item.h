@@ -11,9 +11,9 @@ class Item {
 		Hitbox hitbox;
 	public:
 		virtual ~Item();
-		void init(const Coord& pos, const Hitbox& hitbox);
+		void init(const Coord& pos);
 		Hitbox getHitbox() const;
-		Coord getPosition() const;		
+		Coord getPosition() const;
 		virtual void use(PlayerInfo& pl) = 0;
 		virtual GraphicsCache::ImageType getImage() const = 0;
 };

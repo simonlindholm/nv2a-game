@@ -4,9 +4,11 @@
 
 Item::~Item() {}
 
-void Item::init(const Coord& pos, const Hitbox& hitbox) {
+void Item::init(const Coord& pos) {
+	Hitbox hb;
+	hb.add(shared_ptr<Shape>(new Circle(Coord(0, 0), 7.5)));
 	this->pos = pos;
-	this->hitbox = hitbox;
+	this->hitbox = hb;
 	this->hitbox.moveBy(pos);
 }
 
@@ -19,10 +21,8 @@ Hitbox Item::getHitbox() const {
 }
 
 
-MushroomItem::MushroomItem(const Coord& pos) {
-	Hitbox hb;
-	hb.add(shared_ptr<Shape>(new Circle(Coord(0, 0), 7.5)));
-	this->Item::init(pos, hb);
+MushroomItem::MushroomItem(const Coord& pos) {	
+	this->Item::init(pos);
 }
 
 void MushroomItem::use(PlayerInfo& pl) {
@@ -35,9 +35,7 @@ GraphicsCache::ImageType MushroomItem::getImage() const {
 
 
 ShieldItem::ShieldItem(const Coord& pos) {
-	Hitbox hb;
-	hb.add(shared_ptr<Shape>(new Circle(Coord(0, 0), 7.5)));
-	this->Item::init(pos, hb);
+	this->Item::init(pos);
 }
 
 void ShieldItem::use(PlayerInfo& pl) {
@@ -51,9 +49,7 @@ GraphicsCache::ImageType ShieldItem::getImage() const {
 
 
 SpeedItem::SpeedItem(const Coord& pos) {
-	Hitbox hb;
-	hb.add(shared_ptr<Shape>(new Circle(Coord(0, 0), 7.5)));
-	this->Item::init(pos, hb);
+	this->Item::init(pos);
 }
 
 void SpeedItem::use(PlayerInfo &pl) {
