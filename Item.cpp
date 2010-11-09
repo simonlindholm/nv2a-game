@@ -4,11 +4,9 @@
 
 Item::~Item() {}
 
-void Item::init(const Coord& pos) {
-	Hitbox hb;
-	hb.add(shared_ptr<Shape>(new Circle(Coord(0, 0), 7.5)));
+void Item::init(const Coord& pos, const Hitbox& hitbox) {
 	this->pos = pos;
-	this->hitbox = hb;
+	this->hitbox = hitbox;
 	this->hitbox.moveBy(pos);
 }
 
@@ -21,8 +19,10 @@ Hitbox Item::getHitbox() const {
 }
 
 
-MushroomItem::MushroomItem(const Coord& pos) {	
-	this->Item::init(pos);
+MushroomItem::MushroomItem(const Coord& pos) {
+	Hitbox hb;
+	hb.add(shared_ptr<Shape>(new Circle(Coord(0, 0), 7.5)));
+	this->Item::init(pos, hb);
 }
 
 void MushroomItem::use(PlayerInfo& pl) {
@@ -35,7 +35,9 @@ GraphicsCache::ImageType MushroomItem::getImage() const {
 
 
 ShieldItem::ShieldItem(const Coord& pos) {
-	this->Item::init(pos);
+	Hitbox hb;
+	hb.add(shared_ptr<Shape>(new Circle(Coord(0, 0), 7.5)));
+	this->Item::init(pos, hb);
 }
 
 void ShieldItem::use(PlayerInfo& pl) {
@@ -49,12 +51,14 @@ GraphicsCache::ImageType ShieldItem::getImage() const {
 
 
 SpeedItem::SpeedItem(const Coord& pos) {
-	this->Item::init(pos);
+	Hitbox hb;
+	hb.add(shared_ptr<Shape>(new Circle(Coord(0, 0), 7.5)));
+	this->Item::init(pos, hb);
 }
 
 void SpeedItem::use(PlayerInfo &pl) {
 	pl.setBuffTimer(7000);
-	pl.setSpeed(0.4);
+	pl.setSpeed(0.35);
 }
 
 //TODO: create an actual sprite for SpeedItem
