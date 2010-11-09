@@ -216,14 +216,10 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 	for (size_t i = 0; i < gameState.players.size(); ++i) {
 		PlayerInfo& p = gameState.playerInfo[i];
 		// Handle HP regeneration
-		if(p.getHP() < 100) {
-			p.regenTimerLogic(delay);
-		}
+		p.regenTimerLogic(delay);
 
 		// Handle timer for buffs
-		if(p.buffIsActive()) {
-			p.buffTimerLogic(delay);
-		}
+		p.buffTimerLogic(delay);
 	}
 
 	// Draw the player interface

@@ -75,12 +75,14 @@ void PlayerInfo::resetRegenTimer() {
 }
 
 void PlayerInfo::regenTimerLogic(unsigned int delay) {
-	regenTimer.step(delay);
-	if (regenTimer.isDone()) {
-		second.step(delay);
-		if (second.isDone()) {
-			setHP(hp + 15);
-			second.changeTime(1000);
+	if(hp < 100) {
+		regenTimer.step(delay);
+		if (regenTimer.isDone()) {
+			second.step(delay);
+			if (second.isDone()) {
+				setHP(hp + 15);
+				second.changeTime(1000);
+			}
 		}
 	}
 }
@@ -90,15 +92,13 @@ void PlayerInfo::setBuffTimer(unsigned int time) {
 	buffTimer.set(time);
 }
 
-bool PlayerInfo::buffIsActive() const {
-	return buffTimer.isActive();
-}
-
 void PlayerInfo::buffTimerLogic(unsigned int delay) {
-	buffTimer.step(delay);
-	if(buffTimer.isDone()) {
-		buffTimer.stop();
-		resetStats();
+	if(buffTimer.isActive()) {
+		buffTimer.step(delay);
+		if(buffTimer.isDone()) {
+			buffTimer.stop();
+			resetStats();
+		}
 	}
 }
 

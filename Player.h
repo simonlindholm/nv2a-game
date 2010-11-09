@@ -19,15 +19,15 @@ class PlayerInfo {
 
 	public:
 		PlayerInfo();
-
-		// Resets player's stats to default values
+		
+		// Resets the player's stats to their default values
 		void resetStats();
 
 		// Get the angle of movement
 		double getAngle() const;
 
-		// Set player's speed depending on whether they're buffed or not
-		void setSpeed(double spd);
+		// Set the player's speed. Called when buffing the player.
+		void setSpeed(double spe);
 
 		// Get the speed of the player, in pixels per millisecond
 		double getSpeed() const;
@@ -35,16 +35,17 @@ class PlayerInfo {
 		// Get the player's position
 		Coord getPosition() const;
 
-		// Set the player's position
+		// Move the player to a position. This should only be called from some
+		// managing class, such as GameState.
 		void moveTo(const Coord& to);
 
-		// Set HP based on bullet collision or HP regeneration
+		// Set HP based on bullet collision, HP regeneration or HP restoration
 		void setHP(int newHP);
 
 		// Get the current HP of the player
 		int getHP() const;
 
-		// Set defense based on buffs from items
+		// Set the player's defense. Called when buffing the player.
 		void setDef(int newDef);
 
 		// Get the player's current defense stat
@@ -53,24 +54,19 @@ class PlayerInfo {
 		// Get the (external) hitbox for the player
 		const Hitbox& getHitbox() const;
 
-		// Set the angle of sight
+		// Set the angle of sight (from the derived class)
 		void setAngle(double angle);
 
-		// Resets regenTimer to 5 seconds and second to 1 second
+		// Resets regenTimer (to 6 seconds) and second (to 0 seconds)
 		void resetRegenTimer();
 
-		// Step regenTimer (or second when regenTimer is done) by delay ms.
-		// When both timers are done, player regains 15 hp and second resets.
+		// Regenerate 15 HP per second after 6 seconds of not being hit
 		void regenTimerLogic(unsigned int delay);
 
 		// Set the buff timer
 		void setBuffTimer(unsigned int time);
 
-		// Check if a buff is currently active or not
-		bool buffIsActive() const;
-
-		// Step buffTimer by delay ms. Stop timer when done.
-		// If timer is done, call resetStats().
+		// When the buff timer is done, stop the timer and call resetStats()
 		void buffTimerLogic(unsigned int delay);
 };
 
@@ -98,5 +94,4 @@ class Player {
 		// Initialize the external state of a player. Must be called before
 		// any other function is used.
 		void setInfo(const PlayerInfo* info);
-
 };
