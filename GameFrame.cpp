@@ -190,9 +190,9 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 			for (size_t i = 0; i < gameState.players.size(); ++i) {
 				PlayerInfo& p = gameState.playerInfo[i];
 				if (bullet->getOwner() != i &&
-					p.getHitbox().collidesWith(bhit)) {
-						p.setHP(p.getHP() - (int)(bullet->getDamage() - p.getDef()));
-						p.resetRegenTimer();
+						p.getHitbox().collidesWith(bhit)) {
+					p.setHP(p.getHP() - (int)(bullet->getDamage() - p.getDef()));
+					p.resetRegenTimer();
 
 					//TODO: Game over-screen when HP reaches zero instead of resetting HP
 					if(p.getHP() <= 0) {
@@ -212,7 +212,7 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 			++bIter;
 		}
 	}
-	
+
 	for (size_t i = 0; i < gameState.players.size(); ++i) {
 		PlayerInfo& p = gameState.playerInfo[i];
 		// Handle HP regeneration
