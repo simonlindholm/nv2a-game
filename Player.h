@@ -53,7 +53,7 @@ class PlayerInfo {
 		// Get the (external) hitbox for the player
 		const Hitbox& getHitbox() const;
 
-		// Set the angle of sight (from the derived class)
+		// Set the angle of sight
 		void setAngle(double angle);
 
 		// Resets regenTimer to 5 seconds and second to 1 second
