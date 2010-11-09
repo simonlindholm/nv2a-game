@@ -35,8 +35,7 @@ class PlayerInfo {
 		// Get the player's position
 		Coord getPosition() const;
 
-		// Move the player to a position. This should only be called from some
-		// managing class, such as GameState.
+		// Set the player's position
 		void moveTo(const Coord& to);
 
 		// Set HP based on bullet collision, HP regeneration or HP restoration
@@ -54,7 +53,7 @@ class PlayerInfo {
 		// Get the (external) hitbox for the player
 		const Hitbox& getHitbox() const;
 
-		// Set the angle of sight (from the derived class)
+		// Set the angle of sight
 		void setAngle(double angle);
 
 		// Resets regenTimer (to 6 seconds) and second (to 0 seconds)
