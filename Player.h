@@ -19,7 +19,7 @@ class PlayerInfo {
 
 	public:
 		PlayerInfo();
-		
+
 		// Resets the player's stats to their default values
 		void resetStats();
 
@@ -56,10 +56,11 @@ class PlayerInfo {
 		// Set the angle of sight
 		void setAngle(double angle);
 
-		// Resets regenTimer (to 6 seconds) and second (to 0 seconds)
+		// Resets HP regeneration timers
 		void resetRegenTimer();
 
-		// Regenerate 15 HP per second after 6 seconds of not being hit
+		// Regenerate 15 HP per second after 6 seconds of not being hit.
+		// The delay is used to step the appropriate regeneration timer.
 		void regenTimerLogic(unsigned int delay);
 
 		// Set the buff timer
