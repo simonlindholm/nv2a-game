@@ -57,11 +57,10 @@ SpeedItem::SpeedItem(const Coord& pos) {
 }
 
 void SpeedItem::use(PlayerInfo &pl) {
-	pl.setBuffTimer(7000);
-	pl.setSpeed(0.35);
+	pl.setBuffTimer(6000);
+	pl.setSpeed(0.3);
 }
 
-//TODO: create an actual sprite for SpeedItem
 GraphicsCache::ImageType SpeedItem::getImage() const {
-	return GraphicsCache::ImgShield;
+	return GraphicsCache::ImgSpeed;
 }

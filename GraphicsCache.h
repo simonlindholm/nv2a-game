@@ -20,6 +20,7 @@ class GraphicsCache {
 			ImgEnemyHP,
 			ImgMushroom,
 			ImgShield,
+			ImgSpeed,
 			ImgEnd
 		};
 
