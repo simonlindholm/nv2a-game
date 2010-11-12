@@ -25,6 +25,7 @@ void HumanPlayer::startFrame(Uint8* keyState, Uint8 mouseState, int mouseX, int 
 	mouse.y = mouseY;
 
 	shooting = false;
+	if(mouseState& SDL_BUTTON(SDL_BUTTON_LEFT)) shooting = true;
 }
 
 void HumanPlayer::handleEvent(const SDL_Event& event) {
