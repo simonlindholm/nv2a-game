@@ -16,6 +16,7 @@ class PlayerInfo {
 		double angle;
 		Timer regenTimer, second;
 		Timer buffTimer;
+		Timer bulletrateTimer;
 
 	public:
 		PlayerInfo();
@@ -68,6 +69,15 @@ class PlayerInfo {
 
 		// When the buff timer is done, stop the timer and call resetStats()
 		void buffTimerLogic(unsigned int delay);
+
+		// Reset the bulletrate timer
+		void resetBulletrateTimer();
+
+		// Check if the bulletrate timer is done
+		bool bulletrateTimerIsDone();
+
+		// Step bulletrate timer by delay ms
+		void stepBulletrateTimer(unsigned int delay);
 };
 
 // An abstract class describing a player in the game

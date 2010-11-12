@@ -11,6 +11,7 @@ PlayerInfo::PlayerInfo() {
 	hp = 100;
 	resetStats();
 	resetRegenTimer();
+	resetBulletrateTimer();
 }
 
 void PlayerInfo::resetStats() {
@@ -100,6 +101,18 @@ void PlayerInfo::buffTimerLogic(unsigned int delay) {
 			resetStats();
 		}
 	}
+}
+
+void PlayerInfo::resetBulletrateTimer() {
+	bulletrateTimer.set(200);
+}
+
+bool PlayerInfo::bulletrateTimerIsDone() {
+	return bulletrateTimer.isDone();
+}
+
+void PlayerInfo::stepBulletrateTimer(unsigned int delay) {
+	bulletrateTimer.step(delay);
 }
 
 

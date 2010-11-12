@@ -42,7 +42,6 @@ GameFrame::GameFrame(const std::vector<shared_ptr<Player> >& enemies)
 
 	gameState.itemsLeft = 0;
 	this->setItemTimer();
-	setBulletrateTimer();
 }
 
 void GameFrame::setItemTimer() {
@@ -62,10 +61,6 @@ shared_ptr<Item> GameFrame::getRandomItem() const {
 		if (gameState.wall.collidesWith(ret->getHitbox())) continue;
 		return ret;
 	}
-}
-
-void GameFrame::setBulletrateTimer() {
-	gameState.bulletrateTimer.set(200);
 }
 
 Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
@@ -98,12 +93,6 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 		b->move(delay);
 		++bIter;
 	}
-
-	// Handle bulletrate timer
-	if(gameState.bulletrateTimer.isDone()) {
-		setBulletrateTimer();
-	}
-	gameState.bulletrateTimer.step(delay);
 
 	// Move all players
 	for (size_t i = 0; i < gameState.players.size(); ++i) {
@@ -138,10 +127,12 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 		}
 
 		// Handle shooting
+		pinfo.stepBulletrateTimer(delay);
 		if (ac.shooting) {
-			if(p != player || gameState.bulletrateTimer.isDone()) {
+			if(pinfo.bulletrateTimerIsDone()) {
 				shared_ptr<Bullet> b(new Bullet(pinfo.getPosition(), pinfo.getAngle(), i));
 				gameState.bullets.push_back(b);
+				pinfo.resetBulletrateTimer();
 			}
 		}
 

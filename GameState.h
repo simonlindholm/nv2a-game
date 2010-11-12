@@ -16,6 +16,4 @@ struct GameState {
 	std::list<shared_ptr<Item> > items;
 	Timer itemTimer;
 	int itemsLeft;
-
-	Timer bulletrateTimer;
 };
