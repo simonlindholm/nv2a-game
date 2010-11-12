@@ -4,7 +4,6 @@
 #include "HumanPlayer.h"
 #include "GameState.h"
 #include "shared_ptr.h"
-#include "Timer.h"
 
 // This is the 'game' state, where most of the logic should be located
 class GameFrame : public Frame {
