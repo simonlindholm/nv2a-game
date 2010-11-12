@@ -29,8 +29,8 @@ void MushroomItem::use(PlayerInfo& pl) {
 	pl.setHP(pl.getHP() + 50);
 }
 
-GraphicsCache::ImageType MushroomItem::getImage() const {
-	return GraphicsCache::ImgMushroom;
+StaticImages::Id MushroomItem::getImage() const {
+	return StaticImages::Mushroom;
 }
 
 
@@ -45,8 +45,8 @@ void ShieldItem::use(PlayerInfo& pl) {
 	pl.setDef(10);
 }
 
-GraphicsCache::ImageType ShieldItem::getImage() const {
-	return GraphicsCache::ImgShield;
+StaticImages::Id ShieldItem::getImage() const {
+	return StaticImages::Shield;
 }
 
 
@@ -61,6 +61,6 @@ void SpeedItem::use(PlayerInfo &pl) {
 	pl.setSpeed(0.3);
 }
 
-GraphicsCache::ImageType SpeedItem::getImage() const {
-	return GraphicsCache::ImgSpeed;
+StaticImages::Id SpeedItem::getImage() const {
+	return StaticImages::Speed;
 }

@@ -7,7 +7,7 @@
 #include <ctime>
 #include "exceptions.h"
 #include "StartFrame.h"
-#include "GraphicsCache.h"
+#include "ResourceCache.h"
 #include "Config.h"
 
 int main(int argc, char** argv) {
@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
 			SDL_FillRect(screen, 0, SDL_MapRGB(screen->format, 0, 0, 0));
 		}
 
-		GraphicsCache::init();
+		ResourceCache::init();
 		hasGr = true;
 
 		// Begin in a 'begin state' given by StartFrame
@@ -104,7 +104,7 @@ int main(int argc, char** argv) {
 	}
 
 	// Clean up
-	if (hasGr) GraphicsCache::destroy();
+	if (hasGr) ResourceCache::destroy();
 	if (curFrame) delete curFrame;
 	if (hasMix) Mix_CloseAudio();
 	if (hasSDL) SDL_Quit();

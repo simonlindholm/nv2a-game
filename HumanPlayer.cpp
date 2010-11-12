@@ -8,7 +8,7 @@
 #include "util.h"
 #include "mathutil.h"
 #include "graphicsutil.h"
-#include "GraphicsCache.h"
+#include "ResourceCache.h"
 
 HumanPlayer::HumanPlayer() {
 }
@@ -41,7 +41,7 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 
 	SDL_Lock lock(screen);
 	SDL_FillRect(screen, 0, SDL_MapRGB(screen->format, 100, 0, 255));
-	GraphicsCache& gCache = GraphicsCache::get();
+	ResourceCache& rCache = ResourceCache::get();
 
 	// Draw the items
 	std::list<shared_ptr<Item> >::const_iterator iIter, iEnd;
@@ -49,10 +49,10 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 	iEnd = game.items.end();
 	while (iIter != iEnd) {
 		const Item& item = **iIter;
-		GraphicsCache::ImageType img = item.getImage();
+		StaticImages::Id img = item.getImage();
 		Coord pos = item.getPosition();
 
-		drawCenteredSurface(pos, gCache.getImg(img), screen);
+		drawCenteredSurface(pos, rCache.getImg(img), screen);
 
 		++iIter;
 	}
@@ -64,7 +64,7 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 		shared_ptr<Bullet> b = *bIter;
 		Coord pos = b->getPosition();
 
-		drawCenteredSurface(pos, gCache.getImg(GraphicsCache::ImgBullet), screen);
+		drawCenteredSurface(pos, rCache.getImg(StaticImages::Bullet), screen);
 
 		++bIter;
 	}
@@ -79,19 +79,19 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 
 		if (&pl == this) {
 			// Let yourself have a seperate appearance
-			drawCenteredSurface(pos, gCache.getRotatedImg(GraphicsCache::RotatedImgHuman, angle), screen);
+			drawCenteredSurface(pos, rCache.getRotatedImg(RotatedImages::Human, angle), screen);
 
 			// Show player's HP bar in the lower left corner
 			SDL_Rect clipHP = {(int)(1.5*(100 - p.getHP())), 0, 150, 15};
 			SDL_Rect HPpos = {(screen->h / 30), screen->h - (screen->h / 15), 0, 0};
-			SDL_BlitSurface(gCache.getImg(GraphicsCache::ImgPlayerHP), &clipHP, screen, &HPpos);
+			SDL_BlitSurface(rCache.getImg(StaticImages::PlayerHP), &clipHP, screen, &HPpos);
 		}
 		else {
-			drawCenteredSurface(pos, gCache.getRotatedImg(GraphicsCache::RotatedImgEnemy, angle), screen);
+			drawCenteredSurface(pos, rCache.getRotatedImg(RotatedImages::Enemy, angle), screen);
 
 			SDL_Rect clipHP = {(int)(0.6*(100 - p.getHP())), 0, 60, 8};
 			SDL_Rect HPpos = {(int)pos.x - 30, (int)pos.y - 30, 0, 0};
-			SDL_BlitSurface(gCache.getImg(GraphicsCache::ImgEnemyHP), &clipHP, screen, &HPpos);
+			SDL_BlitSurface(rCache.getImg(StaticImages::EnemyHP), &clipHP, screen, &HPpos);
 		}
 	}
 }
