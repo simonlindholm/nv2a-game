@@ -4,7 +4,7 @@
 #include "HumanPlayer.h"
 #include "Timer.h"
 #include "Bullet.h"
-#include "Item.h"
+#include "ItemFactory.h"
 #include "Config.h"
 #include "util.h"
 #include "exceptions.h"
@@ -57,7 +57,8 @@ shared_ptr<Item> GameFrame::getRandomItem() const {
 		Coord pos;
 		pos.x = randRange(0, cfg.winWidth);
 		pos.y = randRange(0, cfg.winHeight);
-		shared_ptr<Item> ret = shared_ptr<Item>(new SpeedItem(pos));
+		ItemFactory itemFactory;
+		shared_ptr<Item> ret = shared_ptr<Item>(itemFactory.createItem(pos));
 		if (gameState.wall.collidesWith(ret->getHitbox())) continue;
 		return ret;
 	}
