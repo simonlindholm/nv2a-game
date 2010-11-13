@@ -3,20 +3,20 @@
 #include "shared_ptr.h"
 
 shared_ptr<Item> ItemFactory::createItem(const Coord& pos) {
-	shared_ptr<Item> ret;
+	Item* ret = NULL;
 	int randomNumber = randRange(0, 3);
 
 	switch(randomNumber) {
 		case 0:
-			ret = shared_ptr<Item>(new MushroomItem(pos));
+			ret = new MushroomItem(pos);
 			break;
 		case 1:
-			ret = shared_ptr<Item>(new ShieldItem(pos));
+			ret = new ShieldItem(pos);
 			break;
 		case 2:
-			ret = shared_ptr<Item>(new SpeedItem(pos));
+			ret = new SpeedItem(pos);
 			break;
 	}
 
-	return ret;
+	return shared_ptr<Item>(ret);
 }
