@@ -131,7 +131,7 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 			if(pinfo.canShoot()) {
 				shared_ptr<Bullet> b(new Bullet(pinfo.getPosition(), pinfo.getAngle(), i));
 				gameState.bullets.push_back(b);
-				pinfo.resetShotTimer();
+				pinfo.restartShotTimer();
 			}
 		}
 

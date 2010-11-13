@@ -63,13 +63,13 @@ class PlayerInfo {
 		// Set the buff timer
 		void setBuffTimer(unsigned int time);
 
-		// Reset the shot timer
-		void resetShotTimer();
+		// Restart the shot timer
+		void restartShotTimer();
 
 		// Check if the shot timer is done
 		bool canShoot();
 
-		// Steps timers by delay ms. Also contains the logic for the timers.
+		// Steps the timers by delay ms and also contains the logic for them.
 		void step(unsigned int delay);
 };
 

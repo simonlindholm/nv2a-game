@@ -80,7 +80,7 @@ void PlayerInfo::setBuffTimer(unsigned int time) {
 	buffTimer.set(time);
 }
 
-void PlayerInfo::resetShotTimer() {
+void PlayerInfo::restartShotTimer() {
 	shotTimer.set(200);
 }
 
@@ -89,8 +89,9 @@ bool PlayerInfo::canShoot() {
 }
 
 void PlayerInfo::step(unsigned int delay) {
-	// Regenerate 15 HP per second after 6 seconds of not being hit
-	if(hp < 100) {
+	// HP regeneration logic:
+	// The player regenerates 15 HP per second after 6 seconds of not being hit.
+	if (hp < 100) {
 		regenTimer.step(delay);
 		if (regenTimer.isDone()) {
 			second.step(delay);
@@ -101,10 +102,11 @@ void PlayerInfo::step(unsigned int delay) {
 		}
 	}
 
-	// When the buff timer is done, stop the timer and call resetStats()
-	if(buffTimer.isActive()) {
+	// Buff timer logic:
+	// Reset the player's stats when the buff timer is done.
+	if (buffTimer.isActive()) {
 		buffTimer.step(delay);
-		if(buffTimer.isDone()) {
+		if (buffTimer.isDone()) {
 			buffTimer.stop();
 			resetStats();
 		}
