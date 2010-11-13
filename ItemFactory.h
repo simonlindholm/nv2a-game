@@ -1,9 +1,10 @@
 #pragma once
 #include "Item.h"
+#include "shared_ptr.h"
 
 class ItemFactory {
 	public:
 		// Create an item at the position given by pos.
 		// A random number decides which kind of item is created.
-		Item* createItem(const Coord& pos);
+		shared_ptr<Item> createItem(const Coord& pos);
 };

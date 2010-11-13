@@ -58,7 +58,7 @@ shared_ptr<Item> GameFrame::getRandomItem() const {
 		pos.x = randRange(0, cfg.winWidth);
 		pos.y = randRange(0, cfg.winHeight);
 		ItemFactory itemFactory;
-		shared_ptr<Item> ret = shared_ptr<Item>(itemFactory.createItem(pos));
+		shared_ptr<Item> ret = itemFactory.createItem(pos);
 		if (gameState.wall.collidesWith(ret->getHitbox())) continue;
 		return ret;
 	}
