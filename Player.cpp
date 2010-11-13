@@ -11,7 +11,7 @@ PlayerInfo::PlayerInfo() {
 	hp = 100;
 	resetStats();
 	resetRegenTimer();
-	resetShotTimer();
+	restartShotTimer();
 }
 
 void PlayerInfo::resetStats() {
