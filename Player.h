@@ -69,7 +69,8 @@ class PlayerInfo {
 		// Check if the shot timer is done
 		bool canShoot();
 
-		// Steps the timers by delay ms and also contains the logic for them.
+		// Performs relevant player-related logic during a frame, 
+		// such as regenerating HP and decreasing buff timers.
 		void step(unsigned int delay);
 };
 
