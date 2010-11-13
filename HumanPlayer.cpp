@@ -25,15 +25,12 @@ void HumanPlayer::startFrame(Uint8* keyState, Uint8 mouseState, int mouseX, int 
 	mouse.y = mouseY;
 
 	shooting = false;
-	if(mouseState& SDL_BUTTON(SDL_BUTTON_LEFT)) shooting = true;
+	if (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) shooting = true;
 }
 
 void HumanPlayer::handleEvent(const SDL_Event& event) {
 	// TODO: Handle events related to the player interface, such as
 	// weapon swapping, item use, etc.
-	if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
-		shooting = true;
-	}
 }
 
 void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {

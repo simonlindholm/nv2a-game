@@ -127,12 +127,11 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 		}
 
 		// Handle shooting
-		pinfo.stepBulletrateTimer(delay);
 		if (ac.shooting) {
-			if(pinfo.bulletrateTimerIsDone()) {
+			if(pinfo.canShoot()) {
 				shared_ptr<Bullet> b(new Bullet(pinfo.getPosition(), pinfo.getAngle(), i));
 				gameState.bullets.push_back(b);
-				pinfo.resetBulletrateTimer();
+				pinfo.resetShotTimer();
 			}
 		}
 
@@ -219,11 +218,9 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 
 	for (size_t i = 0; i < gameState.players.size(); ++i) {
 		PlayerInfo& p = gameState.playerInfo[i];
-		// Handle HP regeneration
-		p.regenTimerLogic(delay);
 
-		// Handle timer for buffs
-		p.buffTimerLogic(delay);
+		// Step the timers in PlayerInfo
+		p.step(delay);
 	}
 
 	// Draw the player interface

@@ -16,7 +16,7 @@ class PlayerInfo {
 		double angle;
 		Timer regenTimer, second;
 		Timer buffTimer;
-		Timer bulletrateTimer;
+		Timer shotTimer;
 
 	public:
 		PlayerInfo();
@@ -60,24 +60,17 @@ class PlayerInfo {
 		// Resets HP regeneration timers
 		void resetRegenTimer();
 
-		// Regenerate 15 HP per second after 6 seconds of not being hit.
-		// The delay is used to step the appropriate regeneration timer.
-		void regenTimerLogic(unsigned int delay);
-
 		// Set the buff timer
 		void setBuffTimer(unsigned int time);
 
-		// When the buff timer is done, stop the timer and call resetStats()
-		void buffTimerLogic(unsigned int delay);
+		// Reset the shot timer
+		void resetShotTimer();
 
-		// Reset the bulletrate timer
-		void resetBulletrateTimer();
+		// Check if the shot timer is done
+		bool canShoot();
 
-		// Check if the bulletrate timer is done
-		bool bulletrateTimerIsDone();
-
-		// Step bulletrate timer by delay ms
-		void stepBulletrateTimer(unsigned int delay);
+		// Steps timers by delay ms. Also contains the logic for the timers.
+		void step(unsigned int delay);
 };
 
 // An abstract class describing a player in the game

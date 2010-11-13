@@ -11,7 +11,7 @@ PlayerInfo::PlayerInfo() {
 	hp = 100;
 	resetStats();
 	resetRegenTimer();
-	resetBulletrateTimer();
+	resetShotTimer();
 }
 
 void PlayerInfo::resetStats() {
@@ -75,7 +75,21 @@ void PlayerInfo::resetRegenTimer() {
 	second.set(0);
 }
 
-void PlayerInfo::regenTimerLogic(unsigned int delay) {
+void PlayerInfo::setBuffTimer(unsigned int time) {
+	resetStats();
+	buffTimer.set(time);
+}
+
+void PlayerInfo::resetShotTimer() {
+	shotTimer.set(200);
+}
+
+bool PlayerInfo::canShoot() {
+	return shotTimer.isDone();
+}
+
+void PlayerInfo::step(unsigned int delay) {
+	// Regenerate 15 HP per second after 6 seconds of not being hit
 	if(hp < 100) {
 		regenTimer.step(delay);
 		if (regenTimer.isDone()) {
@@ -86,14 +100,8 @@ void PlayerInfo::regenTimerLogic(unsigned int delay) {
 			}
 		}
 	}
-}
 
-void PlayerInfo::setBuffTimer(unsigned int time) {
-	resetStats();
-	buffTimer.set(time);
-}
-
-void PlayerInfo::buffTimerLogic(unsigned int delay) {
+	// When the buff timer is done, stop the timer and call resetStats()
 	if(buffTimer.isActive()) {
 		buffTimer.step(delay);
 		if(buffTimer.isDone()) {
@@ -101,18 +109,8 @@ void PlayerInfo::buffTimerLogic(unsigned int delay) {
 			resetStats();
 		}
 	}
-}
 
-void PlayerInfo::resetBulletrateTimer() {
-	bulletrateTimer.set(200);
-}
-
-bool PlayerInfo::bulletrateTimerIsDone() {
-	return bulletrateTimer.isDone();
-}
-
-void PlayerInfo::stepBulletrateTimer(unsigned int delay) {
-	bulletrateTimer.step(delay);
+	shotTimer.step(delay);
 }
 
 
