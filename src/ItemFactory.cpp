@@ -4,7 +4,7 @@
 
 shared_ptr<Item> ItemFactory::createItem(const Coord& pos) {
 	Item* ret = NULL;
-	int randomNumber = randRange(0, 3);
+	int randomNumber = randTo(3);
 
 	switch(randomNumber) {
 		case 0:
