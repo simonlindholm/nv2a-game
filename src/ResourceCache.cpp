@@ -11,11 +11,11 @@ ResourceCache::ResourceCache() {
 	// Zero-initialize surface pointers
 	for (int i = 0; i < RotatedImages::End; ++i) {
 		for (int j = 0; j < 360; ++j) {
-			this->rotateCache[i].images[j] = 0;
+			rotateCache[i].images[j] = 0;
 		}
 	}
 	for (int i = 0; i < StaticImages::End; ++i) {
-		this->cache[i] = 0;
+		cache[i] = 0;
 	}
 
 	try {
@@ -30,6 +30,7 @@ ResourceCache::ResourceCache() {
 		addStatic("item-mushroom.png", StaticImages::Mushroom);
 		addStatic("item-shield.png", StaticImages::Shield);
 		addStatic("item-speed.png", StaticImages::Speed);
+		addStatic("map.png", StaticImages::LevelMap);
 	}
 	catch (...) {
 		// Clean up in case of errors
@@ -63,12 +64,12 @@ ResourceCache& ResourceCache::get() {
 
 SDL_Surface* ResourceCache::getRotatedImg(RotatedImages::Id it, int angle) const {
 	int ind = static_cast<int>(it);
-	return this->rotateCache[ind].images[angle];
+	return rotateCache[ind].images[angle];
 }
 
 SDL_Surface* ResourceCache::getImg(StaticImages::Id it) const {
 	int ind = static_cast<int>(it);
-	return this->cache[ind];
+	return cache[ind];
 }
 
 void ResourceCache::addRotatable(const std::string& filename, RotatedImages::Id it) {

@@ -8,6 +8,7 @@ struct StaticImages {
 		Mushroom,
 		Shield,
 		Speed,
+		LevelMap,
 		End
 	};
 };

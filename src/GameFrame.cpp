@@ -10,14 +10,20 @@
 #include "exceptions.h"
 #include "shared_ptr.h"
 
-GameFrame::GameFrame(const std::vector<shared_ptr<Player> >& enemies)
+GameFrame::GameFrame(const Level& level,
+		const std::vector<shared_ptr<Player> >& enemies)
 {
 	player = shared_ptr<HumanPlayer>(new HumanPlayer);
 	gameState.players = enemies;
 	gameState.players.push_back(player);
 
+	gameState.level = level;
+
 	gameState.playerInfo.resize(gameState.players.size());
-	Coord startingPos[] = {Coord(30, 30), Coord(200, 200)};
+
+	// TODO: Start at the points given by level.startPoints instead. (The
+	// AI doesn't handle random starting positions very well yet, though.)
+	Coord startingPos[] = {Coord(40, 230), Coord(600, 425)};
 	size_t stSize = sizeof startingPos/sizeof *startingPos;
 	for (size_t i = 0; i < gameState.players.size() && i < stSize; ++i) {
 		gameState.playerInfo[i].moveTo(startingPos[i]);
@@ -28,16 +34,16 @@ GameFrame::GameFrame(const std::vector<shared_ptr<Player> >& enemies)
 	}
 
 	// Add out-of-screen rectangles to act as boundaries
-	const int wallSize = 100;
+	const int wallSize = 500;
 	int sw = Config::get().winWidth, sh = Config::get().winHeight;
 
-	gameState.wall.add(shared_ptr<Shape>(new Rectangle(Coord(-wallSize, -wallSize),
+	gameState.level.wall.add(shared_ptr<Shape>(new Rectangle(Coord(-wallSize, -wallSize),
 					sw + 2*wallSize, wallSize)));
-	gameState.wall.add(shared_ptr<Shape>(new Rectangle(Coord(-wallSize, -wallSize),
+	gameState.level.wall.add(shared_ptr<Shape>(new Rectangle(Coord(-wallSize, -wallSize),
 					wallSize, sw + 2*wallSize)));
-	gameState.wall.add(shared_ptr<Shape>(new Rectangle(Coord(-wallSize, sh),
+	gameState.level.wall.add(shared_ptr<Shape>(new Rectangle(Coord(-wallSize, sh),
 					sw + 2*wallSize, wallSize)));
-	gameState.wall.add(shared_ptr<Shape>(new Rectangle(Coord(sw, -wallSize),
+	gameState.level.wall.add(shared_ptr<Shape>(new Rectangle(Coord(sw, -wallSize),
 					wallSize, sw + 2*wallSize)));
 
 	gameState.itemsLeft = 0;
@@ -59,7 +65,7 @@ shared_ptr<Item> GameFrame::getRandomItem() const {
 		pos.y = randRange(0, cfg.winHeight);
 		ItemFactory itemFactory;
 		shared_ptr<Item> ret = itemFactory.createItem(pos);
-		if (gameState.wall.collidesWith(ret->getHitbox())) continue;
+		if (gameState.level.wall.collidesWith(ret->getHitbox())) continue;
 		return ret;
 	}
 }
@@ -111,7 +117,7 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 		// Collision detection, don't move against other players.
 		bool stop = false;
 		Hitbox hbox = pinfo.getHitbox();
-		if (gameState.wall.collidesWith(hbox)) stop = true;
+		if (gameState.level.wall.collidesWith(hbox)) stop = true;
 		if (!stop) {
 			for (size_t j = 0; j < gameState.players.size(); ++j) {
 				if (i == j) continue;
@@ -186,7 +192,7 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 		const Hitbox& bhit = bullet->getHitbox();
 		bool del = false;
 
-		if (bhit.collidesWith(gameState.wall)) {
+		if (bhit.collidesWith(gameState.level.wall)) {
 			//TODO: Handle wall collision
 			del = true;
 		}

@@ -9,6 +9,7 @@
 #include "mathutil.h"
 #include "graphicsutil.h"
 #include "ResourceCache.h"
+#include "Config.h"
 
 HumanPlayer::HumanPlayer() {
 }
@@ -40,6 +41,13 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 	SDL_Lock lock(screen);
 	SDL_FillRect(screen, 0, SDL_MapRGB(screen->format, 100, 0, 255));
 	ResourceCache& rCache = ResourceCache::get();
+	Config& cfg = Config::get();
+
+	// Draw the background
+	SDL_Rect bgPos;
+	bgPos.x = (cfg.winWidth - game.level.bg->w) / 2;
+	bgPos.y = (cfg.winHeight - game.level.bg->h) / 2;
+	SDL_BlitSurface(game.level.bg, 0, screen, &bgPos);
 
 	// Draw the items
 	std::list<shared_ptr<Item> >::const_iterator iIter, iEnd;
@@ -74,9 +82,8 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 		Coord pos = p.getPosition();
 		int angle = radToIntDeg(p.getAngle());
 
-
 		if (&pl == this) {
-			// Let yourself have a seperate appearance
+			// Let yourself have a separate appearance
 			drawCenteredSurface(pos, rCache.getRotatedImg(RotatedImages::Human, angle), screen);
 
 			// Show player's HP bar in the lower left corner
