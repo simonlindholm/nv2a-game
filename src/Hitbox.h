@@ -12,9 +12,9 @@ class Rectangle;
 // shape classes
 class CollisionTests {
 	public:
-		static bool collRR(const Rectangle& a, const Rectangle& b);
-		static bool collRC(const Rectangle& a, const Circle& b);
-		static bool collCC(const Circle& a, const Circle& b);
+		static bool collRR(const Rectangle& a, const Rectangle& b, Coord* out);
+		static bool collRC(const Rectangle& a, const Circle& b, Coord* out);
+		static bool collCC(const Circle& a, const Circle& b, Coord* out);
 };
 
 // Abstract class symbolising shapes such as circles and rectangles, positioned
@@ -38,11 +38,11 @@ class Shape {
 		virtual shared_ptr<Shape> clone() const = 0;
 
 		// Check if the shape collides with another one
-		virtual bool collidesWith(const Shape& other) const = 0;
+		virtual bool collidesWith(const Shape& other, Coord* out) const = 0;
 
 		// Functions to help with multiple dispatch for collision detection
-		virtual bool collidesWithDisp(const Circle& other) const = 0;
-		virtual bool collidesWithDisp(const Rectangle& other) const = 0;
+		virtual bool collidesWithDisp(const Circle& other, Coord* out) const = 0;
+		virtual bool collidesWithDisp(const Rectangle& other, Coord* out) const = 0;
 
 		// Copy the object onto sh, which must be of the same type (no
 		// typechecking is done, so use only if you are absolutely sure
@@ -58,9 +58,9 @@ class Circle : public Shape {
 		double radius;
 	public:
 		Circle(const Coord& pos, double rad);
-		virtual bool collidesWith(const Shape& other) const;
-		virtual bool collidesWithDisp(const Circle& other) const;
-		virtual bool collidesWithDisp(const Rectangle& other) const;
+		virtual bool collidesWith(const Shape& other, Coord* out) const;
+		virtual bool collidesWithDisp(const Circle& other, Coord* out) const;
+		virtual bool collidesWithDisp(const Rectangle& other, Coord* out) const;
 		virtual void rotate(double angle);
 		virtual shared_ptr<Shape> clone() const;
 		virtual void rawAssign(const Shape& sh);
@@ -75,9 +75,9 @@ class Rectangle : public Shape {
 	public:
 		Rectangle(const Coord& pos, double width, double height);
 		Rectangle(const Coord& pos, double width, double height, double angle);
-		virtual bool collidesWith(const Shape& other) const;
-		virtual bool collidesWithDisp(const Circle& other) const;
-		virtual bool collidesWithDisp(const Rectangle& other) const;
+		virtual bool collidesWith(const Shape& other, Coord* out) const;
+		virtual bool collidesWithDisp(const Circle& other, Coord* out) const;
+		virtual bool collidesWithDisp(const Rectangle& other, Coord* out) const;
 		virtual void rotate(double angle);
 		virtual shared_ptr<Shape> clone() const;
 		virtual void rawAssign(const Shape& sh);
@@ -94,9 +94,22 @@ class Hitbox {
 		Hitbox& operator=(const Hitbox& other);
 		void swap(Hitbox& other);
 
+		// Add a shape to the hitbox shape collection
 		void add(shared_ptr<Shape> sh);
+
+		// Check whether the hitbox collides with another hitbox
 		bool collidesWith(const Hitbox& other) const;
+
+		// As above, but returns a Coord* which is either NULL if there is no
+		// collision, or, if there is one, &out, which might be changed to
+		// contain a unit vector directed towards the surface of the shape
+		// collided with, if it is implemented for that collision routine
+		Coord* collidesWithSurf(const Hitbox& other, Coord& out) const;
+
+		// Rotate every shape around the origin
 		void rotate(double angle);
+
+		// Move every shape relatively
 		void moveBy(const Coord& by);
 
 		// Make a copy of another hitbox, which must have a shape vector with
