@@ -1,4 +1,5 @@
 #include <SDL/SDL.h>
+#include <cmath>
 #include "GameFrame.h"
 #include "SDL_helpers.h"
 #include "HumanPlayer.h"
@@ -7,8 +8,22 @@
 #include "ItemFactory.h"
 #include "Config.h"
 #include "util.h"
+#include "mathutil.h"
 #include "exceptions.h"
 #include "shared_ptr.h"
+
+static Coord rotatePoint(const Coord& point, double angle) {
+	// TODO: Use a more appropriate method, instead of copy-pasting
+	// it from the hitbox code
+	if (fpEqual(point.x, 0, 0.1) && fpEqual(point.y, 0, 0.1)) return point;
+	double abs = pyth(point.x, point.y);
+	double pangle = std::atan2(-point.y, point.x);
+	pangle += angle;
+	Coord res;
+	res.x = abs * std::cos(pangle);
+	res.y = abs * -std::sin(pangle);
+	return res;
+}
 
 GameFrame::GameFrame(const Level& level,
 		const std::vector<shared_ptr<Player> >& enemies)
@@ -108,29 +123,43 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 
 		Player::Action ac = p->move(gameState, delay);
 
-		Coord pos = pinfo.getPosition();
-		Coord npos = pos;
-		npos.x += ac.mx;
-		npos.y += ac.my;
-		pinfo.moveTo(npos);
+		Coord pos = pinfo.getPosition(), nvec, *pnvec = &nvec;
 
-		// Collision detection, don't move against other players.
-		bool stop = false;
-		Hitbox hbox = pinfo.getHitbox();
-		if (gameState.level.wall.collidesWith(hbox)) stop = true;
-		if (!stop) {
+		for (int it = 0; it < 2; ++it) {
+			Coord npos = pos;
+			npos.x += ac.mx;
+			npos.y += ac.my;
+			pinfo.moveTo(npos);
+
+			// Collision detection, don't move against other players or the wall
+			Hitbox hbox = pinfo.getHitbox();
+			int stop = hbox.collidesWith(gameState.level.wall, pnvec);
 			for (size_t j = 0; j < gameState.players.size(); ++j) {
 				if (i == j) continue;
-				if (gameState.playerInfo[j].getHitbox().collidesWith(hbox)) {
-					stop = true;
-					break;
-				}
+				if (stop) break;
+				stop = hbox.collidesWith(gameState.playerInfo[j].getHitbox(), pnvec);
 			}
-		}
 
-		if (stop) {
-			// Movement blocked by other player; revert the move
-			pinfo.moveTo(pos);
+			if (stop) {
+				// Movement blocked; revert the move
+				pinfo.moveTo(pos);
+			}
+
+			if (stop == 2 && it == 0) {
+				pnvec = 0;
+				double angle = std::atan2(-nvec.y, nvec.x);
+				Coord m;
+				m.x = ac.mx;
+				m.y = ac.my;
+				m = rotatePoint(m, -angle);
+				double fr = std::abs(m.x);
+				m.x = 0;
+				// TODO: Apply friction to m.y
+				m = rotatePoint(m, angle);
+				ac.mx = m.x;
+				ac.my = m.y;
+			}
+			else break;
 		}
 
 		// Handle shooting
