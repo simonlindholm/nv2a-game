@@ -34,7 +34,9 @@ static bool rrCorner(const Coord& q, double w, double h, double px, double py) {
 
 
 // Collision detection functions
-bool CollisionTests::collRC(const Rectangle& a, const Circle& b) {
+bool CollisionTests::collRC(const Rectangle& a, const Circle& b, Coord* out) {
+	// TODO: Calculate the surface normal vector
+
 	// Create a copy of the circle to allow moving it, which makes
 	// the algorithm simpler
 	Circle c = b;
@@ -49,24 +51,33 @@ bool CollisionTests::collRC(const Rectangle& a, const Circle& b) {
 	if (c.pos.x <= -c.radius || c.pos.x >= a.w + c.radius) return false;
 	if (c.pos.y <= -c.radius || c.pos.y >= a.h + c.radius) return false;
 
-	if (c.pos.x >= 0 && c.pos.x <= a.w &&
-		c.pos.y > -c.radius && c.pos.y < a.h + c.radius) return true;
-	if (c.pos.y >= 0 && c.pos.y <= a.h &&
-		c.pos.x > -c.radius && c.pos.x < a.w + c.radius) return true;
+	if (c.pos.x >= 0 && c.pos.x <= a.w) {
+		return true;
+	}
+	if (c.pos.y >= 0 && c.pos.y <= a.h) {
+		return true;
+	}
 
 	double xdif = std::min(std::abs(c.pos.x), std::abs(c.pos.x - a.w));
 	double ydif = std::min(std::abs(c.pos.y), std::abs(c.pos.y - a.h));
-	return (xdif*xdif + ydif*ydif < c.radius*c.radius);
+	if (xdif*xdif + ydif*ydif < c.radius*c.radius) {
+		return true;
+	}
+	return false;
 }
 
-bool CollisionTests::collCC(const Circle& a, const Circle& b) {
+bool CollisionTests::collCC(const Circle& a, const Circle& b, Coord* out) {
+	// TODO: Calculate the surface normal vector
+
 	double difx = a.pos.x - b.pos.x;
 	double dify = a.pos.y - b.pos.y;
 	double mdist = a.radius + b.radius;
 	return (difx*difx + dify*dify < mdist*mdist);
 }
 
-bool CollisionTests::collRR(const Rectangle& a, const Rectangle& b) {
+bool CollisionTests::collRR(const Rectangle& a, const Rectangle& b, Coord* out) {
+	// TODO: Calculate the surface normal vector
+
 	if (b.axis) {
 		if (a.axis) {
 			// Both rectangles are axis-aligned, which makes the test trivial
@@ -77,8 +88,13 @@ bool CollisionTests::collRR(const Rectangle& a, const Rectangle& b) {
 			return true;
 		}
 		else {
-			// Order them so that a is the most axis-aligned
-			return collRR(b, a);
+			// Order them so that a is the axis-aligned one
+			bool ret = collRR(b, a, out);
+			if (out) {
+				out->x = -out->x;
+				out->y = -out->y;
+			}
+			return ret;
 		}
 	}
 
@@ -139,14 +155,14 @@ void Circle::rotate(double angle) {
 	this->pos = rotatePoint(this->pos, angle);
 }
 
-bool Circle::collidesWith(const Shape& other) const {
-	return other.collidesWithDisp(*this);
+bool Circle::collidesWith(const Shape& other, Coord* out) const {
+	return other.collidesWithDisp(*this, out);
 }
-bool Circle::collidesWithDisp(const Circle& other) const {
-	return CollisionTests::collCC(other, *this);
+bool Circle::collidesWithDisp(const Circle& other, Coord* out) const {
+	return CollisionTests::collCC(other, *this, out);
 }
-bool Circle::collidesWithDisp(const Rectangle& other) const {
-	return CollisionTests::collRC(other, *this);
+bool Circle::collidesWithDisp(const Rectangle& other, Coord* out) const {
+	return CollisionTests::collRC(other, *this, out);
 }
 
 shared_ptr<Shape> Circle::clone() const {
@@ -173,14 +189,24 @@ void Rectangle::rotate(double angle) {
 	this->axis = false;
 }
 
-bool Rectangle::collidesWith(const Shape& other) const {
-	return other.collidesWithDisp(*this);
+bool Rectangle::collidesWith(const Shape& other, Coord* out) const {
+	return other.collidesWithDisp(*this, out);
 }
-bool Rectangle::collidesWithDisp(const Rectangle& other) const {
-	return CollisionTests::collRR(*this, other);
+bool Rectangle::collidesWithDisp(const Rectangle& other, Coord* out) const {
+	return CollisionTests::collRR(*this, other, out);
 }
-bool Rectangle::collidesWithDisp(const Circle& other) const {
-	return CollisionTests::collRC(*this, other);
+bool Rectangle::collidesWithDisp(const Circle& other, Coord* out) const {
+	bool ret = CollisionTests::collRC(*this, other, out);
+
+	// We are checking a circle against a rectangle, but collRC gives the
+	// surface normal vector as against the circle, so we need to negate
+	// the vector
+	if (out) {
+		out->x = -out->x;
+		out->y = -out->y;
+	}
+
+	return ret;
 }
 
 shared_ptr<Shape> Rectangle::clone() const {
@@ -217,10 +243,20 @@ bool Hitbox::collidesWith(const Hitbox& other) const {
 	size_t isz = this->shapes.size(), jsz = other.shapes.size();
 	for (size_t i = 0; i < isz; ++i) {
 		for (size_t j = 0; j < jsz; ++j) {
-			if (this->shapes[i]->collidesWith(*other.shapes[j])) return true;
+			if (this->shapes[i]->collidesWith(*other.shapes[j], 0)) return true;
 		}
 	}
 	return false;
+}
+
+Coord* Hitbox::collidesWithSurf(const Hitbox& other, Coord& out) const {
+	size_t isz = this->shapes.size(), jsz = other.shapes.size();
+	for (size_t i = 0; i < isz; ++i) {
+		for (size_t j = 0; j < jsz; ++j) {
+			if (this->shapes[i]->collidesWith(*other.shapes[j], &out)) return &out;
+		}
+	}
+	return 0;
 }
 
 void Hitbox::rotate(double angle) {
