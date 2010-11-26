@@ -1,4 +1,5 @@
 #pragma once
+#include "util.h"
 
 // Small utility functions, structs, constants, etc.
 
@@ -13,6 +14,9 @@ int radToIntDeg(double rad);
 
 // Calculate the hypotenuse in a right triangle with sides a and b, ie. sqrt(a*a+b*b)
 double pyth(double a, double b);
+
+// Rotate a given point by an angle given by a unit vector 'avec'
+Coord rotatePointVec(const Coord& point, const Coord& avec);
 
 // Floating point equality tests
 // (Note: Floating point comparisons are inexact, so instead of comparing

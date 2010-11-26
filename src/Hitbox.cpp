@@ -7,7 +7,15 @@
 namespace{
 
 Coord rotatePoint(const Coord& point, double angle) {
-	if (fpEqual(point.x, 0, 0.1) && fpEqual(point.y, 0, 0.1)) return point;
+	// TODO: Try using implementation in rotatePointVec.
+	// Needs testing/test cases.
+	/*
+	Coord v;
+	v.x = std::cos(angle);
+	v.y = std::sin(angle);
+	return rotatePointVec(point, v);
+	*/
+	if (std::abs(point.x) < 0.1 && std::abs(point.y) < 0.1) return point;
 	double abs = pyth(point.x, point.y);
 	double pangle = std::atan2(-point.y, point.x);
 	pangle += angle;

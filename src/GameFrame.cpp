@@ -12,19 +12,6 @@
 #include "exceptions.h"
 #include "shared_ptr.h"
 
-static Coord rotatePoint(const Coord& point, double angle) {
-	// TODO: Use a more appropriate method, instead of copy-pasting
-	// it from the hitbox code
-	if (fpEqual(point.x, 0, 0.001) && fpEqual(point.y, 0, 0.001)) return point;
-	double abs = pyth(point.x, point.y);
-	double pangle = std::atan2(-point.y, point.x);
-	pangle += angle;
-	Coord res;
-	res.x = abs * std::cos(pangle);
-	res.y = abs * -std::sin(pangle);
-	return res;
-}
-
 GameFrame::GameFrame(const Level& level,
 		const std::vector<shared_ptr<Player> >& enemies)
 {
@@ -150,8 +137,8 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 
 			if (stop == 2 && it == 0) {
 				// Reduce movement against surface to 0, and apply friction
-				double angle = std::atan2(-nvec.y, nvec.x);
-				acm = rotatePoint(acm, -angle);
+				nvec.y = -nvec.y;
+				acm = rotatePointVec(acm, nvec);
 				double fr = std::abs(acm.x) * 0.15;
 				if (acm.y > 0) {
 					acm.y -= fr;
@@ -162,7 +149,8 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 					if (acm.y > 0) acm.y = 0;
 				}
 				acm.x = 0;
-				acm = rotatePoint(acm, angle);
+				nvec.y = -nvec.y;
+				acm = rotatePointVec(acm, nvec);
 			}
 			else break;
 		}

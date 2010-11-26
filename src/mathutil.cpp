@@ -19,6 +19,13 @@ double pyth(double a, double b) {
 	return std::sqrt(a*a + b*b);
 }
 
+Coord rotatePointVec(const Coord& point, const Coord& avec) {
+	Coord res;
+	res.x = point.x*avec.x - point.y*avec.y;
+	res.y = point.y*avec.x + point.x*avec.y;
+	return res;
+}
+
 template <class T>
 bool fpEqualRelImpl(T a, T b, T epsilon) {
 	T aa = std::fabs(a), ab = std::fabs(b), ad = std::fabs(a-b);
