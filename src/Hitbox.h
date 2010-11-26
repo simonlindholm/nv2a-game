@@ -1,5 +1,4 @@
 #pragma once
-
 #include <vector>
 #include "shared_ptr.h"
 #include "util.h"
@@ -12,9 +11,12 @@ class Rectangle;
 // shape classes
 class CollisionTests {
 	public:
-		static int collRR(const Rectangle& a, const Rectangle& b, Coord* out);
-		static int collRC(const Rectangle& a, const Circle& b, Coord* out);
-		static int collCC(const Circle& a, const Circle& b, Coord* out);
+		static bool collRR(const Rectangle& a, const Rectangle& b);
+		static bool collRC(const Rectangle& a, const Circle& b);
+		static bool collCC(const Circle& a, const Circle& b);
+		static bool surfRR(const Rectangle& a, const Rectangle& b, Coord& out);
+		static bool surfRC(const Rectangle& a, const Circle& b, Coord& out);
+		static bool surfCC(const Circle& a, const Circle& b, Coord& out);
 };
 
 // Abstract class symbolising shapes such as circles and rectangles, positioned
@@ -38,11 +40,20 @@ class Shape {
 		virtual shared_ptr<Shape> clone() const = 0;
 
 		// Check if the shape collides with another one
-		virtual int collidesWith(const Shape& other, Coord* out) const = 0;
+		virtual bool collidesWith(const Shape& other) const = 0;
 
 		// Functions to help with multiple dispatch for collision detection
-		virtual int collidesWithDisp(const Circle& other, Coord* out) const = 0;
-		virtual int collidesWithDisp(const Rectangle& other, Coord* out) const = 0;
+		virtual bool collidesWithDisp(const Circle& other) const = 0;
+		virtual bool collidesWithDisp(const Rectangle& other) const = 0;
+
+		// Find a unit vector directed from a point of 'this' which is nearly
+		// colliding with 'other' against the surface involved in the near
+		// collision, returning false if it is not yet implemented
+		virtual bool collisionSurf(const Shape& other, Coord& out) const = 0;
+
+		// Functions to help with multiple dispatch of the above function
+		virtual bool collisionSurfDisp(const Circle& other, Coord& out) const = 0;
+		virtual bool collisionSurfDisp(const Rectangle& other, Coord& out) const = 0;
 
 		// Copy the object onto sh, which must be of the same type (no
 		// typechecking is done, so use only if you are absolutely sure
@@ -58,9 +69,12 @@ class Circle : public Shape {
 		double radius;
 	public:
 		Circle(const Coord& pos, double rad);
-		virtual int collidesWith(const Shape& other, Coord* out) const;
-		virtual int collidesWithDisp(const Circle& other, Coord* out) const;
-		virtual int collidesWithDisp(const Rectangle& other, Coord* out) const;
+		virtual bool collidesWith(const Shape& other) const;
+		virtual bool collidesWithDisp(const Circle& other) const;
+		virtual bool collidesWithDisp(const Rectangle& other) const;
+		virtual bool collisionSurf(const Shape& other, Coord& out) const;
+		virtual bool collisionSurfDisp(const Circle& other, Coord& out) const;
+		virtual bool collisionSurfDisp(const Rectangle& other, Coord& out) const;
 		virtual void rotate(double angle);
 		virtual shared_ptr<Shape> clone() const;
 		virtual void rawAssign(const Shape& sh);
@@ -75,9 +89,12 @@ class Rectangle : public Shape {
 	public:
 		Rectangle(const Coord& pos, double width, double height);
 		Rectangle(const Coord& pos, double width, double height, double angle);
-		virtual int collidesWith(const Shape& other, Coord* out) const;
-		virtual int collidesWithDisp(const Circle& other, Coord* out) const;
-		virtual int collidesWithDisp(const Rectangle& other, Coord* out) const;
+		virtual bool collidesWith(const Shape& other) const;
+		virtual bool collidesWithDisp(const Circle& other) const;
+		virtual bool collidesWithDisp(const Rectangle& other) const;
+		virtual bool collisionSurf(const Shape& other, Coord& out) const;
+		virtual bool collisionSurfDisp(const Circle& other, Coord& out) const;
+		virtual bool collisionSurfDisp(const Rectangle& other, Coord& out) const;
 		virtual void rotate(double angle);
 		virtual shared_ptr<Shape> clone() const;
 		virtual void rawAssign(const Shape& sh);
@@ -97,13 +114,17 @@ class Hitbox {
 		// Add a shape to the hitbox shape collection
 		void add(shared_ptr<Shape> sh);
 
-		// Check whether the hitbox collies with another hitbox, returning
+		// Check whether the hitbox collides with another hitbox
+		bool collidesWith(const Hitbox& other) const;
+
+		// Check whether the hitbox collides with another hitbox, returning
 		// 0 for no collision, and non-zero for collision.
-		// If implemented by the collision routine, and 'out' is not NULL,
-		// 'out' will be modified to contain a unit vector directed towards
-		// the surface of the shape collided with. In this case, the value 2
-		// will be returned, otherwise the return value will be 1.
-		int collidesWith(const Hitbox& other, Coord* out = 0) const;
+		// If implemented by the collision routine, 'out' will be modified
+		// to contain a unit vector directed from where the hitbox was before
+		// a relative movement of 'relm', towards the surface of the shape
+		// collided with. In this case, the value 2 will be returned,
+		// otherwise the return value will be 1.
+		int collidesWithSurf(const Hitbox& other, Coord relm, Coord& out) const;
 
 		// Rotate every shape around the origin
 		void rotate(double angle);

@@ -15,7 +15,7 @@
 static Coord rotatePoint(const Coord& point, double angle) {
 	// TODO: Use a more appropriate method, instead of copy-pasting
 	// it from the hitbox code
-	if (fpEqual(point.x, 0, 0.1) && fpEqual(point.y, 0, 0.1)) return point;
+	if (fpEqual(point.x, 0, 0.001) && fpEqual(point.y, 0, 0.001)) return point;
 	double abs = pyth(point.x, point.y);
 	double pangle = std::atan2(-point.y, point.x);
 	pangle += angle;
@@ -122,22 +122,25 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 		PlayerInfo& pinfo = gameState.playerInfo[i];
 
 		Player::Action ac = p->move(gameState, delay);
+		Coord acm;
+		acm.x = ac.mx;
+		acm.y = ac.my;
 
-		Coord pos = pinfo.getPosition(), nvec, *pnvec = &nvec;
+		Coord pos = pinfo.getPosition(), nvec;
 
 		for (int it = 0; it < 2; ++it) {
 			Coord npos = pos;
-			npos.x += ac.mx;
-			npos.y += ac.my;
+			npos.x += acm.x;
+			npos.y += acm.y;
 			pinfo.moveTo(npos);
 
 			// Collision detection, don't move against other players or the wall
 			Hitbox hbox = pinfo.getHitbox();
-			int stop = hbox.collidesWith(gameState.level.wall, pnvec);
+			int stop = hbox.collidesWithSurf(gameState.level.wall, acm, nvec);
 			for (size_t j = 0; j < gameState.players.size(); ++j) {
 				if (i == j) continue;
 				if (stop) break;
-				stop = hbox.collidesWith(gameState.playerInfo[j].getHitbox(), pnvec);
+				stop = hbox.collidesWithSurf(gameState.playerInfo[j].getHitbox(), acm, nvec);
 			}
 
 			if (stop) {
@@ -146,18 +149,20 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 			}
 
 			if (stop == 2 && it == 0) {
-				pnvec = 0;
+				// Reduce movement against surface to 0, and apply friction
 				double angle = std::atan2(-nvec.y, nvec.x);
-				Coord m;
-				m.x = ac.mx;
-				m.y = ac.my;
-				m = rotatePoint(m, -angle);
-				double fr = std::abs(m.x);
-				m.x = 0;
-				// TODO: Apply friction to m.y
-				m = rotatePoint(m, angle);
-				ac.mx = m.x;
-				ac.my = m.y;
+				acm = rotatePoint(acm, -angle);
+				double fr = std::abs(acm.x) * 0.15;
+				if (acm.y > 0) {
+					acm.y -= fr;
+					if (acm.y < 0) acm.y = 0;
+				}
+				else {
+					acm.y += fr;
+					if (acm.y > 0) acm.y = 0;
+				}
+				acm.x = 0;
+				acm = rotatePoint(acm, angle);
 			}
 			else break;
 		}
