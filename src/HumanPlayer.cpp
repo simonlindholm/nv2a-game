@@ -87,15 +87,15 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 			drawCenteredSurface(pos, rCache.getRotatedImg(RotatedImages::Human, angle), screen);
 
 			// Show player's HP bar in the lower left corner
-			SDL_Rect clipHP = {(int)(1.5*(100 - p.getHP())), 0, 150, 15};
-			SDL_Rect HPpos = {(screen->h / 30), screen->h - (screen->h / 15), 0, 0};
+			SDL_Rect clipHP = {(Sint16)(1.5*(100 - p.getHP())), 0, 150, 15};
+			SDL_Rect HPpos = {(Sint16)(screen->h / 30), (Sint16)(screen->h - (screen->h / 15)), 0, 0};
 			SDL_BlitSurface(rCache.getImg(StaticImages::PlayerHP), &clipHP, screen, &HPpos);
 		}
 		else {
 			drawCenteredSurface(pos, rCache.getRotatedImg(RotatedImages::Enemy, angle), screen);
 
-			SDL_Rect clipHP = {(int)(0.6*(100 - p.getHP())), 0, 60, 8};
-			SDL_Rect HPpos = {(int)pos.x - 30, (int)pos.y - 30, 0, 0};
+			SDL_Rect clipHP = {(Sint16)(0.6*(100 - p.getHP())), 0, 60, 8};
+			SDL_Rect HPpos = {(Sint16)(pos.x - 30), (Sint16)(pos.y - 30), 0, 0};
 			SDL_BlitSurface(rCache.getImg(StaticImages::EnemyHP), &clipHP, screen, &HPpos);
 		}
 	}
