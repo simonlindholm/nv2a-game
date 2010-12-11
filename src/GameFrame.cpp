@@ -13,26 +13,23 @@
 #include "shared_ptr.h"
 
 GameFrame::GameFrame(const Level& level,
-		const std::vector<shared_ptr<Player> >& enemies)
+		const std::vector<shared_ptr<PlayerLogic> >& enemies)
 {
 	player = shared_ptr<HumanPlayer>(new HumanPlayer);
-	gameState.players = enemies;
-	gameState.players.push_back(player);
+	for (size_t i = 0; i < enemies.size(); ++i) {
+		shared_ptr<Player> pl(new Player(enemies[i]));
+		gameState.players.push_back(pl);
+	}
+	gameState.players.push_back(shared_ptr<Player>(new Player(player)));
 
 	gameState.level = level;
-
-	gameState.playerInfo.resize(gameState.players.size());
 
 	// TODO: Start at the points given by level.startPoints instead. (The
 	// AI doesn't handle random starting positions very well yet, though.)
 	Coord startingPos[] = {Coord(40, 230), Coord(600, 425)};
 	size_t stSize = sizeof startingPos/sizeof *startingPos;
 	for (size_t i = 0; i < gameState.players.size() && i < stSize; ++i) {
-		gameState.playerInfo[i].moveTo(startingPos[i]);
-	}
-
-	for (size_t i = 0; i < gameState.players.size(); ++i) {
-		gameState.players[i]->setInfo(&gameState.playerInfo[i]);
+		gameState.players[i]->info.moveTo(startingPos[i]);
 	}
 
 	// Add out-of-screen rectangles to act as boundaries
@@ -105,10 +102,10 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 
 	// Move all players
 	for (size_t i = 0; i < gameState.players.size(); ++i) {
-		shared_ptr<Player> p = gameState.players[i];
-		PlayerInfo& pinfo = gameState.playerInfo[i];
+		Player& p = *gameState.players[i];
+		PlayerInfo& pinfo = p.info;
 
-		Player::Action ac = p->move(gameState, delay);
+		PlayerLogic::Action ac = p.logic->move(gameState, delay);
 		Coord acm;
 		acm.x = ac.mx;
 		acm.y = ac.my;
@@ -127,7 +124,7 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 			for (size_t j = 0; j < gameState.players.size(); ++j) {
 				if (i == j) continue;
 				if (stop) break;
-				stop = hbox.collidesWithSurf(gameState.playerInfo[j].getHitbox(), acm, nvec);
+				stop = hbox.collidesWithSurf(gameState.players[j]->info.getHitbox(), acm, nvec);
 			}
 
 			if (stop) {
@@ -187,7 +184,7 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 		const Hitbox& ihit = item->getHitbox();
 		bool del = false;
 		for (size_t i = 0; i < gameState.players.size(); ++i) {
-			PlayerInfo& p = gameState.playerInfo[i];
+			PlayerInfo& p = gameState.players[i]->info;
 			if (p.getHitbox().collidesWith(ihit)) {
 				item->use(p);
 
@@ -220,7 +217,7 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 		}
 		else {
 			for (size_t i = 0; i < gameState.players.size(); ++i) {
-				PlayerInfo& p = gameState.playerInfo[i];
+				PlayerInfo& p = gameState.players[i]->info;
 				if (bullet->getOwner() != i &&
 						p.getHitbox().collidesWith(bhit)) {
 					p.setHP(p.getHP() - (int)(bullet->getDamage() - p.getDef()));
@@ -246,7 +243,7 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 	}
 
 	for (size_t i = 0; i < gameState.players.size(); ++i) {
-		PlayerInfo& p = gameState.playerInfo[i];
+		PlayerInfo& p = gameState.players[i]->info;
 
 		// Step the timers in PlayerInfo
 		p.step(delay);

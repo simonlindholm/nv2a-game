@@ -3,7 +3,6 @@
 #include "mathutil.h"
 
 PlayerInfo::PlayerInfo() {
-	// XXX: Don't use hardcoded values
 	hitbox.add(shared_ptr<Shape>(new Circle(Coord(0, 0), 16)));
 	phitbox = rhitbox = hitbox;
 	angle = 0;
@@ -116,8 +115,14 @@ void PlayerInfo::step(unsigned int delay) {
 }
 
 
-Player::~Player() {}
+PlayerLogic::~PlayerLogic() {}
 
-void Player::setInfo(const PlayerInfo* info) {
+void PlayerLogic::initInfo(const PlayerInfo* info) {
 	this->info = info;
+}
+
+Player::Player(shared_ptr<PlayerLogic> plogic)
+	: info(), logic(plogic)
+{
+	logic->initInfo(&info);
 }

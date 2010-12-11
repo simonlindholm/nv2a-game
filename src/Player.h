@@ -74,8 +74,9 @@ class PlayerInfo {
 		void step(unsigned int delay);
 };
 
-// An abstract class describing a player in the game
-class Player {
+// An abstract class describing the logic of a player (instantiated by classes
+// like StupidAIPlayer, HumanPlayer, etc.)
+class PlayerLogic {
 	protected:
 		// The external state of the player
 		const PlayerInfo* info;
@@ -89,13 +90,26 @@ class Player {
 			double angle;
 		};
 
-		virtual ~Player() = 0;
+		virtual ~PlayerLogic() = 0;
 
 		// Returns what actions the player performs this frame, given the state
 		// of the game and the delay since last frame
 		virtual Action move(const GameState& game, unsigned int delay) = 0;
 
 		// Initialize the external state of a player. Must be called before
-		// any other function is used.
-		void setInfo(const PlayerInfo* info);
+		// any other function is used, and may not be called twice.
+		void initInfo(const PlayerInfo* info);
+};
+
+// A class describing a player, holds the info and the logic objects
+class Player {
+	public:
+		PlayerInfo info;
+		shared_ptr<PlayerLogic> logic;
+		Player(shared_ptr<PlayerLogic> plogic);
+	private:
+		// Copy constructor and assignment operator are left undefined since
+		// Player has no copy semantics
+		Player(const Player&); 
+		Player& operator=(const Player&);
 };

@@ -13,7 +13,7 @@ StupidAIPlayer::StupidAIPlayer(const std::vector<Coord>& checkpoints)
 }
 
 // Move the player in some (rather stupid) way
-Player::Action StupidAIPlayer::move(const GameState& game, unsigned int delay) {
+PlayerLogic::Action StupidAIPlayer::move(const GameState& game, unsigned int delay) {
 	Action ret;
 
 	Coord towards = this->checkpoints[this->moveInd];
@@ -42,16 +42,16 @@ Player::Action StupidAIPlayer::move(const GameState& game, unsigned int delay) {
 	// Calculate the angle of sight
 	if (targetInd == -1) {
 		for (size_t i = 0; i < game.players.size(); ++i) {
-			if (game.players[i].get() != this) {
+			if (game.players[i]->logic.get() != this) {
 				targetInd = static_cast<int>(i);
 				break;
 			}
 		}
 	}
-	Coord targetPos = game.playerInfo[targetInd].getPosition();
+	Coord targetPos = game.players[targetInd]->info.getPosition();
 	double dx = targetPos.x - pos.x;
 	double dy = targetPos.y - pos.y;
-	ret.angle = atan2(-dy, dx);
+	ret.angle = std::atan2(-dy, dx);
 
 	// Handle random shooting
 	ret.shooting = false;

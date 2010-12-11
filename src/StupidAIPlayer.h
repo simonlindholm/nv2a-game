@@ -6,7 +6,7 @@
 
 // Implements a simple, stupid, opponent player
 // (this file is to be removed later)
-class StupidAIPlayer : public Player {
+class StupidAIPlayer : public PlayerLogic {
 	private:
 		std::vector<Coord> checkpoints;
 		size_t moveInd;

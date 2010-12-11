@@ -39,7 +39,7 @@ Frame* StartFrame::frame(SDL_Surface* screen, unsigned int delay) {
 		level.startPoints.push_back(Coord(600, 320));
 	}
 
-	std::vector<shared_ptr<Player> > enemies;
+	std::vector<shared_ptr<PlayerLogic> > enemies;
 	{
 		std::vector<Coord> coords;
 		coords.push_back(Coord(40, 230));
@@ -53,7 +53,7 @@ Frame* StartFrame::frame(SDL_Surface* screen, unsigned int delay) {
 		coords.push_back(Coord(230, 425));
 		coords.push_back(Coord(205, 320));
 		coords.push_back(Coord(70, 285));
-		shared_ptr<Player> enemy(new StupidAIPlayer(coords));
+		shared_ptr<PlayerLogic> enemy(new StupidAIPlayer(coords));
 		enemies.push_back(enemy);
 	}
 	return new GameFrame(level, enemies);

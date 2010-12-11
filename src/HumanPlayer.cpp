@@ -78,17 +78,19 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 	// And lastly the players
 	for (size_t i = 0; i < game.players.size(); ++i) {
 		const Player& pl = *game.players[i];
-		const PlayerInfo& p = game.playerInfo[i];
+		const PlayerInfo& p = pl.info;
 		Coord pos = p.getPosition();
 		int angle = radToIntDeg(p.getAngle());
 
-		if (&pl == this) {
+		if (pl.logic.get() == this) {
 			// Let yourself have a separate appearance
 			drawCenteredSurface(pos, rCache.getRotatedImg(RotatedImages::Human, angle), screen);
 
 			// Show player's HP bar in the lower left corner
 			SDL_Rect clipHP = {(Sint16)(1.5*(100 - p.getHP())), 0, 150, 15};
-			SDL_Rect HPpos = {(Sint16)(screen->h / 30), (Sint16)(screen->h - (screen->h / 15)), 0, 0};
+			SDL_Rect HPpos;
+			HPpos.x = (Sint16)(cfg.winHeight / 30);
+			HPpos.y = (Sint16)(cfg.winHeight - (cfg.winHeight / 15));
 			SDL_BlitSurface(rCache.getImg(StaticImages::PlayerHP), &clipHP, screen, &HPpos);
 		}
 		else {
@@ -102,7 +104,7 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 }
 
 // Calculate movement of player
-Player::Action HumanPlayer::move(const GameState& game, unsigned int delay) {
+PlayerLogic::Action HumanPlayer::move(const GameState& game, unsigned int delay) {
 	bool atCursor = false;
 	double angle = info->getAngle();
 
@@ -175,7 +177,7 @@ Player::Action HumanPlayer::move(const GameState& game, unsigned int delay) {
 		}
 	}
 
-	Player::Action a;
+	Action a;
 	a.mx = mx;
 	a.my = my;
 	a.shooting = this->shooting;

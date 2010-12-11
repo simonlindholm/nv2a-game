@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 // Singleton struct for holding configuration settings, such as window
 // dimensions, FPS, keybinds, etc.

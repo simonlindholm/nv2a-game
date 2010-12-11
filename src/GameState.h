@@ -12,7 +12,6 @@ struct GameState {
 	Level level;
 
 	std::vector<shared_ptr<Player> > players;
-	std::vector<PlayerInfo> playerInfo;
 	std::list<shared_ptr<Bullet> > bullets;
 
 	std::list<shared_ptr<Item> > items;

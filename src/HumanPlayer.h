@@ -4,7 +4,7 @@
 #include "util.h"
 
 // Implements a player controlled by the user
-class HumanPlayer : public Player {
+class HumanPlayer : public PlayerLogic {
 	private:
 		int vx, vy;
 		Coord mouse;
