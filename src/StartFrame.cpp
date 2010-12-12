@@ -29,14 +29,14 @@ Frame* StartFrame::frame(SDL_Surface* screen, unsigned int delay) {
 		level.wall.add(shared_ptr<Shape>(new Rectangle(Coord(0, 370), 175, 5)));
 		level.wall.add(shared_ptr<Shape>(new Rectangle(Coord(470, 0), 5, 164)));
 
-		level.startPoints.push_back(Coord(40, 230));
-		level.startPoints.push_back(Coord(510, 35));
-		level.startPoints.push_back(Coord(600, 425));
+		level.startingPoints.push_back(Coord(40, 230));
+		level.startingPoints.push_back(Coord(510, 35));
+		level.startingPoints.push_back(Coord(600, 425));
 
-		level.spawnPoints = level.startPoints;
-		level.startPoints.push_back(Coord(50, 45));
-		level.startPoints.push_back(Coord(590, 135));
-		level.startPoints.push_back(Coord(600, 320));
+		level.respawnPoints = level.startingPoints;
+		level.respawnPoints.push_back(Coord(50, 45));
+		level.respawnPoints.push_back(Coord(590, 135));
+		level.respawnPoints.push_back(Coord(600, 320));
 	}
 
 	std::vector<shared_ptr<PlayerLogic> > enemies;
@@ -44,11 +44,10 @@ Frame* StartFrame::frame(SDL_Surface* screen, unsigned int delay) {
 		std::vector<Coord> coords;
 		coords.push_back(Coord(40, 230));
 		coords.push_back(Coord(140, 120));
-		coords.push_back(Coord(280, 115));
-		coords.push_back(Coord(350, 70));
-		coords.push_back(Coord(435, 140));
-		coords.push_back(Coord(440, 310));
-		coords.push_back(Coord(490, 385));
+		coords.push_back(Coord(260, 115));
+		coords.push_back(Coord(310, 45));
+		coords.push_back(Coord(490, 220));
+		coords.push_back(Coord(490, 340));
 		coords.push_back(Coord(490, 425));
 		coords.push_back(Coord(230, 425));
 		coords.push_back(Coord(205, 320));

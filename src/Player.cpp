@@ -117,6 +117,8 @@ void PlayerInfo::step(unsigned int delay) {
 
 PlayerLogic::~PlayerLogic() {}
 
+void PlayerLogic::signalSpawn() {}
+
 void PlayerLogic::initInfo(const PlayerInfo* info) {
 	this->info = info;
 }

@@ -96,6 +96,11 @@ class PlayerLogic {
 		// of the game and the delay since last frame
 		virtual Action move(const GameState& game, unsigned int delay) = 0;
 
+		// Signal to the player that they have respawned. (Note: The
+		// signaling system should probably be changed to use events when
+		// it grows big enough.)
+		virtual void signalSpawn();
+
 		// Initialize the external state of a player. Must be called before
 		// any other function is used, and may not be called twice.
 		void initInfo(const PlayerInfo* info);
