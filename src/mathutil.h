@@ -15,6 +15,9 @@ int radToIntDeg(double rad);
 // Calculate the hypotenuse in a right triangle with sides a and b, ie. sqrt(a*a+b*b)
 double pyth(double a, double b);
 
+// Calculate the square of the euclidean distance between to points
+double distsq(const Coord& a, const Coord& b);
+
 // Rotate a given point by an angle given by a unit vector 'avec'
 Coord rotatePointVec(const Coord& point, const Coord& avec);
 

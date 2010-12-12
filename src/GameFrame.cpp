@@ -1,4 +1,5 @@
 #include <SDL/SDL.h>
+#include <algorithm>
 #include <cmath>
 #include "GameFrame.h"
 #include "SDL_helpers.h"
@@ -24,12 +25,14 @@ GameFrame::GameFrame(const Level& level,
 
 	gameState.level = level;
 
-	// TODO: Start at the points given by level.startPoints instead. (The
-	// AI doesn't handle random starting positions very well yet, though.)
-	Coord startingPos[] = {Coord(40, 230), Coord(600, 425)};
-	size_t stSize = sizeof startingPos/sizeof *startingPos;
-	for (size_t i = 0; i < gameState.players.size() && i < stSize; ++i) {
-		gameState.players[i]->info.moveTo(startingPos[i]);
+	// Start the players at random positions, avoiding collisions by starting
+	// them at a rearrangement of the possible positions instead of choosing
+	// each position independently.
+	std::vector<Coord> stPoints = level.startingPoints;
+	std::random_shuffle(stPoints.begin(), stPoints.end());
+	for (size_t i = 0; i < gameState.players.size(); ++i) {
+		gameState.players[i]->info.moveTo(stPoints[i % stPoints.size()]);
+		gameState.players[i]->logic->signalSpawn();
 	}
 
 	// Add out-of-screen rectangles to act as boundaries
@@ -217,15 +220,23 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 		}
 		else {
 			for (size_t i = 0; i < gameState.players.size(); ++i) {
-				PlayerInfo& p = gameState.players[i]->info;
+				Player& pl = *gameState.players[i];
+				PlayerInfo& p = pl.info;
 				if (bullet->getOwner() != i &&
 						p.getHitbox().collidesWith(bhit)) {
 					p.setHP(p.getHP() - (int)(bullet->getDamage() - p.getDef()));
 					p.resetRegenTimer();
 
-					//TODO: Game over-screen when HP reaches zero instead of resetting HP
 					if(p.getHP() <= 0) {
+						// Player died, respawn at a random position
+						// TODO: Change this to something better.
+						// TODO: Reset buffs, timers, etc. This should probably
+						// be in a PlayerInfo member function, together with
+						// the HP reset.
+						std::vector<Coord>& rpoints = gameState.level.respawnPoints;
+						p.moveTo(rpoints[randTo(rpoints.size())]);
 						p.setHP(100);
+						pl.logic->signalSpawn();
 					}
 
 					del = true;

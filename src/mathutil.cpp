@@ -19,6 +19,11 @@ double pyth(double a, double b) {
 	return std::sqrt(a*a + b*b);
 }
 
+double distsq(const Coord& a, const Coord& b) {
+	double xd = a.x - b.x, yd = a.y - b.y;
+	return xd*xd + yd*yd;
+}
+
 Coord rotatePointVec(const Coord& point, const Coord& avec) {
 	Coord res;
 	res.x = point.x*avec.x - point.y*avec.y;

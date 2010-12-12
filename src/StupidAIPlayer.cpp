@@ -1,5 +1,6 @@
 #include <vector>
 #include <cmath>
+#include <cfloat>
 #include <cstdlib>
 #include "StupidAIPlayer.h"
 #include "GameState.h"
@@ -11,6 +12,22 @@ StupidAIPlayer::StupidAIPlayer(const std::vector<Coord>& checkpoints)
 {
 	this->shootDelay = randRange(1500, 2500);
 }
+
+void StupidAIPlayer::signalSpawn() {
+	// Set the AI to move to the nearest checkpoint, this makes a good
+	// heuristic for not getting stuck in things.
+	double nDist = DBL_MAX;
+	Coord pos = info->getPosition();
+	for (size_t i = 0; i < checkpoints.size(); ++i) {
+		Coord p = checkpoints[i];
+		double dsq = distsq(pos, p);
+		if (dsq < nDist) {
+			nDist = dsq;
+			this->moveInd = (int)i;
+		}
+	}
+}
+
 
 // Move the player in some (rather stupid) way
 PlayerLogic::Action StupidAIPlayer::move(const GameState& game, unsigned int delay) {

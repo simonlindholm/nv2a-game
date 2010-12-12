@@ -7,6 +7,6 @@
 struct Level {
 	SDL_Surface* bg;
 	Hitbox wall;
-	std::vector<Coord> startPoints;
-	std::vector<Coord> spawnPoints;
+	std::vector<Coord> startingPoints;
+	std::vector<Coord> respawnPoints;
 };
