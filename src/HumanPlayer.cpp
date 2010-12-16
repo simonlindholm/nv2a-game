@@ -12,15 +12,67 @@
 #include "Config.h"
 
 HumanPlayer::HumanPlayer() {
+	// Start off by not ignoring any keys
+	// (I'm not sure if this is the right choice.)
+	for (int i = 0; i < SDLK_LAST; ++i) {
+		ignoredKey[i] = false;
+	}
+	noIgnoredKeys = true;
+	initIgnKeys = false;
+}
+
+void HumanPlayer::signalSpawn() {
+	ignoreKeys();
+}
+
+void HumanPlayer::updateIgnoredKeys(Uint8* keyState) {
+	if (noIgnoredKeys) return;
+	if (initIgnKeys) {
+		// Signal to ignore all keys, set from ignoreKeys().
+		ignKeys.clear();
+		for (int i = 0; i < SDLK_LAST; ++i) {
+			ignoredKey[i] = keyState[i];
+			if (ignoredKey[i]) {
+				ignKeys.push_back(i);
+			}
+		}
+		initIgnKeys = false;
+		noIgnoredKeys = ignKeys.empty();
+		return;
+	}
+	std::list<int>::iterator it = ignKeys.begin(), end = ignKeys.end();
+	while (it != end) {
+		int key = *it;
+		if (!keyState[key]) {
+			ignoredKey[key] = false;
+			ignKeys.erase(it++);
+		}
+		else ++it;
+	}
+	noIgnoredKeys = ignKeys.empty();
+}
+
+void HumanPlayer::ignoreKeys() {
+	// Set a flag to ignore all keys on the next invocation of updateIgnoredKeys
+	// (because it is simpler to do with access to the key state, and the
+	// effect is exactly the same).
+	noIgnoredKeys = false;
+	initIgnKeys = true;
+}
+
+bool HumanPlayer::keyDown(Uint8* keyState, SDLKey key) {
+	return keyState[key] && !ignoredKey[key];
 }
 
 void HumanPlayer::startFrame(Uint8* keyState, Uint8 mouseState, int mouseX, int mouseY) {
+	updateIgnoredKeys(keyState);
+
 	// Calculate relative movement direction (ie. left, up, diagonal, etc.)
 	vx = vy = 0;
-	if (keyState[SDLK_w]) ++vy;
-	if (keyState[SDLK_a]) --vx;
-	if (keyState[SDLK_s]) --vy;
-	if (keyState[SDLK_d]) ++vx;
+	if (keyDown(keyState, SDLK_w)) ++vy;
+	if (keyDown(keyState, SDLK_a)) --vx;
+	if (keyDown(keyState, SDLK_s)) --vy;
+	if (keyDown(keyState, SDLK_d)) ++vx;
 
 	mouse.x = mouseX;
 	mouse.y = mouseY;
