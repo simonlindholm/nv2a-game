@@ -12,6 +12,7 @@ class StupidAIPlayer : public PlayerLogic {
 		size_t moveInd;
 		int targetInd;
 		int shootDelay;
+		int disDelay;
 	public:
 		StupidAIPlayer(const std::vector<Coord>& checkpoints);
 		virtual Action move(const GameState& game, unsigned int delay);

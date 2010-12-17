@@ -10,7 +10,8 @@
 StupidAIPlayer::StupidAIPlayer(const std::vector<Coord>& checkpoints)
 	: checkpoints(checkpoints), moveInd(0), targetInd(-1)
 {
-	this->shootDelay = randRange(1500, 2500);
+	shootDelay = randRange(1500, 2500);
+	disDelay = 800;
 }
 
 void StupidAIPlayer::signalSpawn() {
@@ -26,6 +27,10 @@ void StupidAIPlayer::signalSpawn() {
 			this->moveInd = (int)i;
 		}
 	}
+
+	// Let the AI become disDelay by spawning, and not shoot immediately
+	shootDelay = randRange(1500, 2500);
+	disDelay = 1000;
 }
 
 
@@ -41,7 +46,11 @@ PlayerLogic::Action StupidAIPlayer::move(const GameState& game, unsigned int del
 	double relY = towards.y - pos.y;
 	double dist = pyth(relX, relY);
 
-	if (dist <= mov) {
+	if (disDelay >= 800) {
+		// Player is sufficiently disoriented, don't move at all
+		ret.mx = ret.my = 0;
+	}
+	else if (dist <= mov) {
 		// Player can reach target in this step, teleport there
 		ret.mx = relX;
 		ret.my = relY;
@@ -69,6 +78,14 @@ PlayerLogic::Action StupidAIPlayer::move(const GameState& game, unsigned int del
 	double dx = targetPos.x - pos.x;
 	double dy = targetPos.y - pos.y;
 	ret.angle = std::atan2(-dy, dx);
+
+	if (disDelay > 0) {
+		// Introduce some errors in the aim when disoriented
+		ret.angle += disDelay * std::sin(disDelay / 260.0) / 1600.0;
+
+		// Step the disorientation timer
+		disDelay -= delay;
+	}
 
 	// Handle random shooting
 	ret.shooting = false;
