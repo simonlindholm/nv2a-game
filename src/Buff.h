@@ -7,10 +7,9 @@ class Buff {
 	private:
 		Timer buffTimer;
 	public:
-		virtual ~Buff();
+		Buff(unsigned int time);
 
-		// Set the buff timer
-		void setBuffTimer(unsigned int time);
+		virtual ~Buff();
 
 		// Step the buff timer by delay ms
 		void step(unsigned int delay);

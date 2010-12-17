@@ -1,11 +1,11 @@
 #include "Buff.h"
 #include "Player.h"
 
-Buff::~Buff() {}
-
-void Buff::setBuffTimer(unsigned int time) {
+Buff::Buff(unsigned int time) {
 	buffTimer.set(time);
 }
+
+Buff::~Buff() {}
 
 void Buff::step(unsigned int delay) {
 	if (buffTimer.isActive()) {
@@ -18,9 +18,8 @@ bool Buff::hasEnded() const {
 }
 
 
-ShieldBuff::ShieldBuff(PlayerInfo& pl) {
+ShieldBuff::ShieldBuff(PlayerInfo& pl) : Buff(5000) {
 	this->activate(pl);
-	this->setBuffTimer(5000);
 }
 
 void ShieldBuff::activate(PlayerInfo &pl) {
@@ -28,9 +27,8 @@ void ShieldBuff::activate(PlayerInfo &pl) {
 }
 
 
-SpeedBuff::SpeedBuff(PlayerInfo& pl) {
+SpeedBuff::SpeedBuff(PlayerInfo& pl) : Buff(6000) {
 	this->activate(pl);
-	this->setBuffTimer(6000);
 }
 
 void SpeedBuff::activate(PlayerInfo &pl) {

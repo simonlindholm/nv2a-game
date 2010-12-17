@@ -86,12 +86,12 @@ void PlayerInfo::addBuff(shared_ptr<Buff> buff) {
 	buffs.push_back(buff);
 }
 
-void PlayerInfo::resetAllBuffs() {
+void PlayerInfo::recalculateBuffs() {
 	resetStats();
-	std::list<shared_ptr<Buff> >::iterator buffIt = buffs.begin();
-	while (buffIt != buffs.end()) {
-		(*(*buffIt)).activate(*this);
-		++buffIt;
+	std::list<shared_ptr<Buff> >::iterator it = buffs.begin();
+	while (it != buffs.end()) {
+		(*it)->activate(*this);
+		++it;
 	}
 }
 
@@ -109,24 +109,24 @@ void PlayerInfo::step(unsigned int delay) {
 		}
 	}
 
-	// Buff logic:
-	// Erase the buff when the it ends, then call resetAllBuffs().
-	std::list<shared_ptr<Buff> >::iterator buffIt = buffs.begin();
-	while (buffIt != buffs.end())
+    // Walk through the list of active buffs to see if any of them have ended.
+    // If so, erase those from the list and recalculate the player state.
+	std::list<shared_ptr<Buff> >::iterator it = buffs.begin();
+	while (it != buffs.end())
 	{
 		bool del = false;
-		shared_ptr<Buff> currentBuff = *buffIt;
-		(*currentBuff).step(delay);
-		if ((*currentBuff).hasEnded()) {
+		shared_ptr<Buff> currentBuff = *it;
+		currentBuff->step(delay);
+		if (currentBuff->hasEnded()) {
 			del = true;
 		}
 
 		if (del) {
-			buffs.erase(buffIt++);
-			resetAllBuffs();
+			buffs.erase(it++);
+			recalculateBuffs();
 		}
 		else {
-			++buffIt;
+			++it;
 		}
 	}
 

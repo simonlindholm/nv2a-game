@@ -1,11 +1,11 @@
 #pragma once
+#include <list>
 #include "fwd.h"
 #include "util.h"
 #include "Hitbox.h"
 #include "Timer.h"
 #include "Buff.h"
 #include "shared_ptr.h"
-#include <list>
 
 // A class describing the external state of the player
 class PlayerInfo {
@@ -73,7 +73,7 @@ class PlayerInfo {
 		void addBuff(shared_ptr<Buff> buff);
 
 		// Resets all stats, then reactivates all buffs
-		void resetAllBuffs();
+		void recalculateBuffs();
 
 		// Performs relevant player-related logic during a frame, 
 		// such as regenerating HP and decreasing buff timers.
