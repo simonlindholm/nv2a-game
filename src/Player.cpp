@@ -74,17 +74,25 @@ void PlayerInfo::resetRegenTimer() {
 	second.set(0);
 }
 
-void PlayerInfo::setBuffTimer(unsigned int time) {
-	resetStats();
-	buffTimer.set(time);
-}
-
 void PlayerInfo::restartShotTimer() {
 	shotTimer.set(200);
 }
 
 bool PlayerInfo::canShoot() {
 	return shotTimer.isDone();
+}
+
+void PlayerInfo::addBuff(shared_ptr<Buff> buff) {
+	buffs.push_back(buff);
+}
+
+void PlayerInfo::resetAllBuffs() {
+	resetStats();
+	std::list<shared_ptr<Buff> >::iterator buffIt = buffs.begin();
+	while (buffIt != buffs.end()) {
+		(*(*buffIt)).activate(*this);
+		++buffIt;
+	}
 }
 
 void PlayerInfo::step(unsigned int delay) {
@@ -101,13 +109,24 @@ void PlayerInfo::step(unsigned int delay) {
 		}
 	}
 
-	// Buff timer logic:
-	// Reset the player's stats when the buff timer is done.
-	if (buffTimer.isActive()) {
-		buffTimer.step(delay);
-		if (buffTimer.isDone()) {
-			buffTimer.stop();
-			resetStats();
+	// Buff logic:
+	// Erase the buff when the it ends, then call resetAllBuffs().
+	std::list<shared_ptr<Buff> >::iterator buffIt = buffs.begin();
+	while (buffIt != buffs.end())
+	{
+		bool del = false;
+		shared_ptr<Buff> currentBuff = *buffIt;
+		(*currentBuff).step(delay);
+		if ((*currentBuff).hasEnded()) {
+			del = true;
+		}
+
+		if (del) {
+			buffs.erase(buffIt++);
+			resetAllBuffs();
+		}
+		else {
+			++buffIt;
 		}
 	}
 

@@ -3,6 +3,9 @@
 #include "util.h"
 #include "Hitbox.h"
 #include "Timer.h"
+#include "Buff.h"
+#include "shared_ptr.h"
+#include <list>
 
 // A class describing the external state of the player
 class PlayerInfo {
@@ -15,8 +18,8 @@ class PlayerInfo {
 		Coord pos;
 		double angle;
 		Timer regenTimer, second;
-		Timer buffTimer;
 		Timer shotTimer;
+		std::list<shared_ptr<Buff> > buffs;
 
 	public:
 		PlayerInfo();
@@ -60,14 +63,17 @@ class PlayerInfo {
 		// Resets HP regeneration timers
 		void resetRegenTimer();
 
-		// Set the buff timer
-		void setBuffTimer(unsigned int time);
-
 		// Restart the shot timer
 		void restartShotTimer();
 
 		// Check if the shot timer is done
 		bool canShoot();
+
+		// Add a buff to the list of currently active buffs
+		void addBuff(shared_ptr<Buff> buff);
+
+		// Resets all stats, then reactivates all buffs
+		void resetAllBuffs();
 
 		// Performs relevant player-related logic during a frame, 
 		// such as regenerating HP and decreasing buff timers.

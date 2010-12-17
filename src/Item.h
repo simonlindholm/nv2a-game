@@ -4,7 +4,7 @@
 #include "fwd.h"
 #include "util.h"
 
-// Abstract class symbolising an item
+// Abstract class symbolizing an item
 class Item {
 	private:
 		Coord pos;

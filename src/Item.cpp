@@ -1,6 +1,8 @@
 #include "Item.h"
 #include "Player.h"
 #include "Hitbox.h"
+#include "Buff.h"
+#include "shared_ptr.h"
 
 Item::~Item() {}
 
@@ -41,8 +43,8 @@ ShieldItem::ShieldItem(const Coord& pos) {
 }
 
 void ShieldItem::use(PlayerInfo& pl) {
-	pl.setBuffTimer(5000);
-	pl.setDef(10);
+	shared_ptr<Buff> shieldBuff(new ShieldBuff(pl));
+	pl.addBuff(shieldBuff);
 }
 
 StaticImages::Id ShieldItem::getImage() const {
@@ -57,8 +59,8 @@ SpeedItem::SpeedItem(const Coord& pos) {
 }
 
 void SpeedItem::use(PlayerInfo &pl) {
-	pl.setBuffTimer(6000);
-	pl.setSpeed(0.3);
+	shared_ptr<Buff> speedBuff(new SpeedBuff(pl));
+	pl.addBuff(speedBuff);
 }
 
 StaticImages::Id SpeedItem::getImage() const {
