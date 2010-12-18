@@ -10,8 +10,7 @@
 StupidAIPlayer::StupidAIPlayer(const std::vector<Coord>& checkpoints)
 	: checkpoints(checkpoints), moveInd(0), targetInd(-1)
 {
-	shootDelay = randRange(1500, 2500);
-	disDelay = 800;
+	// shootDelay and disDelay will get initialized on spawn, so do nothing.
 }
 
 void StupidAIPlayer::signalSpawn() {
@@ -29,7 +28,7 @@ void StupidAIPlayer::signalSpawn() {
 	}
 
 	// Let the AI become disDelay by spawning, and not shoot immediately
-	shootDelay = randRange(1500, 2500);
+	shootDelay = 700;
 	disDelay = 1000;
 }
 
@@ -92,7 +91,7 @@ PlayerLogic::Action StupidAIPlayer::move(const GameState& game, unsigned int del
 	this->shootDelay -= delay;
 	if (this->shootDelay <= 0) {
 		ret.shooting = true;
-		this->shootDelay = randRange(200, 1500);
+		this->shootDelay += randRange(200, 500);
 	}
 
 	return ret;

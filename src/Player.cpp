@@ -75,7 +75,7 @@ void PlayerInfo::resetRegenTimer() {
 }
 
 void PlayerInfo::restartShotTimer() {
-	shotTimer.set(200);
+	shotTimer.set(180);
 }
 
 bool PlayerInfo::canShoot() {
