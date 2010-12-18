@@ -22,9 +22,9 @@ ResourceCache::ResourceCache() {
 		// Load rotatable images
 		addRotatable("human.png", RotatedImages::Human);
 		addRotatable("enemy.png", RotatedImages::Enemy);
+		addRotatable("bullet.png", RotatedImages::Bullet);
 
 		// Load static images
-		addStatic("bullet.png", StaticImages::Bullet);
 		addStatic("player_HP.png", StaticImages::PlayerHP);
 		addStatic("enemy_HP.png", StaticImages::EnemyHP);
 		addStatic("item-mushroom.png", StaticImages::Mushroom);

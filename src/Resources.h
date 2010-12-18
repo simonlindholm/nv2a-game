@@ -2,7 +2,6 @@
 
 struct StaticImages {
 	enum Id {
-		Bullet,
 		PlayerHP,
 		EnemyHP,
 		Mushroom,
@@ -17,6 +16,7 @@ struct RotatedImages {
 	enum Id {
 		Human,
 		Enemy,
+		Bullet,
 		End
 	};
 };

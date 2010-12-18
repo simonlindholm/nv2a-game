@@ -93,13 +93,12 @@ void HumanPlayer::handleEvent(const SDL_Event& event) {
 }
 
 void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
-	// TODO: Paint player interface to screen
-	// (The GUI that includes score, weapons, etc. goes here)
-
-	SDL_Lock lock(screen);
-	SDL_FillRect(screen, 0, SDL_MapRGB(screen->format, 100, 0, 255));
 	ResourceCache& rCache = ResourceCache::get();
 	Config& cfg = Config::get();
+
+	// Fill the screen with a background color
+	SDL_Lock lock(screen);
+	SDL_FillRect(screen, 0, SDL_MapRGB(screen->format, 100, 0, 255));
 
 	// Draw the background
 	SDL_Rect bgPos;
@@ -127,8 +126,10 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 	while (bIter != bEnd) {
 		shared_ptr<Bullet> b = *bIter;
 		Coord pos = b->getPosition();
+		int angle = radToIntDeg(b->getAngle());
 
-		drawCenteredSurface(pos, rCache.getImg(StaticImages::Bullet), screen);
+		SDL_Surface* surf = rCache.getRotatedImg(RotatedImages::Bullet, angle);
+		drawCenteredSurface(pos, surf, screen);
 
 		++bIter;
 	}
