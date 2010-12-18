@@ -8,7 +8,7 @@
 // This is the 'game' state, where most of the logic should be located
 class GameFrame : public Frame {
 	private:
-		GameState gameState;
+		GameState gs;
 		shared_ptr<HumanPlayer> player;
 		void setItemTimer();
 		shared_ptr<Item> getRandomItem() const;

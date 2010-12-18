@@ -19,43 +19,43 @@ GameFrame::GameFrame(const Level& level,
 	player = shared_ptr<HumanPlayer>(new HumanPlayer);
 	for (size_t i = 0; i < enemies.size(); ++i) {
 		shared_ptr<Player> pl(new Player(enemies[i]));
-		gameState.players.push_back(pl);
+		gs.players.push_back(pl);
 	}
-	gameState.players.push_back(shared_ptr<Player>(new Player(player)));
+	gs.players.push_back(shared_ptr<Player>(new Player(player)));
 
-	gameState.level = level;
+	gs.level = level;
 
 	// Start the players at random positions, avoiding collisions by starting
 	// them at a rearrangement of the possible positions instead of choosing
 	// each position independently.
 	std::vector<Coord> stPoints = level.startingPoints;
 	std::random_shuffle(stPoints.begin(), stPoints.end());
-	for (size_t i = 0; i < gameState.players.size(); ++i) {
-		gameState.players[i]->info.moveTo(stPoints[i % stPoints.size()]);
-		gameState.players[i]->logic->signalSpawn();
+	for (size_t i = 0; i < gs.players.size(); ++i) {
+		gs.players[i]->info.moveTo(stPoints[i % stPoints.size()]);
+		gs.players[i]->logic->signalSpawn();
 	}
 
 	// Add out-of-screen rectangles to act as boundaries
 	const int wallSize = 500;
 	int sw = Config::get().winWidth, sh = Config::get().winHeight;
 
-	gameState.level.wall.add(shared_ptr<Shape>(new Rectangle(Coord(-wallSize, -wallSize),
+	gs.level.wall.add(shared_ptr<Shape>(new Rectangle(Coord(-wallSize, -wallSize),
 					sw + 2*wallSize, wallSize)));
-	gameState.level.wall.add(shared_ptr<Shape>(new Rectangle(Coord(-wallSize, -wallSize),
+	gs.level.wall.add(shared_ptr<Shape>(new Rectangle(Coord(-wallSize, -wallSize),
 					wallSize, sw + 2*wallSize)));
-	gameState.level.wall.add(shared_ptr<Shape>(new Rectangle(Coord(-wallSize, sh),
+	gs.level.wall.add(shared_ptr<Shape>(new Rectangle(Coord(-wallSize, sh),
 					sw + 2*wallSize, wallSize)));
-	gameState.level.wall.add(shared_ptr<Shape>(new Rectangle(Coord(sw, -wallSize),
+	gs.level.wall.add(shared_ptr<Shape>(new Rectangle(Coord(sw, -wallSize),
 					wallSize, sw + 2*wallSize)));
 
-	gameState.itemsLeft = 0;
+	gs.itemsLeft = 0;
 	this->setItemTimer();
 }
 
 void GameFrame::setItemTimer() {
 	const int maxItems = 2, minTime = 7000, maxTime = 10000;
-	if (gameState.itemsLeft < maxItems && !gameState.itemTimer.isActive()) {
-		gameState.itemTimer.set(randRange(minTime, maxTime));
+	if (gs.itemsLeft < maxItems && !gs.itemTimer.isActive()) {
+		gs.itemTimer.set(randRange(minTime, maxTime));
 	}
 }
 
@@ -67,7 +67,7 @@ shared_ptr<Item> GameFrame::getRandomItem() const {
 		pos.y = randRange(0, cfg.winHeight);
 		ItemFactory itemFactory;
 		shared_ptr<Item> ret = itemFactory.createItem(pos);
-		if (gameState.level.wall.collidesWith(ret->getHitbox())) continue;
+		if (gs.level.wall.collidesWith(ret->getHitbox())) continue;
 		return ret;
 	}
 }
@@ -96,7 +96,7 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 
 	// Move bullets
 	typedef std::list<shared_ptr<Bullet> >::iterator BulletIt;
-	BulletIt bIter = gameState.bullets.begin(), bEnd = gameState.bullets.end();
+	BulletIt bIter = gs.bullets.begin(), bEnd = gs.bullets.end();
 	while (bIter != bEnd) {
 		shared_ptr<Bullet> b = *bIter;
 		b->move(delay);
@@ -104,11 +104,11 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 	}
 
 	// Move all players
-	for (size_t i = 0; i < gameState.players.size(); ++i) {
-		Player& p = *gameState.players[i];
+	for (size_t i = 0; i < gs.players.size(); ++i) {
+		Player& p = *gs.players[i];
 		PlayerInfo& pinfo = p.info;
 
-		PlayerLogic::Action ac = p.logic->move(gameState, delay);
+		PlayerLogic::Action ac = p.logic->move(gs, delay);
 		Coord acm;
 		acm.x = ac.mx;
 		acm.y = ac.my;
@@ -123,11 +123,11 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 
 			// Collision detection, don't move against other players or the wall
 			Hitbox hbox = pinfo.getHitbox();
-			int stop = hbox.collidesWithSurf(gameState.level.wall, acm, nvec);
-			for (size_t j = 0; j < gameState.players.size(); ++j) {
+			int stop = hbox.collidesWithSurf(gs.level.wall, acm, nvec);
+			for (size_t j = 0; j < gs.players.size(); ++j) {
 				if (i == j) continue;
 				if (stop) break;
-				stop = hbox.collidesWithSurf(gameState.players[j]->info.getHitbox(), acm, nvec);
+				stop = hbox.collidesWithSurf(gs.players[j]->info.getHitbox(), acm, nvec);
 			}
 
 			if (stop) {
@@ -159,7 +159,7 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 		if (ac.shooting) {
 			if(pinfo.canShoot()) {
 				shared_ptr<Bullet> b(new Bullet(pinfo.getPosition(), pinfo.getAngle(), i));
-				gameState.bullets.push_back(b);
+				gs.bullets.push_back(b);
 				pinfo.restartShotTimer();
 			}
 		}
@@ -169,25 +169,25 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 	}
 
 	// Appearance of new items
-	gameState.itemTimer.step(delay);
-	if (gameState.itemTimer.isDone()) {
+	gs.itemTimer.step(delay);
+	if (gs.itemTimer.isDone()) {
 		shared_ptr<Item> newItem = this->getRandomItem();
-		gameState.items.push_back(newItem);
-		++gameState.itemsLeft;
-		gameState.itemTimer.stop();
+		gs.items.push_back(newItem);
+		++gs.itemsLeft;
+		gs.itemTimer.stop();
 		this->setItemTimer();
 	}
 
 	// Check item collisions
 	std::list<shared_ptr<Item> >::iterator iIter, iEnd;
-	iIter = gameState.items.begin();
-	iEnd = gameState.items.end();
+	iIter = gs.items.begin();
+	iEnd = gs.items.end();
 	while (iIter != iEnd) {
 		shared_ptr<Item> item = *iIter;
 		const Hitbox& ihit = item->getHitbox();
 		bool del = false;
-		for (size_t i = 0; i < gameState.players.size(); ++i) {
-			PlayerInfo& p = gameState.players[i]->info;
+		for (size_t i = 0; i < gs.players.size(); ++i) {
+			PlayerInfo& p = gs.players[i]->info;
 			if (p.getHitbox().collidesWith(ihit)) {
 				item->use(p);
 
@@ -197,8 +197,8 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 		}
 
 		if (del) {
-			gameState.items.erase(iIter++);
-			--gameState.itemsLeft;
+			gs.items.erase(iIter++);
+			--gs.itemsLeft;
 			this->setItemTimer();
 		}
 		else {
@@ -207,20 +207,20 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 	}
 
 	// Check collisions for bullets
-	bIter = gameState.bullets.begin();
-	bEnd = gameState.bullets.end();
+	bIter = gs.bullets.begin();
+	bEnd = gs.bullets.end();
 	while (bIter != bEnd) {
 		shared_ptr<Bullet> bullet = *bIter;
 		const Hitbox& bhit = bullet->getHitbox();
 		bool del = false;
 
-		if (bhit.collidesWith(gameState.level.wall)) {
+		if (bhit.collidesWith(gs.level.wall)) {
 			//TODO: Handle wall collision
 			del = true;
 		}
 		else {
-			for (size_t i = 0; i < gameState.players.size(); ++i) {
-				Player& pl = *gameState.players[i];
+			for (size_t i = 0; i < gs.players.size(); ++i) {
+				Player& pl = *gs.players[i];
 				PlayerInfo& p = pl.info;
 				if (bullet->getOwner() != i &&
 						p.getHitbox().collidesWith(bhit)) {
@@ -233,7 +233,7 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 						// TODO: Reset buffs, timers, etc. This should probably
 						// be in a PlayerInfo member function, together with
 						// the HP reset.
-						std::vector<Coord>& rpoints = gameState.level.respawnPoints;
+						std::vector<Coord>& rpoints = gs.level.respawnPoints;
 						p.moveTo(rpoints[randTo(rpoints.size())]);
 						p.setHP(100);
 						pl.logic->signalSpawn();
@@ -246,21 +246,21 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 		}
 
 		if (del) {
-			gameState.bullets.erase(bIter++);
+			gs.bullets.erase(bIter++);
 		}
 		else {
 			++bIter;
 		}
 	}
 
-	for (size_t i = 0; i < gameState.players.size(); ++i) {
-		PlayerInfo& p = gameState.players[i]->info;
+	for (size_t i = 0; i < gs.players.size(); ++i) {
+		PlayerInfo& p = gs.players[i]->info;
 
 		// Step the timers in PlayerInfo
 		p.step(delay);
 	}
 
 	// Draw the player interface
-	player->paint(gameState, screen);
+	player->paint(gs, screen);
 	return 0;
 }
