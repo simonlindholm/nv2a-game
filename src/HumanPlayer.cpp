@@ -12,23 +12,23 @@
 #include "Config.h"
 
 HumanPlayer::HumanPlayer() {
-	// Start off by not ignoring any keys
-	// (I'm not sure if this is the right choice.)
+	// Default-initialize ignored input state, this will get changed on spawn.
 	for (int i = 0; i < SDLK_LAST; ++i) {
 		ignoredKey[i] = false;
 	}
-	noIgnoredKeys = true;
-	initIgnKeys = false;
+	ignMouse = 0;
+	noIgnoredInput = true;
+	initIgnInput = false;
 }
 
 void HumanPlayer::signalSpawn() {
-	ignoreKeys();
+	ignoreInput();
 }
 
-void HumanPlayer::updateIgnoredKeys(Uint8* keyState) {
-	if (noIgnoredKeys) return;
-	if (initIgnKeys) {
-		// Signal to ignore all keys, set from ignoreKeys().
+void HumanPlayer::updateIgnoredInput(Uint8* keyState, Uint8 mouseState) {
+	if (noIgnoredInput) return;
+	if (initIgnInput) {
+		// Signal to ignore all keys, set from ignoreInput().
 		ignKeys.clear();
 		for (int i = 0; i < SDLK_LAST; ++i) {
 			ignoredKey[i] = keyState[i];
@@ -36,8 +36,9 @@ void HumanPlayer::updateIgnoredKeys(Uint8* keyState) {
 				ignKeys.push_back(i);
 			}
 		}
-		initIgnKeys = false;
-		noIgnoredKeys = ignKeys.empty();
+		ignMouse = mouseState;
+		initIgnInput = false;
+		noIgnoredInput = (ignKeys.empty() && ignMouse == 0);
 		return;
 	}
 	std::list<int>::iterator it = ignKeys.begin(), end = ignKeys.end();
@@ -49,36 +50,41 @@ void HumanPlayer::updateIgnoredKeys(Uint8* keyState) {
 		}
 		else ++it;
 	}
-	noIgnoredKeys = ignKeys.empty();
+	ignMouse &= mouseState;
+	noIgnoredInput = (ignKeys.empty() && ignMouse == 0);
 }
 
-void HumanPlayer::ignoreKeys() {
+void HumanPlayer::ignoreInput() {
 	// Set a flag to ignore all keys on the next invocation of updateIgnoredKeys
 	// (because it is simpler to do with access to the key state, and the
-	// effect is exactly the same).
-	noIgnoredKeys = false;
-	initIgnKeys = true;
+	// effect is the same).
+	noIgnoredInput = false;
+	initIgnInput = true;
 }
 
 bool HumanPlayer::keyDown(Uint8* keyState, SDLKey key) {
 	return keyState[key] && !ignoredKey[key];
 }
 
+bool HumanPlayer::mouseButtonDown(Uint8 mouseState, int button) {
+	return (mouseState & SDL_BUTTON(button) & ~ignMouse) ? true : false;
+}
+
 void HumanPlayer::startFrame(Uint8* keyState, Uint8 mouseState, int mouseX, int mouseY) {
-	updateIgnoredKeys(keyState);
+	updateIgnoredInput(keyState, mouseState);
 
 	// Calculate relative movement direction (ie. left, up, diagonal, etc.)
 	vx = vy = 0;
-	if (keyDown(keyState, SDLK_w)) ++vy;
-	if (keyDown(keyState, SDLK_a)) --vx;
-	if (keyDown(keyState, SDLK_s)) --vy;
-	if (keyDown(keyState, SDLK_d)) ++vx;
+	if (this->keyDown(keyState, SDLK_w)) ++vy;
+	if (this->keyDown(keyState, SDLK_a)) --vx;
+	if (this->keyDown(keyState, SDLK_s)) --vy;
+	if (this->keyDown(keyState, SDLK_d)) ++vx;
 
 	mouse.x = mouseX;
 	mouse.y = mouseY;
 
 	shooting = false;
-	if (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) shooting = true;
+	if (this->mouseButtonDown(mouseState, SDL_BUTTON_LEFT)) shooting = true;
 }
 
 void HumanPlayer::handleEvent(const SDL_Event& event) {

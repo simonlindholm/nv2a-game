@@ -10,13 +10,15 @@ class HumanPlayer : public PlayerLogic {
 		int vx, vy;
 		Coord mouse;
 		bool shooting;
-		bool initIgnKeys, noIgnoredKeys;
+		bool initIgnInput, noIgnoredInput;
 		bool ignoredKey[SDLK_LAST];
 		std::list<int> ignKeys;
+		Uint8 ignMouse;
 
-		void ignoreKeys();
+		void ignoreInput();
 		bool keyDown(Uint8* keyState, SDLKey key);
-		void updateIgnoredKeys(Uint8* keyState);
+		bool mouseButtonDown(Uint8 mouseState, int button);
+		void updateIgnoredInput(Uint8* keyState, Uint8 mouseState);
 	public:
 		HumanPlayer();
 		void startFrame(Uint8* keyState, Uint8 mouseState, int mouseX, int mouseY);
