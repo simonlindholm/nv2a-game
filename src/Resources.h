@@ -9,6 +9,7 @@ struct StaticImages {
 		Speed,
 		IconShield,
 		IconSpeed,
+		AuraShield,
 		LevelMap,
 		End
 	};

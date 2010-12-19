@@ -1,5 +1,6 @@
 #include "Buff.h"
 #include "Player.h"
+#include "ResourceCache.h"
 
 Buff::Buff(unsigned int time) {
 	buffTimer.set(time);
@@ -30,6 +31,11 @@ StaticImages::Id ShieldBuff::getIcon() const {
 	return StaticImages::IconShield;
 }
 
+SDL_Surface* ShieldBuff::getPlayerAura() const {
+	ResourceCache& rCache = ResourceCache::get();
+	return rCache.getImg(StaticImages::AuraShield);
+}
+
 
 SpeedBuff::SpeedBuff(PlayerInfo& pl) : Buff(6000) {
 	this->activate(pl);
@@ -41,4 +47,8 @@ void SpeedBuff::activate(PlayerInfo &pl) {
 
 StaticImages::Id SpeedBuff::getIcon() const {
 	return StaticImages::IconSpeed;
+}
+
+SDL_Surface* SpeedBuff::getPlayerAura() const {
+	return NULL;
 }

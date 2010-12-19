@@ -86,7 +86,7 @@ void PlayerInfo::addBuff(shared_ptr<Buff> buff) {
 	buffs.push_back(buff);
 }
 
-std::list<shared_ptr<Buff> > PlayerInfo::getBuffs() const {
+const std::list<shared_ptr<Buff> >& PlayerInfo::getBuffs() const {
 	return buffs;
 }
 
@@ -113,8 +113,8 @@ void PlayerInfo::step(unsigned int delay) {
 		}
 	}
 
-    // Walk through the list of active buffs to see if any of them have ended.
-    // If so, erase those from the list and recalculate the player state.
+	// Walk through the list of active buffs to see if any of them have ended.
+	// If so, erase those from the list and recalculate the player state.
 	std::list<shared_ptr<Buff> >::iterator it = buffs.begin();
 	while (it != buffs.end())
 	{

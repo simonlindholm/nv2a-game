@@ -140,6 +140,7 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 		const PlayerInfo& p = pl.info;
 		Coord pos = p.getPosition();
 		int angle = radToIntDeg(p.getAngle());
+		std::list<shared_ptr<Buff> > buffs = pl.info.getBuffs();
 
 		if (pl.logic.get() == this) {
 			// Let yourself have a separate appearance
@@ -153,7 +154,6 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 			SDL_BlitSurface(rCache.getImg(StaticImages::PlayerHP), &clipHP, screen, &HPpos);
 
 			// Show icons symbolizing the player's active buffs above the HP bar
-			std::list<shared_ptr<Buff> > buffs = pl.info.getBuffs();
 			std::list<shared_ptr<Buff> >::iterator it = buffs.begin();
 			int i = 0;
 			while (it != buffs.end()) {
@@ -169,6 +169,16 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 			SDL_Rect clipHP = {(Sint16)(0.6*(100 - p.getHP())), 0, 60, 8};
 			SDL_Rect HPpos = {(Sint16)(pos.x - 30), (Sint16)(pos.y - 30), 0, 0};
 			SDL_BlitSurface(rCache.getImg(StaticImages::EnemyHP), &clipHP, screen, &HPpos);
+		}
+
+		// Show buff indicators such as auras around the player
+		std::list<shared_ptr<Buff> >::iterator it = buffs.begin();
+		while (it != buffs.end()) {
+			if ((*it)->getPlayerAura() != NULL) {
+				SDL_Rect iconPos = {(Sint16)(pos.x - 29), (Sint16)(pos.y - 28), 0, 0};
+				SDL_BlitSurface((*it)->getPlayerAura(), NULL, screen, &iconPos);
+			}
+			++it;
 		}
 	}
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include <SDL/SDL.h>
 #include "Timer.h"
 #include "Resources.h"
 #include "fwd.h"
@@ -23,6 +24,9 @@ class Buff {
 
 		// Get the buff icon
 		virtual StaticImages::Id getIcon() const = 0;
+
+		// Get the indicator for the buff
+		virtual SDL_Surface* getPlayerAura() const = 0;
 };
 
 class ShieldBuff : public Buff {
@@ -30,6 +34,7 @@ class ShieldBuff : public Buff {
 		ShieldBuff(PlayerInfo& pl);
 		virtual void activate(PlayerInfo& pl);
 		virtual StaticImages::Id getIcon() const;
+		virtual SDL_Surface* getPlayerAura() const;
 };
 
 class SpeedBuff : public Buff {
@@ -37,4 +42,5 @@ class SpeedBuff : public Buff {
 		SpeedBuff(PlayerInfo& pl);
 		virtual void activate(PlayerInfo& pl);
 		virtual StaticImages::Id getIcon() const;
+		virtual SDL_Surface* getPlayerAura() const;
 };

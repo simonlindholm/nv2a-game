@@ -32,6 +32,7 @@ ResourceCache::ResourceCache() {
 		addStatic("item-speed.png", StaticImages::Speed);
 		addStatic("icon-shield.png", StaticImages::IconShield);
 		addStatic("icon-speed.png", StaticImages::IconSpeed);
+		addStatic("aura-shield.png", StaticImages::AuraShield);
 		addStatic("map.png", StaticImages::LevelMap);
 	}
 	catch (...) {
