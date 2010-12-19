@@ -151,6 +151,17 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 			HPpos.x = (Sint16)(cfg.winHeight / 30);
 			HPpos.y = (Sint16)(cfg.winHeight - (cfg.winHeight / 15));
 			SDL_BlitSurface(rCache.getImg(StaticImages::PlayerHP), &clipHP, screen, &HPpos);
+
+			// Show icons symbolizing the player's active buffs above the HP bar
+			std::list<shared_ptr<Buff> > buffs = pl.info.getBuffs();
+			std::list<shared_ptr<Buff> >::iterator it = buffs.begin();
+			int i = 0;
+			while (it != buffs.end()) {
+				SDL_Rect iconPos = {(HPpos.x + i * 30), (HPpos.y - 30), 0, 0};
+				SDL_BlitSurface(rCache.getImg((*it)->getIcon()), NULL, screen, &iconPos);
+				++it;
+				++i;
+			}
 		}
 		else {
 			drawCenteredSurface(pos, rCache.getRotatedImg(RotatedImages::Enemy, angle), screen);

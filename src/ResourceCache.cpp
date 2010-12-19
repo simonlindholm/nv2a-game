@@ -30,6 +30,8 @@ ResourceCache::ResourceCache() {
 		addStatic("item-mushroom.png", StaticImages::Mushroom);
 		addStatic("item-shield.png", StaticImages::Shield);
 		addStatic("item-speed.png", StaticImages::Speed);
+		addStatic("icon-shield.png", StaticImages::IconShield);
+		addStatic("icon-speed.png", StaticImages::IconSpeed);
 		addStatic("map.png", StaticImages::LevelMap);
 	}
 	catch (...) {

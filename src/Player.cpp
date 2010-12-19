@@ -86,6 +86,10 @@ void PlayerInfo::addBuff(shared_ptr<Buff> buff) {
 	buffs.push_back(buff);
 }
 
+std::list<shared_ptr<Buff> > PlayerInfo::getBuffs() const {
+	return buffs;
+}
+
 void PlayerInfo::recalculateBuffs() {
 	resetStats();
 	std::list<shared_ptr<Buff> >::iterator it = buffs.begin();

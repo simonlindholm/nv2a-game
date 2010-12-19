@@ -72,6 +72,9 @@ class PlayerInfo {
 		// Add a buff to the list of currently active buffs
 		void addBuff(shared_ptr<Buff> buff);
 
+		// Get the list containing the player's currently active buffs
+		std::list<shared_ptr<Buff> > getBuffs() const;
+
 		// Resets all stats, then reactivates all buffs
 		void recalculateBuffs();
 

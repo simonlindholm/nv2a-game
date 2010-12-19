@@ -7,6 +7,8 @@ struct StaticImages {
 		Mushroom,
 		Shield,
 		Speed,
+		IconShield,
+		IconSpeed,
 		LevelMap,
 		End
 	};

@@ -26,6 +26,10 @@ void ShieldBuff::activate(PlayerInfo &pl) {
 	pl.setDef(10);
 }
 
+StaticImages::Id ShieldBuff::getIcon() const {
+	return StaticImages::IconShield;
+}
+
 
 SpeedBuff::SpeedBuff(PlayerInfo& pl) : Buff(6000) {
 	this->activate(pl);
@@ -33,4 +37,8 @@ SpeedBuff::SpeedBuff(PlayerInfo& pl) : Buff(6000) {
 
 void SpeedBuff::activate(PlayerInfo &pl) {
 	pl.setSpeed(0.3);
+}
+
+StaticImages::Id SpeedBuff::getIcon() const {
+	return StaticImages::IconSpeed;
 }
