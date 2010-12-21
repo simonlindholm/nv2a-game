@@ -21,6 +21,12 @@ HumanPlayer::HumanPlayer() {
 	initIgnInput = false;
 }
 
+void HumanPlayer::startGame(const GameState& game) {
+	Config& cfg = Config::get();
+	bgPos.x = (cfg.winWidth - game.level.bg->w) / 2;
+	bgPos.y = (cfg.winHeight - game.level.bg->h) / 2;
+}
+
 void HumanPlayer::signalSpawn() {
 	ignoreInput();
 }
@@ -101,9 +107,6 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 	SDL_FillRect(screen, 0, SDL_MapRGB(screen->format, 100, 0, 255));
 
 	// Draw the background
-	SDL_Rect bgPos;
-	bgPos.x = (cfg.winWidth - game.level.bg->w) / 2;
-	bgPos.y = (cfg.winHeight - game.level.bg->h) / 2;
 	SDL_BlitSurface(game.level.bg, 0, screen, &bgPos);
 
 	// Draw the items
@@ -113,7 +116,11 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 	while (iIter != iEnd) {
 		const Item& item = **iIter;
 		StaticImages::Id img = item.getImage();
+
+		// Get the position relative to the screen
 		Coord pos = item.getPosition();
+		pos.x += bgPos.x;
+		pos.y += bgPos.y;
 
 		drawCenteredSurface(pos, rCache.getImg(img), screen);
 
@@ -125,8 +132,10 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 	BulletIt bIter = game.bullets.begin(), bEnd = game.bullets.end();
 	while (bIter != bEnd) {
 		shared_ptr<Bullet> b = *bIter;
-		Coord pos = b->getPosition();
 		int angle = radToIntDeg(b->getAngle());
+		Coord pos = b->getPosition();
+		pos.x += bgPos.x;
+		pos.y += bgPos.y;
 
 		SDL_Surface* surf = rCache.getRotatedImg(RotatedImages::Bullet, angle);
 		drawCenteredSurface(pos, surf, screen);
@@ -139,6 +148,8 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 		const Player& pl = *game.players[i];
 		const PlayerInfo& p = pl.info;
 		Coord pos = p.getPosition();
+		pos.x += bgPos.x;
+		pos.y += bgPos.y;
 		int angle = radToIntDeg(p.getAngle());
 		std::list<shared_ptr<Buff> > buffs = pl.info.getBuffs();
 
@@ -172,13 +183,14 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 		}
 
 		// Show buff indicators such as auras around the player
-		std::list<shared_ptr<Buff> >::iterator it = buffs.begin();
-		while (it != buffs.end()) {
-			if ((*it)->getPlayerAura() != NULL) {
+		std::list<shared_ptr<Buff> >::iterator buffIt = buffs.begin();
+		while (buffIt != buffs.end()) {
+			SDL_Surface* aura = (*buffIt)->getPlayerAura();
+			if (aura) {
 				SDL_Rect iconPos = {(Sint16)(pos.x - 29), (Sint16)(pos.y - 28), 0, 0};
-				SDL_BlitSurface((*it)->getPlayerAura(), NULL, screen, &iconPos);
+				SDL_BlitSurface(aura, NULL, screen, &iconPos);
 			}
-			++it;
+			++buffIt;
 		}
 	}
 }
@@ -187,19 +199,22 @@ void HumanPlayer::paint(const GameState& game, SDL_Surface* screen) {
 PlayerLogic::Action HumanPlayer::move(const GameState& game, unsigned int delay) {
 	bool atCursor = false;
 	double angle = info->getAngle();
+	Coord mpos = mouse;
+	mpos.x -= bgPos.x;
+	mpos.y -= bgPos.y;
 
 	// Find forward angle
 	Coord pos = info->getPosition();
-	double relX = mouse.x - pos.x;
-	double relY = mouse.y - pos.y;
-	if (fpEqual(pos.x, mouse.x, 2) && fpEqual(pos.y, mouse.y, 2)) {
+	double relX = mpos.x - pos.x;
+	double relY = mpos.y - pos.y;
+	if (fpEqual(pos.x, mpos.x, 2) && fpEqual(pos.y, mpos.y, 2)) {
 		// The player is at the cursor; only move backwards, and retain the
 		// old angle of movement (since we can't calculate a new one, and it
 		// is nice to be able to back out again the same way we came.)
 		atCursor = true;
 	}
 	else {
-		// The vector (mouse - pos) in standard, mathy form is (relX, -relY)
+		// The vector (mpos - pos) in standard, mathy form is (relX, -relY)
 		angle = std::atan2(-relY, relX);
 	}
 
@@ -230,8 +245,8 @@ PlayerLogic::Action HumanPlayer::move(const GameState& game, unsigned int delay)
 
 			mAngle += angle;
 
-			double nx = mouse.x - cursorDist * std::cos(mAngle);
-			double ny = mouse.y + cursorDist * std::sin(mAngle);
+			double nx = mpos.x - cursorDist * std::cos(mAngle);
+			double ny = mpos.y + cursorDist * std::sin(mAngle);
 			mx = nx - pos.x;
 			my = ny - pos.y;
 		}

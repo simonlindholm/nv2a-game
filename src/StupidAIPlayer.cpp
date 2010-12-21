@@ -8,9 +8,19 @@
 #include "mathutil.h"
 
 StupidAIPlayer::StupidAIPlayer(const std::vector<Coord>& checkpoints)
-	: checkpoints(checkpoints), moveInd(0), targetInd(-1)
+	: checkpoints(checkpoints), moveInd(0)
 {
-	// shootDelay and disDelay will get initialized on spawn, so do nothing.
+	// shootDelay and disDelay will get initialized on spawn, and targetInd
+	// will be set when the game begins, so we don't need to initialize those.
+}
+
+void StupidAIPlayer::startGame(const GameState& game) {
+	for (size_t i = 0; i < game.players.size(); ++i) {
+		if (game.players[i]->logic.get() != this) {
+			targetInd = i;
+			break;
+		}
+	}
 }
 
 void StupidAIPlayer::signalSpawn() {
@@ -65,14 +75,6 @@ PlayerLogic::Action StupidAIPlayer::move(const GameState& game, unsigned int del
 	}
 
 	// Calculate the angle of sight
-	if (targetInd == -1) {
-		for (size_t i = 0; i < game.players.size(); ++i) {
-			if (game.players[i]->logic.get() != this) {
-				targetInd = static_cast<int>(i);
-				break;
-			}
-		}
-	}
 	Coord targetPos = game.players[targetInd]->info.getPosition();
 	double dx = targetPos.x - pos.x;
 	double dy = targetPos.y - pos.y;

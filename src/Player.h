@@ -101,6 +101,10 @@ class PlayerLogic {
 
 		virtual ~PlayerLogic() = 0;
 
+		// Signal to the player that the game has started, supplying game
+		// state information. This is called before the players spawn.
+		virtual void startGame(const GameState& game);
+
 		// Returns what actions the player performs this frame, given the state
 		// of the game and the delay since last frame
 		virtual Action move(const GameState& game, unsigned int delay) = 0;

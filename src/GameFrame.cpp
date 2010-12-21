@@ -7,7 +7,6 @@
 #include "Timer.h"
 #include "Bullet.h"
 #include "ItemFactory.h"
-#include "Config.h"
 #include "util.h"
 #include "mathutil.h"
 #include "exceptions.h"
@@ -25,19 +24,9 @@ GameFrame::GameFrame(const Level& level,
 
 	gs.level = level;
 
-	// Start the players at random positions, avoiding collisions by starting
-	// them at a rearrangement of the possible positions instead of choosing
-	// each position independently.
-	std::vector<Coord> stPoints = level.startingPoints;
-	std::random_shuffle(stPoints.begin(), stPoints.end());
-	for (size_t i = 0; i < gs.players.size(); ++i) {
-		gs.players[i]->info.moveTo(stPoints[i % stPoints.size()]);
-		gs.players[i]->logic->signalSpawn();
-	}
-
 	// Add out-of-screen rectangles to act as boundaries
 	const int wallSize = 500;
-	int sw = Config::get().winWidth, sh = Config::get().winHeight;
+	int sw = gs.level.bg->w, sh = gs.level.bg->h;
 
 	gs.level.wall.add(shared_ptr<Shape>(new Rectangle(Coord(-wallSize, -wallSize),
 					sw + 2*wallSize, wallSize)));
@@ -48,8 +37,24 @@ GameFrame::GameFrame(const Level& level,
 	gs.level.wall.add(shared_ptr<Shape>(new Rectangle(Coord(sw, -wallSize),
 					wallSize, sw + 2*wallSize)));
 
+	// Set up the item appearance logic
 	gs.itemsLeft = 0;
 	this->setItemTimer();
+
+	// Tell the players that the game has started
+	for (size_t i = 0; i < gs.players.size(); ++i) {
+		gs.players[i]->logic->startGame(gs);
+	}
+
+	// Let the players spawn at random locations, avoiding collisions by
+	// starting them at a rearrangement of the possible positions instead of
+	// choosing each position independently.
+	std::vector<Coord> stPoints = level.startingPoints;
+	std::random_shuffle(stPoints.begin(), stPoints.end());
+	for (size_t i = 0; i < gs.players.size(); ++i) {
+		gs.players[i]->info.moveTo(stPoints[i % stPoints.size()]);
+		gs.players[i]->logic->signalSpawn();
+	}
 }
 
 void GameFrame::setItemTimer() {
@@ -60,11 +65,10 @@ void GameFrame::setItemTimer() {
 }
 
 shared_ptr<Item> GameFrame::getRandomItem() const {
-	Config& cfg = Config::get();
 	for (;;) {
 		Coord pos;
-		pos.x = randRange(0, cfg.winWidth);
-		pos.y = randRange(0, cfg.winHeight);
+		pos.x = randRange(0, gs.level.bg->w);
+		pos.y = randRange(0, gs.level.bg->h);
 		ItemFactory itemFactory;
 		shared_ptr<Item> ret = itemFactory.createItem(pos);
 		if (gs.level.wall.collidesWith(ret->getHitbox())) continue;

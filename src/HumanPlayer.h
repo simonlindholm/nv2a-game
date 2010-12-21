@@ -14,6 +14,7 @@ class HumanPlayer : public PlayerLogic {
 		bool ignoredKey[SDLK_LAST];
 		std::list<int> ignKeys;
 		Uint8 ignMouse;
+		SDL_Rect bgPos;
 
 		void ignoreInput();
 		bool keyDown(Uint8* keyState, SDLKey key);
@@ -24,6 +25,7 @@ class HumanPlayer : public PlayerLogic {
 		void startFrame(Uint8* keyState, Uint8 mouseState, int mouseX, int mouseY);
 		void handleEvent(const SDL_Event& event);
 		virtual Action move(const GameState& game, unsigned int delay);
+		virtual void startGame(const GameState& game);
 		virtual void signalSpawn();
 		void paint(const GameState& game, SDL_Surface* screen);
 };

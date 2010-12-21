@@ -142,6 +142,8 @@ PlayerLogic::~PlayerLogic() {}
 
 void PlayerLogic::signalSpawn() {}
 
+void PlayerLogic::startGame(const GameState& game) {}
+
 void PlayerLogic::initInfo(const PlayerInfo* info) {
 	this->info = info;
 }
