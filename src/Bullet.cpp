@@ -3,11 +3,12 @@
 
 Bullet::Bullet(const Coord& p, double ang, size_t owner) {
 	angle = ang;
-	pos = p;
+	prevp = pos = p;
 	ownerPlayer = owner;
 	dx = std::cos(angle);
 	dy = -std::sin(angle);
-	hitbox.add(shared_ptr<Shape>(new Circle(this->pos, 2.5)));
+	hitboxLine = shared_ptr<LineSegment>(new LineSegment(pos, pos));
+	hitbox.add(hitboxLine);
 }
 
 double Bullet::getSpeed() const {
@@ -23,13 +24,14 @@ double Bullet::getAngle() const {
 }
 
 void Bullet::move(unsigned int delay) {
+	prevp = pos;
 	double mov = delay * this->getSpeed();
 	pos.x += mov * dx;
 	pos.y += mov * dy;
-	hitbox.moveBy(Coord(mov * dx, mov * dy));
 }
 
-Hitbox Bullet::getHitbox() const {
+const Hitbox& Bullet::getHitbox() const {
+	*hitboxLine = LineSegment(prevp, pos);
 	return hitbox;
 }
 
