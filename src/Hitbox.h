@@ -6,18 +6,11 @@
 // Forward declarations of the shape subclasses
 class Circle;
 class Rectangle;
+class LineSegment;
 
-// Container class for all the collision detection functions, friend of all
-// shape classes
-class CollisionTests {
-	public:
-		static bool collRR(const Rectangle& a, const Rectangle& b);
-		static bool collRC(const Rectangle& a, const Circle& b);
-		static bool collCC(const Circle& a, const Circle& b);
-		static bool surfRR(const Rectangle& a, const Rectangle& b, Coord& out);
-		static bool surfRC(const Rectangle& a, const Circle& b, Coord& out);
-		static bool surfCC(const Circle& a, const Circle& b, Coord& out);
-};
+// Forward-declared container class for all the collision detection functions,
+// friend of all shape classes. Defined in the implementation file.
+class CollisionTests;
 
 // Abstract class symbolising shapes such as circles and rectangles, positioned
 // anywhere in the plane and with any angle of rotation
@@ -45,6 +38,7 @@ class Shape {
 		// Functions to help with multiple dispatch for collision detection
 		virtual bool collidesWithDisp(const Circle& other) const = 0;
 		virtual bool collidesWithDisp(const Rectangle& other) const = 0;
+		virtual bool collidesWithDisp(const LineSegment& other) const = 0;
 
 		// Find a unit vector directed from a point of 'this' which is nearly
 		// colliding with 'other' against the surface involved in the near
@@ -54,6 +48,7 @@ class Shape {
 		// Functions to help with multiple dispatch of the above function
 		virtual bool collisionSurfDisp(const Circle& other, Coord& out) const = 0;
 		virtual bool collisionSurfDisp(const Rectangle& other, Coord& out) const = 0;
+		virtual bool collisionSurfDisp(const LineSegment& other, Coord& out) const = 0;
 
 		// Copy the object onto sh, which must be of the same type (no
 		// typechecking is done, so use only if you are absolutely sure
@@ -62,8 +57,6 @@ class Shape {
 };
 
 class Circle : public Shape {
-	// TODO: Add a custom small-object operator new, because we make a lot
-	// of copies of this class
 	friend class CollisionTests;
 	private:
 		double radius;
@@ -72,9 +65,11 @@ class Circle : public Shape {
 		virtual bool collidesWith(const Shape& other) const;
 		virtual bool collidesWithDisp(const Circle& other) const;
 		virtual bool collidesWithDisp(const Rectangle& other) const;
+		virtual bool collidesWithDisp(const LineSegment& other) const;
 		virtual bool collisionSurf(const Shape& other, Coord& out) const;
 		virtual bool collisionSurfDisp(const Circle& other, Coord& out) const;
 		virtual bool collisionSurfDisp(const Rectangle& other, Coord& out) const;
+		virtual bool collisionSurfDisp(const LineSegment& other, Coord& out) const;
 		virtual void rotate(double angle);
 		virtual shared_ptr<Shape> clone() const;
 		virtual void rawAssign(const Shape& sh);
@@ -92,9 +87,30 @@ class Rectangle : public Shape {
 		virtual bool collidesWith(const Shape& other) const;
 		virtual bool collidesWithDisp(const Circle& other) const;
 		virtual bool collidesWithDisp(const Rectangle& other) const;
+		virtual bool collidesWithDisp(const LineSegment& other) const;
 		virtual bool collisionSurf(const Shape& other, Coord& out) const;
 		virtual bool collisionSurfDisp(const Circle& other, Coord& out) const;
 		virtual bool collisionSurfDisp(const Rectangle& other, Coord& out) const;
+		virtual bool collisionSurfDisp(const LineSegment& other, Coord& out) const;
+		virtual void rotate(double angle);
+		virtual shared_ptr<Shape> clone() const;
+		virtual void rawAssign(const Shape& sh);
+};
+
+class LineSegment : public Shape {
+	friend class CollisionTests;
+	private:
+		Coord p2;
+	public:
+		LineSegment(const Coord& a, const Coord& b);
+		virtual bool collidesWith(const Shape& other) const;
+		virtual bool collidesWithDisp(const Circle& other) const;
+		virtual bool collidesWithDisp(const Rectangle& other) const;
+		virtual bool collidesWithDisp(const LineSegment& other) const;
+		virtual bool collisionSurf(const Shape& other, Coord& out) const;
+		virtual bool collisionSurfDisp(const Circle& other, Coord& out) const;
+		virtual bool collisionSurfDisp(const Rectangle& other, Coord& out) const;
+		virtual bool collisionSurfDisp(const LineSegment& other, Coord& out) const;
 		virtual void rotate(double angle);
 		virtual shared_ptr<Shape> clone() const;
 		virtual void rawAssign(const Shape& sh);
@@ -102,7 +118,6 @@ class Rectangle : public Shape {
 
 // Collection of shapes for use in collision detection
 class Hitbox {
-	// TODO: Implement bounding circles for faster testing
 	private:
 		std::vector<shared_ptr<Shape> > shapes;
 	public:

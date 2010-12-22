@@ -3,26 +3,30 @@
 #include "Hitbox.h"
 #include "mathutil.h"
 
+// Container class for all the collision detection functions, friend of all
+// shape classes
+class CollisionTests {
+	public:
+		static bool collRR(const Rectangle& a, const Rectangle& b);
+		static bool collRC(const Rectangle& a, const Circle& b);
+		static bool collCC(const Circle& a, const Circle& b);
+		static bool collRL(const Rectangle& a, const LineSegment& b);
+		static bool collCL(const Circle& a, const LineSegment& b);
+		static bool collLL(const LineSegment& a, const LineSegment& b);
+		static bool surfRR(const Rectangle& a, const Rectangle& b, Coord& out);
+		static bool surfRC(const Rectangle& a, const Circle& b, Coord& out);
+		static bool surfCC(const Circle& a, const Circle& b, Coord& out);
+};
+
 // Helper functions
 namespace{
 
 Coord rotatePoint(const Coord& point, double angle) {
-	// TODO: Try using implementation in rotatePointVec.
-	// Needs testing/test cases.
-	/*
+	// Note: Not sure if this works correctly in all cases, but it seems so.
 	Coord v;
 	v.x = std::cos(angle);
 	v.y = std::sin(angle);
 	return rotatePointVec(point, v);
-	*/
-	if (std::abs(point.x) < 0.1 && std::abs(point.y) < 0.1) return point;
-	double abs = pyth(point.x, point.y);
-	double pangle = std::atan2(-point.y, point.x);
-	pangle += angle;
-	Coord res;
-	res.x = abs * std::cos(pangle);
-	res.y = abs * -std::sin(pangle);
-	return res;
 }
 
 // Helper function for the rectangle-rectangle collision detection routine,
@@ -30,6 +34,25 @@ Coord rotatePoint(const Coord& point, double angle) {
 // angle at position (px,py), width w and height h.
 bool rrCorner(const Coord& q, double w, double h, double px, double py) {
 	return w * std::abs(q.y - py) + h * std::abs(q.x - px) <= h * w;
+}
+
+// Test whether the line segment p1~p2 intersects (x1,0)~(x2,0),
+// assuming x1 <= x2
+bool collRLine(double x1, double x2, Coord p1, Coord p2) {
+	// Test whether p1~p2 intersects the real line
+	if (p1.y > p2.y) std::swap(p1, p2);
+	if (p1.y > 0 || p2.y < 0) return false;
+
+	if (p1.y == p2.y) {
+		// Handle the exceptional case where the two line segments are parallel
+		if (p1.x > p2.x) std::swap(p1.x, p2.x);
+		return (p1.x <= x2 && x1 <= p2.x);
+	}
+
+	// Calculate the intersection point
+	double xdif = p2.x - p1.x, ydif = p2.y - p1.y;
+	double x = p1.x - p1.y * xdif / ydif;
+	return (x1 <= x && x <= x2);
 }
 
 }
@@ -132,7 +155,79 @@ bool CollisionTests::collRR(const Rectangle& a, const Rectangle& b) {
 	return true;
 }
 
-// Functions for finding a unit vectors directed against the relevant surface
+bool CollisionTests::collRL(const Rectangle& a, const LineSegment& b) {
+	// Make a copy of the line segment so we can modify it
+	LineSegment ls = b;
+
+	// Transform the coordinate system so that the rectangle is axis-aligned
+	// and is located at the origin
+	ls.pos.x -= a.pos.x;
+	ls.pos.y -= a.pos.y;
+	ls.p2.x -= a.pos.x;
+	ls.p2.y -= a.pos.y;
+	if (!a.axis) {
+		ls.pos = rotatePoint(ls.pos, -a.angle);
+		ls.p2 = rotatePoint(ls.p2, -a.angle);
+	}
+
+	// If one of the points is within the rectangle then there is a collision
+	if (ls.pos.x >= 0 && ls.pos.x <= a.w && ls.pos.y >= 0 && ls.pos.y <= a.h)
+		return true;
+
+	// Otherwise, a collision must involve the line segment intersecting one
+	// of the sides, and since these sides are axis-aligned we can use
+	// collRLine for this, with displaced/reflected endpoints
+	if (collRLine(0, a.w, ls.pos, ls.p2)) return true;
+
+	ls.pos.y -= a.h;
+	ls.p2.y -= a.h;
+	if (collRLine(0, a.w, ls.pos, ls.p2)) return true;
+	ls.pos.y += a.h;
+	ls.p2.y += a.h;
+
+	// Reflect everything around y=x, ie. swap x and y coordinates (this does
+	// not change whether the shapes collide, but makes it possible to use
+	// collRLine despite it operating only with horizontal lines)
+	std::swap(ls.pos.x, ls.pos.y);
+	std::swap(ls.p2.x, ls.p2.y);
+
+	if (collRLine(0, a.h, ls.pos, ls.p2)) return true;
+
+	ls.pos.y -= a.w;
+	ls.p2.y -= a.w;
+	if (collRLine(0, a.h, ls.pos, ls.p2)) return true;
+	
+	return false;
+}
+
+bool CollisionTests::collCL(const Circle& a, const LineSegment& b) {
+	Circle c = a;
+	c.pos.x -= b.pos.x;
+	c.pos.y -= b.pos.y;
+	Coord oth = b.p2;
+	oth.x -= b.pos.x;
+	oth.y -= b.pos.y;
+	// TODO: Keep an angle in LineSegment, so this isn't needed
+	double ang = atan2(oth.y, oth.x);
+	c.pos = rotatePoint(c.pos, ang);
+	oth = rotatePoint(oth, ang);
+
+	if (c.pos.y + c.radius < 0 || c.pos.y - c.radius > 0) return false;
+	double xsqmax = c.radius * c.radius - c.pos.y * c.pos.y;
+	if (c.pos.x > 0)
+		return (c.pos.x * c.pos.x <= xsqmax);
+	double xd2 = c.pos.x + oth.x;
+	if (xd2 < 0)
+		return (xd2 * xd2 <= xsqmax);
+	return true;
+}
+
+bool CollisionTests::collLL(const LineSegment&, const LineSegment&) {
+	// TODO: Implement.
+	return false;
+}
+
+// Functions for finding a unit vector directed against the relevant surface
 bool CollisionTests::surfRC(const Rectangle& a, const Circle& b, Coord& out) {
 	// Create a copy of the circle to allow moving it, which makes
 	// the algorithm simpler
@@ -211,6 +306,9 @@ bool Circle::collidesWithDisp(const Circle& other) const {
 bool Circle::collidesWithDisp(const Rectangle& other) const {
 	return CollisionTests::collRC(other, *this);
 }
+bool Circle::collidesWithDisp(const LineSegment& other) const {
+	return CollisionTests::collCL(*this, other);
+}
 
 bool Circle::collisionSurf(const Shape& other, Coord& out) const {
 	return other.collisionSurfDisp(*this, out);
@@ -220,6 +318,9 @@ bool Circle::collisionSurfDisp(const Rectangle& other, Coord& out) const {
 }
 bool Circle::collisionSurfDisp(const Circle& other, Coord& out) const {
 	return CollisionTests::surfCC(other, *this, out);
+}
+bool Circle::collisionSurfDisp(const LineSegment&, Coord&) const {
+	return false;
 }
 
 shared_ptr<Shape> Circle::clone() const {
@@ -255,6 +356,9 @@ bool Rectangle::collidesWithDisp(const Rectangle& other) const {
 bool Rectangle::collidesWithDisp(const Circle& other) const {
 	return CollisionTests::collRC(*this, other);
 }
+bool Rectangle::collidesWithDisp(const LineSegment& other) const {
+	return CollisionTests::collRL(*this, other);
+}
 
 bool Rectangle::collisionSurf(const Shape& other, Coord& out) const {
 	return other.collisionSurfDisp(*this, out);
@@ -275,6 +379,9 @@ bool Rectangle::collisionSurfDisp(const Circle& other, Coord& out) const {
 
 	return ret;
 }
+bool Rectangle::collisionSurfDisp(const LineSegment&, Coord&) const {
+	return false;
+}
 
 shared_ptr<Shape> Rectangle::clone() const {
 	return shared_ptr<Shape>(new Rectangle(*this));
@@ -282,6 +389,51 @@ shared_ptr<Shape> Rectangle::clone() const {
 
 void Rectangle::rawAssign(const Shape& sh) {
 	*this = static_cast<const Rectangle&>(sh);
+}
+
+
+// LineSegment member functions
+LineSegment::LineSegment(const Coord& a, const Coord& b)
+	: Shape(a), p2(b)
+{}
+
+void LineSegment::rotate(double angle) {
+	pos = rotatePoint(pos, angle);
+	p2 = rotatePoint(p2, angle);
+}
+
+bool LineSegment::collidesWith(const Shape& other) const {
+	return other.collidesWithDisp(*this);
+}
+bool LineSegment::collidesWithDisp(const Circle& other) const {
+	return CollisionTests::collCL(other, *this);
+}
+bool LineSegment::collidesWithDisp(const Rectangle& other) const {
+	return CollisionTests::collRL(other, *this);
+}
+bool LineSegment::collidesWithDisp(const LineSegment& other) const {
+	return CollisionTests::collLL(other, *this);
+}
+
+bool LineSegment::collisionSurf(const Shape&, Coord&) const {
+	return false;
+}
+bool LineSegment::collisionSurfDisp(const Rectangle&, Coord&) const {
+	return false;
+}
+bool LineSegment::collisionSurfDisp(const Circle&, Coord&) const {
+	return false;
+}
+bool LineSegment::collisionSurfDisp(const LineSegment&, Coord&) const {
+	return false;
+}
+
+shared_ptr<Shape> LineSegment::clone() const {
+	return shared_ptr<Shape>(new LineSegment(*this));
+}
+
+void LineSegment::rawAssign(const Shape& sh) {
+	*this = static_cast<const LineSegment&>(sh);
 }
 
 
