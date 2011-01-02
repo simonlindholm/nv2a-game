@@ -45,30 +45,38 @@ void StupidAIPlayer::signalSpawn() {
 
 // Move the player in some (rather stupid) way
 PlayerLogic::Action StupidAIPlayer::move(const GameState& game, unsigned int delay) {
-	Action ret;
-
-	Coord towards = this->checkpoints[this->moveInd];
 	Coord pos = info->getPosition();
-
-	double mov = info->getSpeed() * delay;
-	double relX = towards.x - pos.x;
-	double relY = towards.y - pos.y;
-	double dist = pyth(relX, relY);
+	Action ret;
 
 	if (disDelay >= 800) {
 		// Player is sufficiently disoriented, don't move at all
 		ret.mx = ret.my = 0;
 	}
-	else if (dist <= mov) {
-		// Player can reach target in this step, teleport there
-		ret.mx = relX;
-		ret.my = relY;
-		if (++this->moveInd == this->checkpoints.size()) {
-			this->moveInd = 0;
-		}
-	}
 	else {
 		// Move normally
+		double mov = info->getSpeed() * delay, dist, relX, relY;
+		Coord towards;
+
+		// Find the movement against the next checkpoint that cannot be reached
+		// in this step. In theory, this might become an infinite loop with
+		// sufficiently low FPS, but in practice this will probably not happen.
+		for (;;) {
+			towards = checkpoints[moveInd];
+
+			relX = towards.x - pos.x;
+			relY = towards.y - pos.y;
+			dist = pyth(relX, relY);
+
+			// If the target can be reached, break out of the loop
+			if (dist > mov) break;
+
+			ret.mx = relX;
+			ret.my = relY;
+			if (++moveInd == checkpoints.size()) {
+				moveInd = 0;
+			}
+		}
+
 		double rat = mov / dist;
 		ret.mx = relX * rat;
 		ret.my = relY * rat;
