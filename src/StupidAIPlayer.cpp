@@ -55,31 +55,34 @@ PlayerLogic::Action StupidAIPlayer::move(const GameState& game, unsigned int del
 	else {
 		// Move normally
 		double mov = info->getSpeed() * delay, dist, relX, relY;
-		Coord towards;
+		Coord towards, fromp = pos;
+		ret.mx = ret.my = 0;
 
-		// Find the movement against the next checkpoint that cannot be reached
-		// in this step. In theory, this might become an infinite loop with
-		// sufficiently low FPS, but in practice this will probably not happen.
+		// Walk the checkpoint cycle until we exhaust the distance we can move.
 		for (;;) {
 			towards = checkpoints[moveInd];
 
-			relX = towards.x - pos.x;
-			relY = towards.y - pos.y;
+			relX = towards.x - fromp.x;
+			relY = towards.y - fromp.y;
 			dist = pyth(relX, relY);
 
-			// If the target can be reached, break out of the loop
+			// If the target cannot be reached, break out of the loop
 			if (dist > mov) break;
 
-			ret.mx = relX;
-			ret.my = relY;
+			// Reduce the distance we can move by walking to the the next
+			// checkpoint, and set the target to the next one.
+			mov -= dist;
+			fromp = towards;
+			ret.mx += relX;
+			ret.my += relY;
 			if (++moveInd == checkpoints.size()) {
 				moveInd = 0;
 			}
 		}
 
 		double rat = mov / dist;
-		ret.mx = relX * rat;
-		ret.my = relY * rat;
+		ret.mx += relX * rat;
+		ret.my += relY * rat;
 	}
 
 	// Calculate the angle of sight
