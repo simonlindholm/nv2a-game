@@ -238,7 +238,7 @@ Frame* GameFrame::frame(SDL_Surface* screen, unsigned int delay) {
 						// be in a PlayerInfo member function, together with
 						// the HP reset.
 						std::vector<Coord>& rpoints = gs.level.respawnPoints;
-						p.moveTo(rpoints[randTo(rpoints.size())]);
+						p.moveTo(rpoints[randTo((int)rpoints.size())]);
 						p.setHP(100);
 						pl.logic->signalSpawn();
 					}
